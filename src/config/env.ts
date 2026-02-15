@@ -11,7 +11,7 @@ const msString = z
 export const envSchema = z.object({
 	PORT: z.coerce.number().int().positive().default(3000),
 	NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
-	DATABASE_URL: z.url(),
+	DATABASE_URL: z.url().optional(),
 	JWT_SECRET: z.string().min(32),
 	JWT_ACCESS_TOKEN_TTL: msString.default("15m"),
 	JWT_REFRESH_TOKEN_TTL: msString.default("7d"),

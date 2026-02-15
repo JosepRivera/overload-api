@@ -1,0 +1,63 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: gymrat-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}       # danton
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD} # manchitas123_
+      POSTGRES_DB: ${POSTGRES_DB}           # gymrat_db ← IMPORTANTE
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    networks:
+      - gymrat-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  app-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: build
+    container_name: gymrat-app-dev
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
+      - "9229:9229"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
+      NODE_ENV: ${NODE_ENV}
+      PORT: ${PORT}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_ACCESS_TOKEN_TTL: ${JWT_ACCESS_TOKEN_TTL}
+      JWT_REFRESH_TOKEN_TTL: ${JWT_REFRESH_TOKEN_TTL}
+      CORS_ORIGIN: ${CORS_ORIGIN}
+      BCRYPT_ROUNDS: ${BCRYPT_ROUNDS}
+    volumes:
+      - ./src:/app/src
+      - ./prisma:/app/prisma
+      - /app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - gymrat-network
+    command: >
+      sh -c "
+        echo '🔄 Checking database connection...' &&
+        echo 'DATABASE_URL: postgresql://${POSTGRES_USER}:***@postgres:5432/${POSTGRES_DB}' &&
+        pnpm prisma migrate deploy &&
+        echo '✅ Database ready!' &&
+        pnpm run start:dev
+      "
+
+volumes:
+  postgres_dev_data:
+
+networks:
+  gymrat-network:

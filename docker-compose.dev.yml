@@ -4,9 +4,9 @@ services:
     container_name: gymrat-postgres-dev
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}       # danton
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD} # manchitas123_
-      POSTGRES_DB: ${POSTGRES_DB}           # gymrat_db ← IMPORTANTE
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:

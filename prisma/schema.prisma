@@ -8,27 +8,31 @@ datasource db {
 }
 
 model User {
-  id       String @id @default(uuid())
-  email    String @unique
-  name     String
-  password String
+  id             String         @id @default(uuid()) @db.Uuid
+  name           String         @db.VarChar(100)
+  email          String         @unique @db.VarChar(255)
+  password       String         @db.VarChar(255)
+  is_active      Boolean        @default(true)
+  email_verified Boolean        @default(false)
+  created_at     DateTime       @default(now()) @db.Timestamptz
+  updated_at     DateTime       @updatedAt @db.Timestamptz
 
-  refreshTokens   RefreshToken[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  refresh_tokens RefreshToken[]
 
   @@index([email])
+  @@index([is_active])
 }
 
 model RefreshToken {
-  id        String   @id @default(uuid())
-  token     String   @unique
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  expiresAt DateTime
-  createdAt DateTime @default(now())
+  id          String    @id @default(uuid()) @db.Uuid
+  user_id     String    @db.Uuid
+  token_hash  String    @unique @db.VarChar(255)
+  expires_at  DateTime  @db.Timestamptz
+  created_at  DateTime  @default(now()) @db.Timestamptz
+  revoked_at  DateTime? @db.Timestamptz
 
-  @@index([userId])
-  @@index([token])
+  user        User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([expires_at])
 }

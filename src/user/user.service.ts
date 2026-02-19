@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import bcrypt from "bcrypt";
 import { env } from "@/config/env";
 import { PrismaService } from "../prisma/prisma.service";
@@ -30,5 +30,18 @@ export class UserService {
 		return this.prisma.user.findUnique({
 			where: { id },
 		});
+	}
+
+	async findByIdSafe(id: string) {
+		const user = await this.prisma.user.findUnique({
+			where: { id },
+		});
+
+		if (!user) {
+			throw new NotFoundException("User not found");
+		}
+
+		const { password: _, ...userWithoutPassword } = user;
+		return userWithoutPassword;
 	}
 }

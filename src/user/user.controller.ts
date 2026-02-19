@@ -1,4 +1,3 @@
-// src/user/user.controller.ts
 import { Controller, Get, Param, UseGuards } from "@nestjs/common";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";

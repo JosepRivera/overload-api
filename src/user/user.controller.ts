@@ -1,8 +1,8 @@
 // src/user/user.controller.ts
 import { Controller, Get, Param, UseGuards } from "@nestjs/common";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
-import { JwtPayload } from "../auth/dto/jwt-payload.dto";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
+import { JwtPayload } from "../auth/types/jwt-payload.type";
 import { UserService } from "./user.service";
 
 @Controller("users")

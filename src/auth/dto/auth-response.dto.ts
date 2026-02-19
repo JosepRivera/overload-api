@@ -5,7 +5,7 @@ export interface AuthResponseDto {
 		id: string;
 		email: string;
 		name: string;
-		emailVerified: boolean;
-		isActive: boolean;
+		email_verified: boolean;
+		is_active: boolean;
 	};
 }

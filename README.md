@@ -1,7 +1,7 @@
 <div align="center">
 
 <!-- Place your logo at docs/logo.png -->
-<img src="docs/logo.png" alt="Overload API Logo" width="120" />
+<img src="docs/logo.png" alt="Overload API Logo" width="250" style="border-radius: 20px;" />
 
 # Overload API
 
@@ -85,19 +85,17 @@ Built with **NestJS 11**, it exposes a REST API with JWT + Refresh Token authent
 
 ## Features & Roadmap
 
-| ID   | Module                                                                                      | Status        |
-| ---- | ------------------------------------------------------------------------------------------- | ------------- |
-| F-01 | **Authentication** — Register, login, logout and JWT refresh tokens                         | ✅ Done        |
-| F-02 | **Exercise Management** — Full CRUD for the user's personal exercise catalog                | 🚧 In progress |
-| F-03 | **Routines** — Training plans with target sets, reps and rest times                         | 📋 Planned     |
-| F-04 | **Workout Execution** — Real-time tracking of active training sessions                      | 📋 Planned     |
-| F-05 | **Set Logging** — Weight and rep tracking with last-used weight history                     | 📋 Planned     |
-| F-06 | **Training History** — Past sessions with advanced filters                                  | 📋 Planned     |
-| F-07 | **Automatic PR Detection** — Algorithm that identifies new records instantly                | 📋 Planned     |
-| F-08 | **Volume Calculation** — Total volume stats (weight × reps × sets) per session and exercise | 📋 Planned     |
-| F-09 | **1RM Estimation** — One rep max calculation using the Epley formula                        | 📋 Planned     |
-
----
+| Module                                                                                      | Status        |
+| ------------------------------------------------------------------------------------------- | ------------- |
+| **Authentication** — Register, login, logout and JWT refresh tokens                         | ✅ Done        |
+| **Exercise Management** — Full CRUD for the user's personal exercise catalog                | 🚧 In progress |
+| **Routines** — Training plans with target sets, reps and rest times                         | 📋 Planned     |
+| **Workout Execution** — Real-time tracking of active training sessions                      | 📋 Planned     |
+| **Set Logging** — Weight and rep tracking with last-used weight history                     | 📋 Planned     |
+| **Training History** — Past sessions with advanced filters                                  | 📋 Planned     |
+| **Automatic PR Detection** — Algorithm that identifies new records instantly                | 📋 Planned     |
+| **Volume Calculation** — Total volume stats (weight × reps × sets) per session and exercise | 📋 Planned     |
+| **1RM Estimation** — One rep max calculation using the Epley formula                        | 📋 Planned     |
 
 ## Project Architecture
 

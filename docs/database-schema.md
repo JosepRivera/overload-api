@@ -1,309 +1,304 @@
-# 🗄️ Database Schema - Workout Tracking Application
+# Database Schema - Workout Tracking Application
 
-> **Versión**: 1.0  
-> **Fecha**: Febrero 2026  
-> **Mantenedor**: Josep Rivera
+## Table of Contents
 
----
-
-## 📋 Tabla de Contenidos
-
-- [Tablas](#-tablas)
-  - [Autenticación](#autenticación)
-  - [Ejercicios y Rutinas](#ejercicios-y-rutinas)
-  - [Entrenamientos](#entrenamientos)
-- [Métricas Derivadas](#-métricas-derivadas)
-- [Índices y Performance](#️-índices-y-performance)
+- [Tables](#-tables)
+  - [Authentication](#authentication)
+  - [Exercises and Routines](#exercises-and-routines)
+  - [Workouts](#workouts)
+- [Derived Metrics](#-derived-metrics)
+- [Indexes and Performance](#️-indexes-and-performance)
 
 ---
 
-## 📊 Tablas
+## Tables
 
-### Autenticación
+### Authentication
 
 #### `users`
 
-Almacena la información de autenticación de los usuarios.
+Stores user authentication information.
 
-| Columna          | Tipo         | Restricciones           | Descripción                     |
-| ---------------- | ------------ | ----------------------- | ------------------------------- |
-| `id`             | UUID         | PRIMARY KEY             | Identificador único del usuario |
-| `email`          | VARCHAR(255) | UNIQUE, NOT NULL        | Email del usuario (username)    |
-| `password_hash`  | VARCHAR(255) | NOT NULL                | Hash bcrypt (costo 12)          |
-| `is_active`      | BOOLEAN      | NOT NULL, DEFAULT TRUE  | Usuario activo/bloqueado        |
-| `email_verified` | BOOLEAN      | NOT NULL, DEFAULT FALSE | Email verificado                |
-| `created_at`     | TIMESTAMPTZ  | NOT NULL, DEFAULT NOW() | Fecha de registro               |
-| `updated_at`     | TIMESTAMPTZ  | NOT NULL, DEFAULT NOW() | Última actualización del perfil |
+| Column           | Type         | Constraints             | Description            |
+| ---------------- | ------------ | ----------------------- | ---------------------- |
+| `id`             | UUID         | PRIMARY KEY             | Unique user identifier |
+| `email`          | VARCHAR(255) | UNIQUE, NOT NULL        | User email (username)  |
+| `password_hash`  | VARCHAR(255) | NOT NULL                | bcrypt hash (cost 12)  |
+| `is_active`      | BOOLEAN      | NOT NULL, DEFAULT TRUE  | Active/blocked user    |
+| `email_verified` | BOOLEAN      | NOT NULL, DEFAULT FALSE | Email verified         |
+| `created_at`     | TIMESTAMPTZ  | NOT NULL, DEFAULT NOW() | Registration date      |
+| `updated_at`     | TIMESTAMPTZ  | NOT NULL, DEFAULT NOW() | Last profile update    |
 
-**Índices:**
-- Índice único en `email` (case-insensitive usando LOWER)
-- Índice parcial en `is_active` solo para usuarios activos
+**Indexes:**
+- Unique index on `email` (case-insensitive using LOWER)
+- Partial index on `is_active` for active users only
 
-**Notas importantes:**
-- El email se almacena en minúsculas para búsquedas case-insensitive
-- `is_active` permite soft-delete o bloqueo de cuentas
-- **Access tokens NO se almacenan** (son stateless JWT)
-- **Refresh tokens SÍ se almacenan** (ver tabla siguiente)
+**Important notes:**
+- Email is stored in lowercase for case-insensitive lookups
+- `is_active` allows soft-delete or account blocking
+- **Access tokens are NOT stored** (stateless JWT)
+- **Refresh tokens ARE stored** (see next table)
 
 ---
 
 #### `refresh_tokens`
 
-Gestiona los refresh tokens para renovación segura de access tokens.
+Manages refresh tokens for secure access token renewal.
 
-| Columna       | Tipo         | Restricciones                               | Descripción                             |
-| ------------- | ------------ | ------------------------------------------- | --------------------------------------- |
-| `id`          | UUID         | PRIMARY KEY                                 | Identificador único del token           |
-| `user_id`     | UUID         | FK → users(id), NOT NULL, ON DELETE CASCADE | Usuario propietario                     |
-| `token_hash`  | VARCHAR(255) | UNIQUE, NOT NULL                            | Hash SHA-256 del refresh token          |
-| `expires_at`  | TIMESTAMPTZ  | NOT NULL                                    | Fecha de expiración                     |
-| `created_at`  | TIMESTAMPTZ  | NOT NULL, DEFAULT NOW()                     | Fecha de emisión                        |
-| `revoked_at`  | TIMESTAMPTZ  | NULL                                        | Fecha de revocación (logout/compromiso) |
-| `device_info` | VARCHAR(255) | NULL                                        | Info del dispositivo (opcional)         |
-| `ip_address`  | INET         | NULL                                        | IP de creación (auditoría)              |
+| Column        | Type         | Constraints                                 | Description                         |
+| ------------- | ------------ | ------------------------------------------- | ----------------------------------- |
+| `id`          | UUID         | PRIMARY KEY                                 | Unique token identifier             |
+| `user_id`     | UUID         | FK → users(id), NOT NULL, ON DELETE CASCADE | Token owner                         |
+| `token_hash`  | VARCHAR(255) | UNIQUE, NOT NULL                            | SHA-256 hash of the refresh token   |
+| `expires_at`  | TIMESTAMPTZ  | NOT NULL                                    | Expiration date                     |
+| `created_at`  | TIMESTAMPTZ  | NOT NULL, DEFAULT NOW()                     | Issue date                          |
+| `revoked_at`  | TIMESTAMPTZ  | NULL                                        | Revocation date (logout/compromise) |
+| `device_info` | VARCHAR(255) | NULL                                        | Device info (optional)              |
+| `ip_address`  | INET         | NULL                                        | Creation IP (audit)                 |
 
-**Índices:**
-- Índice único en `token_hash` para búsquedas rápidas
-- Índice compuesto en `user_id` solo para tokens válidos (no revocados y no expirados)
-- Índice en `expires_at` para limpieza automática de tokens vencidos
+**Indexes:**
+- Unique index on `token_hash` for fast lookups
+- Composite index on `user_id` for valid tokens only (not revoked and not expired)
+- Index on `expires_at` for automatic cleanup of expired tokens
 
-**Políticas de seguridad:**
-- Refresh tokens expiran en 30-90 días (configurable)
-- Al hacer logout, se revoca el token (`revoked_at = NOW()`)
-- Limpieza automática de tokens expirados (cron job)
-- Máximo 5 tokens activos por usuario (límite de dispositivos)
-- Rotación de tokens: al refrescar, se revoca el anterior
+**Security policies:**
+- Refresh tokens expire in 30–90 days (configurable)
+- On logout, token is revoked (`revoked_at = NOW()`)
+- Automatic cleanup of expired tokens (cron job)
+- Maximum 5 active tokens per user (device limit)
+- Token rotation: on refresh, the previous token is revoked
 
 ---
 
-### Ejercicios y Rutinas
+### Exercises and Routines
 
 #### `exercises`
 
-Catálogo personal de ejercicios de cada usuario.
+Personal exercise catalog for each user.
 
-| Columna       | Tipo         | Restricciones                               | Descripción                           |
-| ------------- | ------------ | ------------------------------------------- | ------------------------------------- |
-| `id`          | UUID         | PRIMARY KEY                                 | Identificador del ejercicio           |
-| `user_id`     | UUID         | FK → users(id), NOT NULL, ON DELETE CASCADE | Propietario del ejercicio             |
-| `name`        | VARCHAR(150) | NOT NULL                                    | Nombre del ejercicio                  |
-| `category`    | VARCHAR(100) | NOT NULL                                    | Grupo muscular (pecho, espalda, etc.) |
-| `type`        | VARCHAR(50)  | NOT NULL                                    | Tipo (compound, isolation, cardio)    |
-| `notes`       | TEXT         | NULL                                        | Notas técnicas del usuario            |
-| `is_archived` | BOOLEAN      | NOT NULL, DEFAULT FALSE                     | Ejercicio archivado (no eliminado)    |
-| `created_at`  | TIMESTAMPTZ  | NOT NULL, DEFAULT NOW()                     | Fecha de creación                     |
-| `updated_at`  | TIMESTAMPTZ  | NOT NULL, DEFAULT NOW()                     | Última modificación                   |
+| Column        | Type         | Constraints                                 | Description                        |
+| ------------- | ------------ | ------------------------------------------- | ---------------------------------- |
+| `id`          | UUID         | PRIMARY KEY                                 | Exercise identifier                |
+| `user_id`     | UUID         | FK → users(id), NOT NULL, ON DELETE CASCADE | Exercise owner                     |
+| `name`        | VARCHAR(150) | NOT NULL                                    | Exercise name                      |
+| `category`    | VARCHAR(100) | NOT NULL                                    | Muscle group (chest, back, etc.)   |
+| `type`        | VARCHAR(50)  | NOT NULL                                    | Type (compound, isolation, cardio) |
+| `notes`       | TEXT         | NULL                                        | User technical notes               |
+| `is_archived` | BOOLEAN      | NOT NULL, DEFAULT FALSE                     | Archived exercise (not deleted)    |
+| `created_at`  | TIMESTAMPTZ  | NOT NULL, DEFAULT NOW()                     | Creation date                      |
+| `updated_at`  | TIMESTAMPTZ  | NOT NULL, DEFAULT NOW()                     | Last modified                      |
 
-**Índices:**
-- Índice en `user_id` solo para ejercicios no archivados
-- Índice compuesto en `user_id` y `category` para filtrado
-- Índice único en combinación `user_id` + `name` (case-insensitive) solo si no está archivado
+**Indexes:**
+- Index on `user_id` for non-archived exercises only
+- Composite index on `user_id` and `category` for filtering
+- Unique index on `user_id` + `name` combination (case-insensitive) for non-archived only
 
-**Restricciones adicionales:**
-- `category` debe ser uno de: 'chest', 'back', 'legs', 'shoulders', 'arms', 'core', 'cardio', 'other'
-- `type` debe ser uno de: 'compound', 'isolation', 'cardio', 'stretching'
+**Additional constraints:**
+- `category` must be one of: 'chest', 'back', 'legs', 'shoulders', 'arms', 'core', 'cardio', 'other'
+- `type` must be one of: 'compound', 'isolation', 'cardio', 'stretching'
 
-**Notas:**
-- No se eliminan ejercicios físicamente si tienen historial
-- Se marcan como `is_archived = TRUE` para ocultar
-- Permite duplicados de nombre si uno está archivado
+**Notes:**
+- Exercises are not physically deleted if they have history
+- They are marked as `is_archived = TRUE` to hide them
+- Duplicate names are allowed if one is archived
 
 ---
 
 #### `routines`
 
-Plantillas de entrenamiento creadas por el usuario.
+Workout templates created by the user.
 
-| Columna       | Tipo         | Restricciones                               | Descripción                |
-| ------------- | ------------ | ------------------------------------------- | -------------------------- |
-| `id`          | UUID         | PRIMARY KEY                                 | Identificador de la rutina |
-| `user_id`     | UUID         | FK → users(id), NOT NULL, ON DELETE CASCADE | Propietario                |
-| `name`        | VARCHAR(150) | NOT NULL                                    | Nombre de la rutina        |
-| `description` | TEXT         | NULL                                        | Descripción opcional       |
-| `is_active`   | BOOLEAN      | NOT NULL, DEFAULT TRUE                      | Rutina activa/archivada    |
-| `created_at`  | TIMESTAMPTZ  | NOT NULL, DEFAULT NOW()                     | Fecha de creación          |
-| `updated_at`  | TIMESTAMPTZ  | NOT NULL, DEFAULT NOW()                     | Última modificación        |
+| Column        | Type         | Constraints                                 | Description             |
+| ------------- | ------------ | ------------------------------------------- | ----------------------- |
+| `id`          | UUID         | PRIMARY KEY                                 | Routine identifier      |
+| `user_id`     | UUID         | FK → users(id), NOT NULL, ON DELETE CASCADE | Owner                   |
+| `name`        | VARCHAR(150) | NOT NULL                                    | Routine name            |
+| `description` | TEXT         | NULL                                        | Optional description    |
+| `is_active`   | BOOLEAN      | NOT NULL, DEFAULT TRUE                      | Active/archived routine |
+| `created_at`  | TIMESTAMPTZ  | NOT NULL, DEFAULT NOW()                     | Creation date           |
+| `updated_at`  | TIMESTAMPTZ  | NOT NULL, DEFAULT NOW()                     | Last modified           |
 
-**Índices:**
-- Índice en `user_id` solo para rutinas activas
-- Índice único en combinación `user_id` + `name` (case-insensitive) solo si está activa
+**Indexes:**
+- Index on `user_id` for active routines only
+- Unique index on `user_id` + `name` combination (case-insensitive) for active routines only
 
 ---
 
 #### `routine_exercises`
 
-Tabla de asociación entre rutinas y ejercicios con configuración objetivo.
+Association table between routines and exercises with target configuration.
 
-| Columna           | Tipo    | Restricciones                                        | Descripción                        |
-| ----------------- | ------- | ---------------------------------------------------- | ---------------------------------- |
-| `id`              | UUID    | PRIMARY KEY                                          | Identificador                      |
-| `routine_id`      | UUID    | FK → routines(id), NOT NULL, ON DELETE CASCADE       | Rutina padre                       |
-| `exercise_id`     | UUID    | FK → exercises(id), NOT NULL                         | Ejercicio asociado                 |
-| `target_sets`     | INTEGER | NOT NULL, CHECK (target_sets > 0)                    | Series objetivo (3-5)              |
-| `target_reps_min` | INTEGER | NOT NULL, CHECK (target_reps_min > 0)                | Reps mínimas objetivo (8)          |
-| `target_reps_max` | INTEGER | NOT NULL, CHECK (target_reps_max >= target_reps_min) | Reps máximas objetivo (12)         |
-| `target_rest_sec` | INTEGER | NOT NULL, CHECK (target_rest_sec >= 0)               | Descanso en segundos (60-180)      |
-| `order_index`     | INTEGER | NOT NULL, CHECK (order_index >= 0)                   | Orden en la rutina (0-indexed)     |
-| `notes`           | TEXT    | NULL                                                 | Notas específicas (técnica, carga) |
+| Column            | Type    | Constraints                                          | Description                          |
+| ----------------- | ------- | ---------------------------------------------------- | ------------------------------------ |
+| `id`              | UUID    | PRIMARY KEY                                          | Identifier                           |
+| `routine_id`      | UUID    | FK → routines(id), NOT NULL, ON DELETE CASCADE       | Parent routine                       |
+| `exercise_id`     | UUID    | FK → exercises(id), NOT NULL                         | Associated exercise                  |
+| `target_sets`     | INTEGER | NOT NULL, CHECK (target_sets > 0)                    | Target sets (3–5)                    |
+| `target_reps_min` | INTEGER | NOT NULL, CHECK (target_reps_min > 0)                | Minimum target reps (8)              |
+| `target_reps_max` | INTEGER | NOT NULL, CHECK (target_reps_max >= target_reps_min) | Maximum target reps (12)             |
+| `target_rest_sec` | INTEGER | NOT NULL, CHECK (target_rest_sec >= 0)               | Rest in seconds (60–180)             |
+| `order_index`     | INTEGER | NOT NULL, CHECK (order_index >= 0)                   | Order within the routine (0-indexed) |
+| `notes`           | TEXT    | NULL                                                 | Specific notes (technique, load)     |
 
-**Índices:**
-- Índice compuesto en `routine_id` y `order_index` para ordenamiento eficiente
-- Índice en `exercise_id` para búsquedas inversas
-- Índice único en combinación `routine_id` + `order_index` para evitar duplicados
+**Indexes:**
+- Composite index on `routine_id` and `order_index` for efficient ordering
+- Index on `exercise_id` for reverse lookups
+- Unique index on `routine_id` + `order_index` to avoid duplicates
 
-**Notas:**
-- Rango de reps (min-max) permite flexibilidad en progresión
-- `order_index` debe ser consecutivo dentro de cada rutina
-- Si se elimina un ejercicio, se puede decidir:
-  - Opción A: Mantener el link (soft delete en exercises)
-  - Opción B: SET NULL + flag de ejercicio eliminado
+**Notes:**
+- Rep range (min–max) allows flexibility in progression
+- `order_index` must be consecutive within each routine
+- If an exercise is deleted, options are:
+  - Option A: Keep the link (soft delete on exercises)
+  - Option B: SET NULL + deleted exercise flag
 
 ---
 
-### Entrenamientos
+### Workouts
 
 #### `workouts`
 
-Sesiones reales de entrenamiento realizadas por el usuario.
+Actual training sessions performed by the user.
 
-| Columna       | Tipo        | Restricciones                               | Descripción                       |
-| ------------- | ----------- | ------------------------------------------- | --------------------------------- |
-| `id`          | UUID        | PRIMARY KEY                                 | Identificador del workout         |
-| `user_id`     | UUID        | FK → users(id), NOT NULL, ON DELETE CASCADE | Usuario que realizó el workout    |
-| `routine_id`  | UUID        | FK → routines(id), NULL, ON DELETE SET NULL | Rutina usada (opcional)           |
-| `started_at`  | TIMESTAMPTZ | NOT NULL                                    | Inicio del entrenamiento          |
-| `finished_at` | TIMESTAMPTZ | NULL                                        | Fin del entrenamiento             |
-| `notes`       | TEXT        | NULL                                        | Notas del workout (energía, etc.) |
-| `created_at`  | TIMESTAMPTZ | NOT NULL, DEFAULT NOW()                     | Fecha de registro                 |
+| Column        | Type        | Constraints                                 | Description                    |
+| ------------- | ----------- | ------------------------------------------- | ------------------------------ |
+| `id`          | UUID        | PRIMARY KEY                                 | Workout identifier             |
+| `user_id`     | UUID        | FK → users(id), NOT NULL, ON DELETE CASCADE | User who performed the workout |
+| `routine_id`  | UUID        | FK → routines(id), NULL, ON DELETE SET NULL | Routine used (optional)        |
+| `started_at`  | TIMESTAMPTZ | NOT NULL                                    | Workout start                  |
+| `finished_at` | TIMESTAMPTZ | NULL                                        | Workout end                    |
+| `notes`       | TEXT        | NULL                                        | Workout notes (energy, etc.)   |
+| `created_at`  | TIMESTAMPTZ | NOT NULL, DEFAULT NOW()                     | Record date                    |
 
-**Índices:**
-- Índice compuesto en `user_id` y `started_at` descendente para timeline
-- Índice en `routine_id` para filtrado por rutina
-- Índice parcial en `user_id` solo para workouts activos (sin `finished_at`)
-- Índice en fecha del `started_at` (convertido a UTC) para agregaciones diarias
+**Indexes:**
+- Composite index on `user_id` and `started_at` descending for timeline
+- Index on `routine_id` for filtering by routine
+- Partial index on `user_id` for active workouts only (no `finished_at`)
+- Index on `started_at` date (converted to UTC) for daily aggregations
 
-**Restricciones:**
-- `finished_at` debe ser NULL o mayor/igual que `started_at`
-- Duración máxima de workout: 6 horas (diferencia entre `finished_at` y `started_at`)
+**Constraints:**
+- `finished_at` must be NULL or greater than or equal to `started_at`
+- Maximum workout duration: 6 hours (difference between `finished_at` and `started_at`)
 
-**Estados del workout:**
-- `finished_at IS NULL` → En progreso
-- `finished_at IS NOT NULL` → Completado
+**Workout states:**
+- `finished_at IS NULL` → In progress
+- `finished_at IS NOT NULL` → Completed
 
-**Políticas:**
-- Solo 1 workout activo por usuario simultáneamente
-- Workouts sin sets pueden eliminarse
-- Workouts con sets son inmutables (solo se puede agregar notes)
+**Policies:**
+- Only 1 active workout per user at a time
+- Workouts without sets can be deleted
+- Workouts with sets are immutable (only notes can be added)
 
 ---
 
 #### `sets`
 
-Series individuales realizadas dentro de un workout.
+Individual sets performed within a workout.
 
-| Columna       | Tipo         | Restricciones                                  | Descripción                            |
+| Column        | Type         | Constraints                                    | Description                            |
 | ------------- | ------------ | ---------------------------------------------- | -------------------------------------- |
-| `id`          | UUID         | PRIMARY KEY                                    | Identificador del set                  |
-| `workout_id`  | UUID         | FK → workouts(id), NOT NULL, ON DELETE CASCADE | Workout padre                          |
-| `exercise_id` | UUID         | FK → exercises(id), NOT NULL                   | Ejercicio realizado                    |
-| `set_number`  | INTEGER      | NOT NULL, CHECK (set_number > 0)               | Número de serie (1, 2, 3...)           |
-| `weight`      | NUMERIC(6,2) | NOT NULL, CHECK (weight >= 0)                  | Peso en kg (max 9999.99)               |
-| `reps`        | INTEGER      | NOT NULL, CHECK (reps > 0)                     | Repeticiones completadas               |
-| `rpe`         | NUMERIC(3,1) | NULL, CHECK (rpe >= 1 AND rpe <= 10)           | Rate of Perceived Exertion (6.5-10)    |
-| `is_warmup`   | BOOLEAN      | NOT NULL, DEFAULT FALSE                        | Set de calentamiento (no cuenta stats) |
-| `created_at`  | TIMESTAMPTZ  | NOT NULL, DEFAULT NOW()                        | Timestamp del registro                 |
+| `id`          | UUID         | PRIMARY KEY                                    | Set identifier                         |
+| `workout_id`  | UUID         | FK → workouts(id), NOT NULL, ON DELETE CASCADE | Parent workout                         |
+| `exercise_id` | UUID         | FK → exercises(id), NOT NULL                   | Exercise performed                     |
+| `set_number`  | INTEGER      | NOT NULL, CHECK (set_number > 0)               | Set number (1, 2, 3…)                  |
+| `weight`      | NUMERIC(6,2) | NOT NULL, CHECK (weight >= 0)                  | Weight in kg (max 9999.99)             |
+| `reps`        | INTEGER      | NOT NULL, CHECK (reps > 0)                     | Completed reps                         |
+| `rpe`         | NUMERIC(3,1) | NULL, CHECK (rpe >= 1 AND rpe <= 10)           | Rate of Perceived Exertion (6.5–10)    |
+| `is_warmup`   | BOOLEAN      | NOT NULL, DEFAULT FALSE                        | Warm-up set (does not count for stats) |
+| `created_at`  | TIMESTAMPTZ  | NOT NULL, DEFAULT NOW()                        | Record timestamp                       |
 
-**Índices:**
-- Índice compuesto en `workout_id`, `exercise_id` y `set_number` para queries ordenadas
-- Índice en `exercise_id` y `created_at` descendente para historial
-- Índice especializado para búsqueda de PRs: `exercise_id`, `weight` desc, `reps` desc (solo sets que no son warmup)
+**Indexes:**
+- Composite index on `workout_id`, `exercise_id`, and `set_number` for ordered queries
+- Index on `exercise_id` and `created_at` descending for history
+- Specialized index for PR lookups: `exercise_id`, `weight` desc, `reps` desc (non-warmup sets only)
 
-**Restricciones adicionales:**
-- Índice único compuesto en `workout_id` + `exercise_id` + `set_number` para evitar sets duplicados
-- Validar que `exercise_id` pertenece al usuario del workout (implementar via trigger o en application layer con Prisma)
+**Additional constraints:**
+- Unique composite index on `workout_id` + `exercise_id` + `set_number` to avoid duplicate sets
+- Validate that `exercise_id` belongs to the workout's user (implement via trigger or application layer with Prisma)
 
-**Notas:**
-- `set_number` resetea por ejercicio dentro del workout
-- Sets de calentamiento (`is_warmup = TRUE`) no cuentan para PRs
-- RPE es opcional pero recomendado para tracking de intensidad
-- Peso de 0.00 es válido (ejercicios de peso corporal)
-
----
-
-## 📈 Métricas Derivadas
-
-Todas estas métricas se calculan on-demand, **NO se persisten en tablas**.
-
-### 1. Volumen por Set
-Fórmula: `weight × reps` para cada set donde `is_warmup = FALSE`
-
-### 2. Volumen Total por Workout
-Fórmula: Suma de `(weight × reps)` para todos los sets de un workout, excluyendo warmups
-
-### 3. Personal Record (PR) por Ejercicio
-- PR de peso: Máximo `weight` alcanzado para un ejercicio
-- PR de volumen: Máximo `(weight × reps)` alcanzado en un solo set
-
-### 4. Estimación de 1RM (Fórmula de Epley)
-Fórmula: `weight × (1 + reps / 30.0)` 
-- Solo aplicable para sets con ≤ 10 reps
-- Excluir warmups
-
-### 5. Progresión Histórica
-Agregar por fecha del workout:
-- Peso promedio por ejercicio
-- Reps promedio por ejercicio
-- Volumen total por sesión
-Ordenar cronológicamente descendente
+**Notes:**
+- `set_number` resets per exercise within the workout
+- Warm-up sets (`is_warmup = TRUE`) do not count for PRs
+- RPE is optional but recommended for intensity tracking
+- Weight of 0.00 is valid (bodyweight exercises)
 
 ---
 
-## ⚡️ Índices y Performance
+## Derived Metrics
 
-### Estrategia de Indexación
+All these metrics are calculated on-demand — **they are NOT persisted in tables**.
 
-#### Índices de Búsqueda
-- `users(email)` → Login frecuente
-- `exercises(user_id, name)` → Búsqueda de ejercicios
-- `workouts(user_id, started_at)` → Timeline de entrenamientos
+### 1. Volume per Set
+Formula: `weight × reps` for each set where `is_warmup = FALSE`
 
-#### Índices de Join
-- `sets(workout_id, exercise_id)` → Queries de volume
-- `routine_exercises(routine_id)` → Carga de rutinas
+### 2. Total Volume per Workout
+Formula: Sum of `(weight × reps)` for all sets in a workout, excluding warm-ups
 
-#### Índices Parciales (Performance)
-- **Workouts activos**: Índice en `user_id` solo donde `finished_at IS NULL` (queries muy frecuentes)
-- **Exercises activos**: Índice en `user_id` solo donde `is_archived = FALSE`
-- **Refresh tokens válidos**: Índice en `user_id` solo donde `revoked_at IS NULL` y `expires_at > NOW()`
+### 3. Personal Record (PR) per Exercise
+- Weight PR: Maximum `weight` achieved for an exercise
+- Volume PR: Maximum `(weight × reps)` achieved in a single set
 
-### Recomendaciones de Particionamiento (Futuro)
+### 4. 1RM Estimate (Epley Formula)
+Formula: `weight × (1 + reps / 30.0)`
+- Only applicable for sets with ≤ 10 reps
+- Exclude warm-ups
 
-Para usuarios con +10,000 workouts, considerar particionar la tabla `sets` por año:
-- Particionar por rango de fechas (ej: sets_2024, sets_2025, etc.)
-- Usar particionamiento nativo de PostgreSQL por rango de `created_at`
+### 5. Historical Progression
+Aggregate by workout date:
+- Average weight per exercise
+- Average reps per exercise
+- Total volume per session
+
+Order chronologically descending.
 
 ---
 
-## 📝 Migraciones Sugeridas
+## Indexes and Performance
 
-### Orden de Creación de Tablas
+### Indexing Strategy
 
-1. `users` (sin dependencias)
-2. `refresh_tokens` (depende de users)
-3. `exercises` (depende de users)
-4. `routines` (depende de users)
-5. `routine_exercises` (depende de routines + exercises)
-6. `workouts` (depende de users + routines)
-7. `sets` (depende de workouts + exercises)
+#### Search Indexes
+- `users(email)` → Frequent login
+- `exercises(user_id, name)` → Exercise search
+- `workouts(user_id, started_at)` → Workout timeline
 
-### Guía de Migraciones con Prisma
+#### Join Indexes
+- `sets(workout_id, exercise_id)` → Volume queries
+- `routine_exercises(routine_id)` → Routine loading
 
-**Orden recomendado de modelos en `schema.prisma`**:
+#### Partial Indexes (Performance)
+- **Active workouts**: Index on `user_id` where `finished_at IS NULL` (very frequent queries)
+- **Active exercises**: Index on `user_id` where `is_archived = FALSE`
+- **Valid refresh tokens**: Index on `user_id` where `revoked_at IS NULL` and `expires_at > NOW()`
 
-1. `User` (sin dependencias)
-2. `RefreshToken` (depende de User)
-3. `Exercise` (depende de User)
-4. `Routine` (depende de User)
-5. `RoutineExercise` (depende de Routine + Exercise)
-6. `Workout` (depende de User + Routine)
-7. `Set` (depende de Workout + Exercise)
+### Partitioning Recommendations (Future)
+
+For users with 10,000+ workouts, consider partitioning the `sets` table by year:
+- Partition by date range (e.g., sets_2024, sets_2025, etc.)
+- Use native PostgreSQL range partitioning on `created_at`
+
+---
+
+## Suggested Migrations
+
+### Table Creation Order
+
+1. `users` (no dependencies)
+2. `refresh_tokens` (depends on users)
+3. `exercises` (depends on users)
+4. `routines` (depends on users)
+5. `routine_exercises` (depends on routines + exercises)
+6. `workouts` (depends on users + routines)
+7. `sets` (depends on workouts + exercises)
+
+### Prisma Migration Guide
+
+**Recommended model order in `schema.prisma`:**
+
+1. `User` (no dependencies)
+2. `RefreshToken` (depends on User)
+3. `Exercise` (depends on User)
+4. `Routine` (depends on User)
+5. `RoutineExercise` (depends on Routine + Exercise)
+6. `Workout` (depends on User + Routine)
+7. `Set` (depends on Workout + Exercise)

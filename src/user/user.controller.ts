@@ -1,7 +1,7 @@
 import { Controller, Get, Param, UseGuards } from "@nestjs/common";
-import { CurrentUser } from "../auth/decorators/current-user.decorator";
-import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
-import { JwtPayload } from "../auth/types/jwt-payload.type";
+import { JWTPayload } from "jose";
+import { CurrentUser } from "@/jwt/current-user.decorator";
+import { JwtAuthGuard } from "@/jwt/jwt-auth.guard";
 import { UserService } from "./user.service";
 
 @Controller("users")
@@ -10,7 +10,7 @@ export class UserController {
 
 	@UseGuards(JwtAuthGuard)
 	@Get("me")
-	async getCurrentUser(@CurrentUser() user: JwtPayload) {
+	async getCurrentUser(@CurrentUser() user: JWTPayload & { sub: string }) {
 		return this.userService.findByIdSafe(user.sub);
 	}
 

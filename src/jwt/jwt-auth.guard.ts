@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
 import { Request } from "express";
-import { JwtService } from "../services/jwt.service";
+import { JwtService } from "./jwt.service";
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
@@ -15,7 +15,7 @@ export class JwtAuthGuard implements CanActivate {
 		}
 
 		const result = await this.jwtService.verify(token);
-		if (!result.valid) {
+		if (!result.valid || !result.decoded) {
 			throw new UnauthorizedException("Invalid or expired token");
 		}
 

@@ -1,12 +1,12 @@
 import { ConflictException, Injectable, UnauthorizedException } from "@nestjs/common";
 import bcrypt from "bcrypt";
 import { env } from "@/config/env";
+import { JwtService } from "@/jwt/jwt.service";
 import { RegisterDto } from "@/user/dto/create-user.dto";
 import { UserService } from "@/user/user.service";
-import { PrismaService } from "../../prisma/prisma.service";
-import { LoginDto } from "../dto/login.dto";
-import { RefreshTokenDto } from "../dto/refresh-token.dto";
-import { JwtService } from "./jwt.service";
+import { PrismaService } from "../prisma/prisma.service";
+import { LoginDto } from "./dto/login.dto";
+import { RefreshTokenDto } from "./dto/refresh-token.dto";
 
 @Injectable()
 export class AuthService {
@@ -17,8 +17,29 @@ export class AuthService {
 	) {}
 
 	private async validatePassword(password: string, hashedPassword: string) {
-		const isValid = await bcrypt.compare(password, hashedPassword);
-		return isValid;
+		return bcrypt.compare(password, hashedPassword);
+	}
+
+	private calculateExpiry(ttl: string): Date {
+		const match = ttl.match(/^(\d+)\s*(ms|s|m|h|d|w|y)$/i);
+		if (!match) {
+			return new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // fallback 7d
+		}
+
+		const value = Number.parseInt(match[1], 10);
+		const unit = match[2].toLowerCase();
+
+		const multipliers: Record<string, number> = {
+			ms: 1,
+			s: 1000,
+			m: 60 * 1000,
+			h: 60 * 60 * 1000,
+			d: 24 * 60 * 60 * 1000,
+			w: 7 * 24 * 60 * 60 * 1000,
+			y: 365 * 24 * 60 * 60 * 1000,
+		};
+
+		return new Date(Date.now() + value * (multipliers[unit] ?? 0));
 	}
 
 	private async saveRefreshToken(userId: string, token: string) {
@@ -31,8 +52,7 @@ export class AuthService {
 			},
 		});
 
-		const expiresAt = new Date();
-		expiresAt.setDate(expiresAt.getDate() + 7);
+		const expiresAt = this.calculateExpiry(env.JWT_REFRESH_TOKEN_TTL);
 
 		return this.prisma.refreshToken.create({
 			data: {
@@ -41,6 +61,24 @@ export class AuthService {
 				expires_at: expiresAt,
 			},
 		});
+	}
+
+	private async findValidRefreshToken(userId: string, rawToken: string) {
+		const tokens = await this.prisma.refreshToken.findMany({
+			where: {
+				user_id: userId,
+				revoked_at: null,
+				expires_at: { gt: new Date() },
+			},
+			include: { user: true },
+		});
+
+		for (const stored of tokens) {
+			const isMatch = await bcrypt.compare(rawToken, stored.token_hash);
+			if (isMatch) return stored;
+		}
+
+		return null;
 	}
 
 	private async generateTokens(userId: string, email: string) {
@@ -89,23 +127,15 @@ export class AuthService {
 
 	async refresh(dto: RefreshTokenDto) {
 		const result = await this.jwtService.verify(dto.refreshToken);
-		if (!result.valid) {
+		if (!result.valid || !result.decoded) {
 			throw new UnauthorizedException("Invalid refresh token");
 		}
 
-		const tokenHash = await bcrypt.hash(dto.refreshToken, env.BCRYPT_ROUNDS);
+		const userId = result.decoded.sub as string;
+		const storedToken = await this.findValidRefreshToken(userId, dto.refreshToken);
 
-		const storedToken = await this.prisma.refreshToken.findUnique({
-			where: { token_hash: tokenHash },
-			include: { user: true },
-		});
-
-		if (!storedToken || !storedToken.user || storedToken.revoked_at) {
+		if (!storedToken || !storedToken.user) {
 			throw new UnauthorizedException("Refresh token revoked or not found");
-		}
-
-		if (storedToken.expires_at < new Date()) {
-			throw new UnauthorizedException("Refresh token expired");
 		}
 
 		const tokens = await this.generateTokens(storedToken.user.id, storedToken.user.email);
@@ -123,15 +153,12 @@ export class AuthService {
 	async logout(dto: RefreshTokenDto) {
 		const result = await this.jwtService.verify(dto.refreshToken);
 
-		if (!result.valid) {
+		if (!result.valid || !result.decoded) {
 			throw new UnauthorizedException("Invalid refresh token");
 		}
 
-		const tokenHash = await bcrypt.hash(dto.refreshToken, env.BCRYPT_ROUNDS);
-
-		const storedToken = await this.prisma.refreshToken.findUnique({
-			where: { token_hash: tokenHash },
-		});
+		const userId = result.decoded.sub as string;
+		const storedToken = await this.findValidRefreshToken(userId, dto.refreshToken);
 
 		if (storedToken) {
 			await this.prisma.refreshToken.update({

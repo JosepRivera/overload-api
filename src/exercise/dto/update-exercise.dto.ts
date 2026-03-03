@@ -1,5 +1,5 @@
 import { createZodDto } from "nestjs-zod";
-import { z } from "zod";
+import type { z } from "zod";
 import { createExerciseSchema } from "./create-exercise.dto";
 
 const updateExerciseSchema = createExerciseSchema.partial();

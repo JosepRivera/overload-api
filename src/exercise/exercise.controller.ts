@@ -1,9 +1,10 @@
 import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { CurrentUser } from "@/jwt/current-user.decorator";
-import { AuthUser } from "@/jwt/dto/jwt.types";
+import type { AuthUser } from "@/jwt/dto/jwt.types";
 import { JwtAuthGuard } from "@/jwt/jwt-auth.guard";
-import { CreateExerciseDto, type CreateExerciseInput } from "./dto/create-exercise.dto";
-import { UpdateExerciseDto, type UpdateExerciseInput } from "./dto/update-exercise.dto";
+import type { CreateExerciseDto } from "./dto/create-exercise.dto";
+import type { UpdateExerciseDto } from "./dto/update-exercise.dto";
+// biome-ignore lint/style/useImportType: NestJS requires runtime reference for dependency injection
 import { ExerciseService } from "./exercise.service";
 
 @Controller("exercise")
@@ -13,8 +14,7 @@ export class ExerciseController {
 
 	@Post()
 	async create(@CurrentUser() user: AuthUser, @Body() dto: CreateExerciseDto) {
-		const input: CreateExerciseInput = dto;
-		return this.exerciseService.create(user.sub, input);
+		return this.exerciseService.create(user.sub, dto);
 	}
 
 	@Get()
@@ -34,8 +34,7 @@ export class ExerciseController {
 		@Param("id") id: string,
 		@Body() dto: UpdateExerciseDto,
 	) {
-		const input: UpdateExerciseInput = dto;
-		return this.exerciseService.update(user.sub, id, input);
+		return this.exerciseService.update(user.sub, id, dto);
 	}
 
 	@Patch(":id/archive")

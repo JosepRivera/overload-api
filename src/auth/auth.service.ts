@@ -1,12 +1,15 @@
 import { ConflictException, Injectable, UnauthorizedException } from "@nestjs/common";
 import bcrypt from "bcrypt";
 import { env } from "@/config/env";
+// biome-ignore lint/style/useImportType: NestJS requires runtime reference for dependency injection
 import { JwtService } from "@/jwt/jwt.service";
-import { RegisterDto } from "@/user/dto/create-user.dto";
+import type { RegisterDto } from "@/user/dto/create-user.dto";
+// biome-ignore lint/style/useImportType: NestJS requires runtime reference for dependency injection
 import { UserService } from "@/user/user.service";
+// biome-ignore lint/style/useImportType: NestJS requires runtime reference for dependency injection
 import { PrismaService } from "../prisma/prisma.service";
-import { LoginDto } from "./dto/login.dto";
-import { RefreshTokenDto } from "./dto/refresh-token.dto";
+import type { LoginDto } from "./dto/login.dto";
+import type { RefreshTokenDto } from "./dto/refresh-token.dto";
 
 @Injectable()
 export class AuthService {

@@ -1,11 +1,12 @@
 import { Body, Controller, HttpCode, Post } from "@nestjs/common";
-import { RegisterDto } from "@/user/dto/create-user.dto";
+import type { RegisterDto } from "@/user/dto/create-user.dto";
+// biome-ignore lint/style/useImportType: NestJS requires runtime reference for dependency injection
 import { AuthService } from "./auth.service";
-import { AuthResponseDto } from "./dto/auth-response.dto";
-import { LoginDto } from "./dto/login.dto";
-import { LogoutResponseDto } from "./dto/logout-response.dto";
-import { RefreshResponseDto } from "./dto/refresh-response.dto";
-import { RefreshTokenDto } from "./dto/refresh-token.dto";
+import type { AuthResponseDto } from "./dto/auth-response.dto";
+import type { LoginDto } from "./dto/login.dto";
+import type { LogoutResponseDto } from "./dto/logout-response.dto";
+import type { RefreshResponseDto } from "./dto/refresh-response.dto";
+import type { RefreshTokenDto } from "./dto/refresh-token.dto";
 
 @Controller("auth")
 export class AuthController {

@@ -1,4 +1,4 @@
-import { JWTPayload } from "jose";
+import type { JWTPayload } from "jose";
 
 declare global {
 	namespace Express {

@@ -1,5 +1,11 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
-import { Request } from "express";
+import {
+	type CanActivate,
+	type ExecutionContext,
+	Injectable,
+	UnauthorizedException,
+} from "@nestjs/common";
+import type { Request } from "express";
+// biome-ignore lint/style/useImportType: NestJS requires runtime reference for dependency injection
 import { JwtService } from "./jwt.service";
 
 @Injectable()

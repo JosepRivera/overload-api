@@ -50,7 +50,7 @@ Manage workouts, sets, weights, personal records and training volume.
 
 Most gym apps are simple logs. This API goes further: it automatically calculates total training volume, detects new PRs the moment they happen, and estimates 1RM so athletes can plan their loads with data, not guesswork.
 
-Built with **NestJS 11**, it exposes a REST API with JWT + Refresh Token authentication, a modular architecture, and full Docker support for both development and production.
+Built with **NestJS 11**, it exposes a REST API with JWT + Refresh Token authentication, a modular architecture, and full Docker support for development.
 
 ---
 
@@ -123,9 +123,8 @@ overload-api/
 │   ├── types/               # Type extensions (Express, globals)
 │   ├── app.module.ts        # Root module
 │   └── main.ts              # Bootstrap: Swagger, Helmet, CORS, global pipes
-├── docker-compose.yml       # Production environment
-├── docker-compose.dev.yml   # Development environment with hot-reload
-└── Dockerfile               # Multi-stage build (build → runner)
+├── docker-compose.yml       # Development environment with hot-reload
+└── Dockerfile               # Development build stage
 ```
 
 ---
@@ -199,13 +198,19 @@ cp .env.example .env
 # Fill in your PostgreSQL credentials and JWT secrets
 ```
 
-**3. Start the development environment**
+**3. Install dependencies locally (optional, for IDE support)**
+
+```bash
+pnpm install
+```
+
+**4. Start the development environment with Docker**
 
 ```bash
 pnpm run dev
 ```
 
-This starts two containers: `gymrat-postgres-dev` and `gymrat-app-dev`. The app runs in watch mode — any change in `src/` is reflected automatically. Pending migrations are applied on startup.
+This starts two containers: `overload-postgres-dev` and `overload-app-dev`. The app runs in watch mode — any change in `src/` is reflected automatically. Pending migrations are applied on startup.
 
 The API will be available at `http://localhost:3000`.
 
@@ -213,35 +218,60 @@ The API will be available at `http://localhost:3000`.
 
 ---
 
+## Common Workflows
+
+To maintain a consistent environment, the application runs inside Docker, but you manage your code and dependencies locally.
+
+### 1. Adding or Updating Dependencies
+When you need to add a new package (e.g., `zod` or `dayjs`):
+
+1. **Install locally:** Run `pnpm add <package-name>` in your terminal. This updates your `package.json` and `pnpm-lock.yaml`.
+2. **Sync with Docker:** Rebuild the container to include the new dependency:
+   ```bash
+   pnpm run dev:build
+   ```
+
+### 2. Database Migrations (Prisma)
+If you modify `prisma/schema.prisma`:
+
+1. **Create and apply migration:** Run the following command. It will ask for a name and apply it to the database inside Docker:
+   ```bash
+   pnpm run db:migrate
+   ```
+2. **Note on Startup:** When the container starts (`pnpm run dev`), it automatically runs `prisma migrate deploy` to ensure your local DB is up to date with existing migrations.
+
+---
+
 ## Available Commands
+
+All commands are designed to be run from your **local machine**. They will automatically interact with the Docker containers when necessary.
 
 ### Development
 
-| Command              | Description                                           |
-| -------------------- | ----------------------------------------------------- |
-| `pnpm run dev`       | Start the development environment with Docker Compose |
-| `pnpm run dev:build` | Rebuild images and start the environment              |
-| `pnpm run dev:down`  | Stop and remove development containers                |
-| `pnpm run dev:logs`  | Stream logs from `gymrat-app-dev` in real time        |
-| `pnpm run shell`     | Open an interactive shell inside the container        |
-| `pnpm run clean`     | Stop containers and remove volumes (deletes local DB) |
+| Command              | Location | Description                                           |
+| -------------------- | -------- | ----------------------------------------------------- |
+| `pnpm run dev`       | Local    | Start the environment with Docker Compose             |
+| `pnpm run dev:build` | Local    | **Rebuild** images and start (use after adding deps)  |
+| `pnpm run stop`      | Local    | Stop and remove development containers                |
+| `pnpm run shell`     | Docker   | Open an interactive shell inside the `overload-app`   |
+| `pnpm run clean`     | Local    | Stop containers and **remove volumes** (wipes DB)     |
 
-### Database
+### Database (Prisma)
 
-| Command               | Description                                       |
-| --------------------- | ------------------------------------------------- |
-| `pnpm run db:migrate` | Create and apply a new migration in development   |
-| `pnpm run db:gen`     | Regenerate the Prisma client after schema changes |
-| `pnpm run db:studio`  | Open Prisma Studio (GUI for browsing the DB)      |
-| `pnpm run db:seed`    | Run the seed script with sample data              |
+| Command               | Location | Description                                     |
+| --------------------- | -------- | ----------------------------------------------- |
+| `pnpm run db:migrate` | Docker   | Create and apply a new migration                |
+| `pnpm run db:studio`  | Docker   | Open Prisma Studio (GUI for browsing the DB)    |
+| `pnpm run db:seed`    | Docker   | Run the seed script with sample data            |
 
-### Code Quality
+### Code Quality & Maintenance
 
-| Command           | Description                          |
-| ----------------- | ------------------------------------ |
-| `pnpm run lint`   | Lint and auto-fix code with Biome    |
-| `pnpm run format` | Format code automatically with Biome |
-| `pnpm run build`  | Compile TypeScript to `dist/`        |
+| Command           | Location | Description                          |
+| ----------------- | -------- | ------------------------------------ |
+| `pnpm run lint`   | Local    | Lint and auto-fix code with Biome    |
+| `pnpm run format` | Local    | Format code automatically with Biome |
+| `pnpm run build`  | Local    | Compile TypeScript to `dist/`        |
+| `pnpm run test`   | Local    | Run unit tests                       |
 
 ---
 

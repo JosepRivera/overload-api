@@ -41,6 +41,7 @@ services:
     volumes:
       - ./src:/app/src
       - ./prisma:/app/prisma
+      - ./generated:/app/generated
       - /app/node_modules
     depends_on:
       postgres:

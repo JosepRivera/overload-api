@@ -61,7 +61,7 @@ export class ExerciseService {
 		await this.findOne(userId, id);
 		return this.prisma.exercise.update({
 			where: { id },
-			data: { is_archived: true },
+			data: { is_active: true },
 		});
 	}
 
@@ -69,7 +69,7 @@ export class ExerciseService {
 		const existing = await this.prisma.exercise.findFirst({
 			where: {
 				user_id: userId,
-				is_archived: false,
+				is_active: false,
 				name: { equals: name, mode: "insensitive" },
 				...(excludeId && { id: { not: excludeId } }),
 			},

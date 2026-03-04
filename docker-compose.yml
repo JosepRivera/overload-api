@@ -23,7 +23,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: build
+      target: dev
     container_name: overload-app-dev
     restart: unless-stopped
     ports:
@@ -49,10 +49,10 @@ services:
       - overload-network
     command: >
       sh -c "
-        echo '🔄 Checking database connection...' &&
-        echo 'DATABASE_URL: postgresql://${POSTGRES_USER}:***@postgres:5432/${POSTGRES_DB}' &&
+        echo '[*] Checking database connection...' &&
+        echo '[DB] postgresql://${POSTGRES_USER}:***@postgres:5432/${POSTGRES_DB}' &&
         pnpm prisma migrate deploy &&
-        echo '✅ Database ready!' &&
+        echo '[OK] Database ready!' &&
         pnpm run start:dev
       "
 

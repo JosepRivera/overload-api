@@ -20,9 +20,7 @@ dist
 build
 
 # Env files
-.env
-.env.local
-.env.*.local
+.env*
 
 # OS
 .DS_Store

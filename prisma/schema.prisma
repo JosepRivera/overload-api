@@ -8,49 +8,90 @@ datasource db {
 }
 
 model User {
-  id             String         @id @default(uuid()) @db.Uuid
-  name           String         @db.VarChar(100)
-  email          String         @unique @db.VarChar(255)
-  password       String         @db.VarChar(255)
-  is_active      Boolean        @default(true)
-  email_verified Boolean        @default(false)
-  created_at     DateTime       @default(now()) @db.Timestamptz
-  updated_at     DateTime       @updatedAt @db.Timestamptz
+  id             String   @id @default(uuid()) @db.Uuid
+  name           String   @db.VarChar(100)
+  email          String   @unique @db.VarChar(255)
+  password       String   @db.VarChar(255)
+  is_active      Boolean  @default(true)
+  email_verified Boolean  @default(false)
+  created_at     DateTime @default(now()) @db.Timestamptz
+  updated_at     DateTime @updatedAt @db.Timestamptz
 
   refresh_tokens RefreshToken[]
   exercises      Exercise[]
+  routines       Routine[]
 
   @@index([email])
   @@index([is_active])
+  @@map("users")
 }
 
 model Exercise {
-  id          String   @id @default(uuid()) @db.Uuid
-  user_id     String   @db.Uuid
-  name        String   @db.VarChar(150)
-  category    String   @db.VarChar(100)
-  type        String   @db.VarChar(50)
-  notes       String?  @db.Text
-  is_archived Boolean  @default(false)
-  created_at  DateTime @default(now()) @db.Timestamptz
-  updated_at  DateTime @updatedAt @db.Timestamptz
+  id         String   @id @default(uuid()) @db.Uuid
+  user_id    String   @db.Uuid
+  name       String   @db.VarChar(150)
+  category   String   @db.VarChar(100)
+  type       String   @db.VarChar(50)
+  notes      String?  @db.Text
+  is_active  Boolean  @default(true)
+  created_at DateTime @default(now()) @db.Timestamptz
+  updated_at DateTime @updatedAt @db.Timestamptz
+
+  user              User              @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  routine_exercises RoutineExercise[]
+
+  @@index([user_id])
+  @@index([user_id, category])
+  @@map("exercises")
+}
+
+model RefreshToken {
+  id         String    @id @default(uuid()) @db.Uuid
+  user_id    String    @db.Uuid
+  token_hash String    @unique @db.VarChar(255)
+  expires_at DateTime  @db.Timestamptz
+  created_at DateTime  @default(now()) @db.Timestamptz
+  revoked_at DateTime? @db.Timestamptz
 
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@index([user_id])
-  @@index([user_id, category])
+  @@index([expires_at])
+  @@map("refresh_tokens")
 }
 
-model RefreshToken {
-  id          String    @id @default(uuid()) @db.Uuid
-  user_id     String    @db.Uuid
-  token_hash  String    @unique @db.VarChar(255)
-  expires_at  DateTime  @db.Timestamptz
-  created_at  DateTime  @default(now()) @db.Timestamptz
-  revoked_at  DateTime? @db.Timestamptz
+model Routine {
+  id          String   @id @default(uuid()) @db.Uuid
+  user_id     String   @db.Uuid
+  name        String   @db.VarChar(150)
+  description String?  @db.Text
+  is_active   Boolean  @default(true)
+  created_at  DateTime @default(now()) @db.Timestamptz
+  updated_at  DateTime @updatedAt @db.Timestamptz
 
-  user        User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user              User              @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  routine_exercises RoutineExercise[]
 
   @@index([user_id])
-  @@index([expires_at])
+  @@map("routines")
+}
+
+model RoutineExercise {
+  id              String  @id @default(uuid()) @db.Uuid
+  routine_id      String  @db.Uuid
+  exercise_id     String  @db.Uuid
+  target_sets     Int
+  target_reps_min Int
+  target_reps_max Int
+  target_rest_sec Int
+  order_index     Int
+  notes           String? @db.Text
+
+  routine  Routine  @relation(fields: [routine_id], references: [id], onDelete: Cascade)
+  exercise Exercise @relation(fields: [exercise_id], references: [id])
+
+  @@unique([routine_id, order_index])
+  @@index([routine_id, order_index])
+  @@index([exercise_id])
+  @@map("routine_exercises")
 }

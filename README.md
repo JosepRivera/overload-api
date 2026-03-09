@@ -1,7 +1,6 @@
 <div align="center">
 
-<!-- Place your logo at docs/logo.png -->
-<img src="docs/logo.png" alt="Overload API Logo" width="250" style="border-radius: 20px;" />
+<img src="docs/assets/logo.png" alt="Overload API Logo" width="250" style="border-radius: 20px;" />
 
 # Overload API
 
@@ -9,7 +8,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white&labelColor=3178C6&color=2d2d2d)](https://www.typescriptlang.org/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?style=for-the-badge&logo=postgresql&logoColor=white&labelColor=4169E1&color=2d2d2d)](https://www.postgresql.org/)
 [![Prisma](https://img.shields.io/badge/Prisma-7.4-2D3748?style=for-the-badge&logo=prisma&logoColor=white&labelColor=2D3748&color=2d2d2d)](https://www.prisma.io/)
-[![Node.js](https://img.shields.io/badge/Node.js-v22-339933?style=for-the-badge&logo=nodedotjs&logoColor=white&labelColor=339933&color=2d2d2d)](https://nodejs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-v24-339933?style=for-the-badge&logo=nodedotjs&logoColor=white&labelColor=339933&color=2d2d2d)](https://nodejs.org/)
 [![Docker](https://img.shields.io/badge/Docker-29-2496ED?style=for-the-badge&logo=docker&logoColor=white&labelColor=2496ED&color=2d2d2d)](https://www.docker.com/)
 [![pnpm](https://img.shields.io/badge/pnpm-10-F69220?style=for-the-badge&logo=pnpm&logoColor=white&labelColor=F69220&color=2d2d2d)](https://pnpm.io/)
 [![Biome](https://img.shields.io/badge/Biome-2.4-60A5FA?style=for-the-badge&logo=biome&logoColor=white&labelColor=60A5FA&color=2d2d2d)](https://biomejs.dev/)
@@ -29,15 +28,19 @@ Manage workouts, sets, weights, personal records and training volume.
   - [Description](#description)
   - [Tech Stack](#tech-stack)
   - [Features \& Roadmap](#features--roadmap)
-  - [Project Architecture](#project-architecture)
+  - [Project Structure](#project-structure)
   - [Database Schema](#database-schema)
   - [Environment Variables](#environment-variables)
   - [Installation \& Setup](#installation--setup)
     - [Prerequisites](#prerequisites)
     - [Steps](#steps)
+  - [Common Workflows](#common-workflows)
+    - [Adding or updating dependencies](#adding-or-updating-dependencies)
+    - [Creating a database migration](#creating-a-database-migration)
   - [Available Commands](#available-commands)
     - [Development](#development)
     - [Database](#database)
+    - [When to use each database command](#when-to-use-each-database-command)
     - [Code Quality](#code-quality)
   - [API Documentation](#api-documentation)
   - [License](#license)
@@ -88,8 +91,8 @@ Built with **NestJS 11**, it exposes a REST API with JWT + Refresh Token authent
 | Module                                                                                      | Status        |
 | ------------------------------------------------------------------------------------------- | ------------- |
 | **Authentication** — Register, login, logout and JWT refresh tokens                         | ✅ Done        |
-| **Exercise Management** — Full CRUD for the user's personal exercise catalog                | 🚧 In progress |
-| **Routines** — Training plans with target sets, reps and rest times                         | 📋 Planned     |
+| **Exercise Management** — Full CRUD for the user's personal exercise catalog                | ✅ Done        |
+| **Routines** — Training plans with target sets, reps and rest times                         | 🚧 In progress |
 | **Workout Execution** — Real-time tracking of active training sessions                      | 📋 Planned     |
 | **Set Logging** — Weight and rep tracking with last-used weight history                     | 📋 Planned     |
 | **Training History** — Past sessions with advanced filters                                  | 📋 Planned     |
@@ -97,35 +100,37 @@ Built with **NestJS 11**, it exposes a REST API with JWT + Refresh Token authent
 | **Volume Calculation** — Total volume stats (weight × reps × sets) per session and exercise | 📋 Planned     |
 | **1RM Estimation** — One rep max calculation using the Epley formula                        | 📋 Planned     |
 
-## Project Architecture
+---
 
-The project follows NestJS's modular architecture. Each business domain is encapsulated in its own module with an independent controller, service and DTOs. The Prisma client is generated into `generated/prisma` instead of `node_modules`, keeping it visible and under version control.
+## Project Structure
 
 ```
 overload-api/
-├── docs/                    # Project documentation (DB schema, features, logo)
+├── docs/                    # Architecture, schema, decisions and assets
 ├── generated/prisma/        # Auto-generated Prisma client — do not edit directly
 ├── prisma/
 │   ├── migrations/          # Migration history
 │   ├── schema.prisma        # Data model definition
 │   └── seed.ts              # Initial data seed script
 ├── src/
-│   ├── auth/                # F-01: Authentication (register, login, logout, refresh)
-│   ├── jwt/                 # Internal JWT module: signing, verification and guard
+│   ├── auth/                # Authentication (register, login, logout, refresh)
+│   ├── jwt/                 # JWT module: signing, verification and guard
 │   ├── user/                # User management
-│   ├── exercises/           # F-02: Personal exercise catalog CRUD
-│   ├── routines/            # F-03: Training plan management
-│   ├── workouts/            # F-04 & F-06: Workout execution and history
-│   ├── sets/                # F-05: Individual set logging
-│   ├── analytics/           # F-07, F-08 & F-09: PRs, volume and 1RM
-│   ├── prisma/              # Global Prisma module, injectable across the app
+│   ├── exercises/           # Personal exercise catalog CRUD
+│   ├── routines/            # Training plan management
+│   ├── workouts/            # Workout execution and history
+│   ├── sets/                # Individual set logging
+│   ├── analytics/           # PRs, volume and 1RM
+│   ├── prisma/              # Global Prisma module
 │   ├── config/              # Environment variable validation with Zod
-│   ├── types/               # Type extensions (Express, globals)
+│   ├── types/               # Type extensions
 │   ├── app.module.ts        # Root module
 │   └── main.ts              # Bootstrap: Swagger, Helmet, CORS, global pipes
 ├── docker-compose.yml       # Development environment with hot-reload
 └── Dockerfile               # Development build stage
 ```
+
+> Full architecture details in [`docs/architecture.md`](./docs/architecture.md).
 
 ---
 
@@ -133,16 +138,16 @@ overload-api/
 
 The schema consists of seven tables. Derived metrics (volume, 1RM, PRs) are calculated on demand and never persisted.
 
-![ER Diagram](docs/er-diagram.svg)
+![ER Diagram](docs/assets/er-diagram.svg)
 
 Key design decisions:
 
-- **Access tokens are stateless** and never stored. Only refresh tokens are persisted, as a SHA-256 hash — never in plain text.
+- **Access tokens are stateless** and never stored. Only refresh tokens are persisted as a SHA-256 hash — never in plain text.
 - **Exercises are never hard-deleted** if they have associated history. They are soft-deleted via `is_archived = TRUE`.
 - **Warmup sets** (`is_warmup = TRUE`) are recorded but excluded from PR detection and volume calculations.
 - A **workout** can exist without an associated routine to support spontaneous training sessions.
 
-> The full schema with all columns, indexes and constraints is in [`docs/database-schema.md`](./docs/database-schema.md).
+> Full schema with all columns, indexes and constraints: [`docs/database-schema.md`](./docs/database-schema.md)
 
 ---
 
@@ -168,9 +173,9 @@ cp .env.example .env
 | `CORS_ORIGIN`           | Allowed CORS origin                  | `http://localhost:5173` |
 | `BCRYPT_ROUNDS`         | bcrypt hashing rounds                | `10`                    |
 
-> `DATABASE_URL` is built automatically by Docker Compose from the PostgreSQL variables above. Only define it manually if running the app outside of Docker.
+> `DATABASE_URL` is built automatically by Docker Compose. Only define it manually if running outside of Docker.
 
-> **Never** commit your `.env` file to the repository. It is included in `.gitignore` by default.
+> **Never** commit your `.env` file. It is included in `.gitignore` by default.
 
 ---
 
@@ -180,7 +185,7 @@ cp .env.example .env
 
 - [Docker](https://www.docker.com/) and Docker Compose installed
 - [pnpm](https://pnpm.io/) — `npm install -g pnpm`
-- Node.js v22+ (only if running outside Docker)
+- Node.js v24+ (only if running outside Docker)
 
 ### Steps
 
@@ -198,92 +203,93 @@ cp .env.example .env
 # Fill in your PostgreSQL credentials and JWT secrets
 ```
 
-**3. Install dependencies locally (optional, for IDE support)**
+**3. Install dependencies locally** (optional, for IDE support)
 
 ```bash
 pnpm install
 ```
 
-**4. Start the development environment with Docker**
+**4. Start the development environment**
 
 ```bash
-pnpm run dev
+pnpm dev
 ```
 
 This starts two containers: `overload-postgres-dev` and `overload-app-dev`. The app runs in watch mode — any change in `src/` is reflected automatically. Pending migrations are applied on startup.
 
-The API will be available at `http://localhost:3000`.
-
-> Port `9229` is also exposed for connecting an external debugger (VS Code, Chrome DevTools).
+- API: `http://localhost:3000`
+- Debugger: port `9229` (VS Code / Chrome DevTools)
 
 ---
 
 ## Common Workflows
 
-To maintain a consistent environment, the application runs inside Docker, but you manage your code and dependencies locally.
+### Adding or updating dependencies
 
-### 1. Adding or Updating Dependencies
-When you need to add a new package (e.g., `zod` or `dayjs`):
+```bash
+pnpm add <package-name>   # updates package.json and pnpm-lock.yaml
+pnpm dev:build            # rebuilds the container with the new dependency
+```
 
-1. **Install locally:** Run `pnpm add <package-name>` in your terminal. This updates your `package.json` and `pnpm-lock.yaml`.
-2. **Sync with Docker:** Rebuild the container to include the new dependency:
-   ```bash
-   pnpm run dev:build
-   ```
+### Creating a database migration
 
-### 2. Database Migrations (Prisma)
-If you modify `prisma/schema.prisma`:
-
-1. **Create and apply migration:** Run the following command. It will ask for a name and apply it to the database inside Docker:
-   ```bash
-   pnpm run db:migrate
-   ```
-2. **Note on Startup:** When the container starts (`pnpm run dev`), it automatically runs `prisma migrate deploy` to ensure your local DB is up to date with existing migrations.
+```bash
+# 1. Modify prisma/schema.prisma
+# 2. Create and apply the migration
+pnpm db:migrate
+```
 
 ---
 
 ## Available Commands
 
-All commands are designed to be run from your **local machine**. They will automatically interact with the Docker containers when necessary.
-
 ### Development
 
-| Command              | Location | Description                                           |
-| -------------------- | -------- | ----------------------------------------------------- |
-| `pnpm run dev`       | Local    | Start the environment with Docker Compose             |
-| `pnpm run dev:build` | Local    | **Rebuild** images and start (use after adding deps)  |
-| `pnpm run stop`      | Local    | Stop and remove development containers                |
-| `pnpm run shell`     | Docker   | Open an interactive shell inside the `overload-app`   |
-| `pnpm run clean`     | Local    | Stop containers and **remove volumes** (wipes DB)     |
+| Command          | Description                                                             |
+| ---------------- | ----------------------------------------------------------------------- |
+| `pnpm dev`       | Start the environment with Docker Compose                               |
+| `pnpm dev:build` | Rebuild images and start (use after adding deps or changing Dockerfile) |
+| `pnpm stop`      | Stop and remove development containers                                  |
+| `pnpm shell`     | Open an interactive shell inside `overload-app-dev`                     |
+| `pnpm clean`     | Stop containers and remove volumes — **wipes the database**             |
 
-### Database (Prisma)
+### Database
 
-| Command               | Location | Description                                     |
-| --------------------- | -------- | ----------------------------------------------- |
-| `pnpm run db:migrate` | Docker   | Create and apply a new migration                |
-| `pnpm run db:studio`  | Docker   | Open Prisma Studio (GUI for browsing the DB)    |
-| `pnpm run db:seed`    | Docker   | Run the seed script with sample data            |
+| Command           | Description                                    |
+| ----------------- | ---------------------------------------------- |
+| `pnpm db:migrate` | Create and apply a new migration               |
+| `pnpm db:reset`   | Reset the database and re-apply all migrations |
+| `pnpm db:seed`    | Run the seed script with sample data           |
+| `pnpm db:gen`     | Regenerate the Prisma client                   |
 
-### Code Quality & Maintenance
+### When to use each database command
 
-| Command           | Location | Description                          |
-| ----------------- | -------- | ------------------------------------ |
-| `pnpm run lint`   | Local    | Lint and auto-fix code with Biome    |
-| `pnpm run format` | Local    | Format code automatically with Biome |
-| `pnpm run build`  | Local    | Compile TypeScript to `dist/`        |
-| `pnpm run test`   | Local    | Run unit tests                       |
+| Situation                          | Command                         |
+| ---------------------------------- | ------------------------------- |
+| Modified `schema.prisma`           | `pnpm db:migrate`               |
+| Reset DB without wiping containers | `pnpm db:reset`                 |
+| Conflicting migration history      | `pnpm db:reset`                 |
+| Changed Dockerfile or dependencies | `pnpm dev:build`                |
+| Wipe everything and start fresh    | `pnpm clean` → `pnpm dev:build` |
+
+### Code Quality
+
+| Command      | Description                       |
+| ------------ | --------------------------------- |
+| `pnpm lint`  | Lint and auto-fix code with Biome |
+| `pnpm build` | Compile TypeScript to `dist/`     |
 
 ---
 
 ## API Documentation
 
-Once the server is running, the interactive Swagger documentation will be available at:
+Once the server is running, the interactive Swagger documentation is available at:
 
 ```
 http://localhost:3000/api/docs
 ```
 
-All endpoints, request/response schemas and examples are documented there. Protected endpoints require a Bearer Token — get one from `POST /auth/login` and paste it into the **Authorize** button in Swagger UI.
+Protected endpoints require a Bearer Token — get one from `POST /auth/login` and paste it into the **Authorize** button in Swagger UI.
 
 ---
 

@@ -101,7 +101,7 @@ export class AuthService {
 			throw new UnauthorizedException("Invalid credentials");
 		}
 
-		const isPasswordValid = await this.validatePassword(dto.password, user.password);
+		const isPasswordValid = await this.validatePassword(dto.password, user.password_hash);
 		if (!isPasswordValid) {
 			throw new UnauthorizedException("Invalid credentials");
 		}
@@ -109,7 +109,7 @@ export class AuthService {
 		const tokens = await this.generateTokens(user.id, user.email);
 		await this.saveRefreshToken(user.id, tokens.refreshToken);
 
-		const { password: _, ...userData } = user;
+		const { password_hash: _, ...userData } = user;
 		return { ...tokens, user: userData };
 	}
 
@@ -124,7 +124,7 @@ export class AuthService {
 		const tokens = await this.generateTokens(user.id, user.email);
 		await this.saveRefreshToken(user.id, tokens.refreshToken);
 
-		const { password: _, ...userData } = user;
+		const { password_hash: _, ...userData } = user;
 		return { ...tokens, user: userData };
 	}
 

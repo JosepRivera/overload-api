@@ -16,7 +16,7 @@ export class UserService {
 			data: {
 				email: input.email,
 				name: input.name,
-				password: hashedPassword,
+				password_hash: hashedPassword,
 			},
 		});
 	}
@@ -42,7 +42,7 @@ export class UserService {
 			throw new NotFoundException("User not found");
 		}
 
-		const { password: _, ...userWithoutPassword } = user;
+		const { password_hash: _, ...userWithoutPassword } = user;
 		return userWithoutPassword;
 	}
 }

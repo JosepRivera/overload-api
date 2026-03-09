@@ -11,6 +11,7 @@ import {
 } from "@nestjs/common";
 import {
 	ApiBearerAuth,
+	ApiBody,
 	ApiConflictResponse,
 	ApiCreatedResponse,
 	ApiNoContentResponse,
@@ -22,11 +23,11 @@ import {
 import { CurrentUser } from "@/jwt/current-user.decorator";
 import { JwtAuthGuard } from "@/jwt/jwt-auth.guard";
 import type { AuthUser } from "@/jwt/types/jwt.types";
-import type { AddRoutineExerciseDto } from "./dto/add-routine-exercise.dto";
-import type { CreateRoutineDto } from "./dto/create-routine.dto";
-import type { ReorderRoutineExercisesDto } from "./dto/reorder-routine-exercises.dto";
-import type { UpdateRoutineDto } from "./dto/update-routine.dto";
-import type { UpdateRoutineExerciseDto } from "./dto/update-routine-exercise.dto";
+import { AddRoutineExerciseDto } from "./dto/add-routine-exercise.dto";
+import { CreateRoutineDto } from "./dto/create-routine.dto";
+import { ReorderRoutineExercisesDto } from "./dto/reorder-routine-exercises.dto";
+import { UpdateRoutineDto } from "./dto/update-routine.dto";
+import { UpdateRoutineExerciseDto } from "./dto/update-routine-exercise.dto";
 // biome-ignore lint/style/useImportType: required for NestJS DI
 import { RoutinesService } from "./routines.service";
 
@@ -43,6 +44,7 @@ export class RoutinesController {
 
 	@Post()
 	@ApiOperation({ summary: "Create a new routine" })
+	@ApiBody({ type: CreateRoutineDto })
 	@ApiCreatedResponse({ description: "Routine created successfully" })
 	@ApiConflictResponse({ description: "A routine with this name already exists" })
 	async create(@CurrentUser() user: AuthUser, @Body() dto: CreateRoutineDto) {
@@ -66,6 +68,7 @@ export class RoutinesController {
 
 	@Patch(":id")
 	@ApiOperation({ summary: "Update a routine name or description" })
+	@ApiBody({ type: UpdateRoutineDto })
 	@ApiOkResponse({ description: "Routine updated successfully" })
 	@ApiNotFoundResponse({ description: "Routine not found" })
 	@ApiConflictResponse({ description: "A routine with this name already exists" })
@@ -92,6 +95,7 @@ export class RoutinesController {
 
 	@Post(":id/exercises")
 	@ApiOperation({ summary: "Add an exercise to a routine" })
+	@ApiBody({ type: AddRoutineExerciseDto })
 	@ApiCreatedResponse({ description: "Exercise added to routine successfully" })
 	@ApiNotFoundResponse({ description: "Routine or exercise not found" })
 	@ApiConflictResponse({ description: "Exercise is already in this routine" })
@@ -113,6 +117,7 @@ export class RoutinesController {
 
 	@Patch(":id/exercises/:exerciseId")
 	@ApiOperation({ summary: "Update exercise configuration within a routine" })
+	@ApiBody({ type: UpdateRoutineExerciseDto })
 	@ApiOkResponse({ description: "Exercise configuration updated successfully" })
 	@ApiNotFoundResponse({ description: "Routine or exercise not found" })
 	async updateExercise(
@@ -140,6 +145,7 @@ export class RoutinesController {
 	@Post(":id/exercises/reorder")
 	@HttpCode(200)
 	@ApiOperation({ summary: "Reorder exercises within a routine" })
+	@ApiBody({ type: ReorderRoutineExercisesDto })
 	@ApiOkResponse({ description: "Exercises reordered successfully" })
 	@ApiNotFoundResponse({ description: "Routine not found" })
 	async reorderExercises(

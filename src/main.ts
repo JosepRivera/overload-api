@@ -1,7 +1,7 @@
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import helmet from "helmet";
-import { ZodValidationPipe } from "nestjs-zod";
+import { cleanupOpenApiDoc, ZodValidationPipe } from "nestjs-zod";
 import { env } from "@/config/env";
 import { AppModule } from "./app.module";
 
@@ -22,11 +22,12 @@ async function bootstrap() {
 		.setTitle("Overload API")
 		.setDescription("REST API for strength training tracking")
 		.setVersion("1.0")
+		.addServer(`http://localhost:${env.PORT}`, "Development")
 		.addBearerAuth()
 		.build();
 
 	const document = SwaggerModule.createDocument(app, config);
-	SwaggerModule.setup("api/docs", app, document);
+	SwaggerModule.setup("api/docs", app, cleanupOpenApiDoc(document));
 
 	await app.listen(env.PORT);
 	console.log(`Server running on http://localhost:${env.PORT}`);

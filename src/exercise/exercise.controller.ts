@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { CurrentUser } from "@/jwt/current-user.decorator";
-import type { AuthUser } from "@/jwt/dto/jwt.types";
 import { JwtAuthGuard } from "@/jwt/jwt-auth.guard";
+import type { AuthUser } from "@/jwt/types/jwt.types";
 import type { CreateExerciseDto } from "./dto/create-exercise.dto";
 import type { UpdateExerciseDto } from "./dto/update-exercise.dto";
 // biome-ignore lint/style/useImportType: NestJS requires runtime reference for dependency injection

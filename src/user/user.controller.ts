@@ -2,7 +2,7 @@ import { Controller, Get, Param, UseGuards } from "@nestjs/common";
 import type { JWTPayload } from "jose";
 import { CurrentUser } from "@/jwt/current-user.decorator";
 import { JwtAuthGuard } from "@/jwt/jwt-auth.guard";
-// biome-ignore lint/style/useImportType: NestJS requires runtime reference for dependency injection
+// biome-ignore lint/style/useImportType: required for NestJS DI
 import { UserService } from "./user.service";
 
 @Controller("users")

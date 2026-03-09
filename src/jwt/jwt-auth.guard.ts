@@ -5,7 +5,7 @@ import {
 	UnauthorizedException,
 } from "@nestjs/common";
 import type { Request } from "express";
-// biome-ignore lint/style/useImportType: NestJS requires runtime reference for dependency injection
+// biome-ignore lint/style/useImportType: required for NestJS DI
 import { JwtService } from "./jwt.service";
 
 @Injectable()

@@ -1,5 +1,5 @@
 import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
-// biome-ignore lint/style/useImportType: NestJS requires runtime reference for dependency injection
+// biome-ignore lint/style/useImportType: required for NestJS DI
 import { PrismaService } from "@/prisma/prisma.service";
 import type { CreateExerciseInput } from "./dto/create-exercise.dto";
 import type { UpdateExerciseInput } from "./dto/update-exercise.dto";
@@ -37,6 +37,16 @@ export class ExerciseService {
 		});
 		if (!exercise) {
 			throw new NotFoundException("Exercise not found");
+		}
+		return exercise;
+	}
+
+	async findOneActive(userId: string, id: string) {
+		const exercise = await this.prisma.exercise.findFirst({
+			where: { id, user_id: userId, is_archived: false },
+		});
+		if (!exercise) {
+			throw new NotFoundException("Exercise not found or is archived");
 		}
 		return exercise;
 	}

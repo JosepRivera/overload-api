@@ -4,7 +4,7 @@ import { JwtAuthGuard } from "@/jwt/jwt-auth.guard";
 import type { AuthUser } from "@/jwt/types/jwt.types";
 import type { CreateExerciseDto } from "./dto/create-exercise.dto";
 import type { UpdateExerciseDto } from "./dto/update-exercise.dto";
-// biome-ignore lint/style/useImportType: NestJS requires runtime reference for dependency injection
+// biome-ignore lint/style/useImportType: required for NestJS DI
 import { ExerciseService } from "./exercise.service";
 
 @Controller("exercise")

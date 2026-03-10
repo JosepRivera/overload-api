@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from "@nestjs/common";
+import {
+	Body,
+	Controller,
+	Get,
+	Param,
+	ParseUUIDPipe,
+	Patch,
+	Post,
+	Query,
+	UseGuards,
+} from "@nestjs/common";
 import {
 	ApiBearerAuth,
 	ApiBody,
@@ -21,7 +31,7 @@ import { ExerciseService } from "./exercise.service";
 @ApiTags("exercises")
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-@Controller("exercise")
+@Controller("exercises")
 export class ExerciseController {
 	constructor(private exerciseService: ExerciseService) {}
 
@@ -53,7 +63,7 @@ export class ExerciseController {
 	@ApiOperation({ summary: "Get a single exercise by ID" })
 	@ApiOkResponse({ description: "Returns the exercise including archived ones" })
 	@ApiNotFoundResponse({ description: "Exercise not found" })
-	async findOne(@CurrentUser() user: AuthUser, @Param("id") id: string) {
+	async findOne(@CurrentUser() user: AuthUser, @Param("id", ParseUUIDPipe) id: string) {
 		return this.exerciseService.findOne(user.sub, id);
 	}
 
@@ -65,7 +75,7 @@ export class ExerciseController {
 	@ApiConflictResponse({ description: "An exercise with this name already exists" })
 	async update(
 		@CurrentUser() user: AuthUser,
-		@Param("id") id: string,
+		@Param("id", ParseUUIDPipe) id: string,
 		@Body() dto: UpdateExerciseDto,
 	) {
 		return this.exerciseService.update(user.sub, id, dto);
@@ -75,7 +85,7 @@ export class ExerciseController {
 	@ApiOperation({ summary: "Archive an exercise (soft delete)" })
 	@ApiOkResponse({ description: "Exercise archived successfully" })
 	@ApiNotFoundResponse({ description: "Exercise not found" })
-	async archive(@CurrentUser() user: AuthUser, @Param("id") id: string) {
+	async archive(@CurrentUser() user: AuthUser, @Param("id", ParseUUIDPipe) id: string) {
 		return this.exerciseService.archive(user.sub, id);
 	}
 }

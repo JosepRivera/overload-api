@@ -5,6 +5,7 @@ import {
 	Get,
 	HttpCode,
 	Param,
+	ParseUUIDPipe,
 	Patch,
 	Post,
 	UseGuards,
@@ -62,7 +63,7 @@ export class RoutinesController {
 	@ApiOperation({ summary: "Get a single routine with its exercises" })
 	@ApiOkResponse({ description: "Returns the routine with exercises ordered by order_index" })
 	@ApiNotFoundResponse({ description: "Routine not found" })
-	async findOne(@CurrentUser() user: AuthUser, @Param("id") id: string) {
+	async findOne(@CurrentUser() user: AuthUser, @Param("id", ParseUUIDPipe) id: string) {
 		return this.routinesService.findOne(user.sub, id);
 	}
 
@@ -74,7 +75,7 @@ export class RoutinesController {
 	@ApiConflictResponse({ description: "A routine with this name already exists" })
 	async update(
 		@CurrentUser() user: AuthUser,
-		@Param("id") id: string,
+		@Param("id", ParseUUIDPipe) id: string,
 		@Body() dto: UpdateRoutineDto,
 	) {
 		return this.routinesService.update(user.sub, id, dto);
@@ -85,7 +86,7 @@ export class RoutinesController {
 	@ApiOperation({ summary: "Deactivate a routine (soft delete)" })
 	@ApiNoContentResponse({ description: "Routine deactivated successfully" })
 	@ApiNotFoundResponse({ description: "Routine not found" })
-	async deactivate(@CurrentUser() user: AuthUser, @Param("id") id: string) {
+	async deactivate(@CurrentUser() user: AuthUser, @Param("id", ParseUUIDPipe) id: string) {
 		await this.routinesService.deactivate(user.sub, id);
 	}
 
@@ -101,7 +102,7 @@ export class RoutinesController {
 	@ApiConflictResponse({ description: "Exercise is already in this routine" })
 	async addExercise(
 		@CurrentUser() user: AuthUser,
-		@Param("id") routineId: string,
+		@Param("id", ParseUUIDPipe) routineId: string,
 		@Body() dto: AddRoutineExerciseDto,
 	) {
 		return this.routinesService.addExercise(user.sub, routineId, dto);
@@ -111,7 +112,10 @@ export class RoutinesController {
 	@ApiOperation({ summary: "List all exercises in a routine ordered by position" })
 	@ApiOkResponse({ description: "Returns all exercises ordered by order_index" })
 	@ApiNotFoundResponse({ description: "Routine not found" })
-	async findAllExercises(@CurrentUser() user: AuthUser, @Param("id") routineId: string) {
+	async findAllExercises(
+		@CurrentUser() user: AuthUser,
+		@Param("id", ParseUUIDPipe) routineId: string,
+	) {
 		return this.routinesService.findAllExercises(user.sub, routineId);
 	}
 
@@ -122,8 +126,8 @@ export class RoutinesController {
 	@ApiNotFoundResponse({ description: "Routine or exercise not found" })
 	async updateExercise(
 		@CurrentUser() user: AuthUser,
-		@Param("id") routineId: string,
-		@Param("exerciseId") exerciseId: string,
+		@Param("id", ParseUUIDPipe) routineId: string,
+		@Param("exerciseId", ParseUUIDPipe) exerciseId: string,
 		@Body() dto: UpdateRoutineExerciseDto,
 	) {
 		return this.routinesService.updateExercise(user.sub, routineId, exerciseId, dto);
@@ -136,8 +140,8 @@ export class RoutinesController {
 	@ApiNotFoundResponse({ description: "Routine or exercise not found" })
 	async removeExercise(
 		@CurrentUser() user: AuthUser,
-		@Param("id") routineId: string,
-		@Param("exerciseId") exerciseId: string,
+		@Param("id", ParseUUIDPipe) routineId: string,
+		@Param("exerciseId", ParseUUIDPipe) exerciseId: string,
 	) {
 		await this.routinesService.removeExercise(user.sub, routineId, exerciseId);
 	}
@@ -150,7 +154,7 @@ export class RoutinesController {
 	@ApiNotFoundResponse({ description: "Routine not found" })
 	async reorderExercises(
 		@CurrentUser() user: AuthUser,
-		@Param("id") routineId: string,
+		@Param("id", ParseUUIDPipe) routineId: string,
 		@Body() dto: ReorderRoutineExercisesDto,
 	) {
 		await this.routinesService.reorderExercises(user.sub, routineId, dto);

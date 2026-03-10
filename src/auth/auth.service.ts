@@ -1,3 +1,4 @@
+import { createHash, randomUUID } from "node:crypto";
 import { ConflictException, Injectable, UnauthorizedException } from "@nestjs/common";
 import bcrypt from "bcrypt";
 import { env } from "@/config/env";
@@ -10,6 +11,8 @@ import { UserService } from "@/user/user.service";
 import { PrismaService } from "../prisma/prisma.service";
 import type { LoginDto } from "./dto/login.dto";
 import type { RefreshTokenDto } from "./dto/refresh-token.dto";
+
+const MAX_ACTIVE_REFRESH_TOKENS = 5;
 
 @Injectable()
 export class AuthService {
@@ -45,15 +48,42 @@ export class AuthService {
 		return new Date(Date.now() + value * (multipliers[unit] ?? 0));
 	}
 
-	private async saveRefreshToken(userId: string, token: string) {
-		const tokenHash = await bcrypt.hash(token, env.BCRYPT_ROUNDS);
+	// FIX BUG-002: Use SHA-256 instead of bcrypt for refresh token hashing.
+	// Refresh tokens are high-entropy random values — bcrypt's cost is unnecessary
+	// and causes O(n) comparisons on every refresh/logout. SHA-256 is O(1) and
+	// allows direct DB lookup by hash instead of iterating all active tokens.
+	private hashToken(token: string): string {
+		return createHash("sha256").update(token).digest("hex");
+	}
 
+	private async saveRefreshToken(userId: string, token: string) {
+		const tokenHash = this.hashToken(token);
+
+		// Delete expired tokens first
 		await this.prisma.refreshToken.deleteMany({
 			where: {
 				user_id: userId,
 				expires_at: { lt: new Date() },
 			},
 		});
+
+		// FIX BUG-001: Enforce max 5 active refresh tokens per user.
+		// If the limit is reached, revoke the oldest active token before creating a new one.
+		const activeTokens = await this.prisma.refreshToken.findMany({
+			where: {
+				user_id: userId,
+				revoked_at: null,
+				expires_at: { gt: new Date() },
+			},
+			orderBy: { created_at: "asc" },
+		});
+
+		if (activeTokens.length >= MAX_ACTIVE_REFRESH_TOKENS) {
+			await this.prisma.refreshToken.update({
+				where: { id: activeTokens[0].id },
+				data: { revoked_at: new Date() },
+			});
+		}
 
 		const expiresAt = this.calculateExpiry(env.JWT_REFRESH_TOKEN_TTL);
 
@@ -66,30 +96,28 @@ export class AuthService {
 		});
 	}
 
+	// FIX BUG-002: Direct DB lookup by SHA-256 hash instead of iterating
+	// all active tokens with bcrypt.compare — O(1) instead of O(n).
 	private async findValidRefreshToken(userId: string, rawToken: string) {
-		const tokens = await this.prisma.refreshToken.findMany({
+		const tokenHash = this.hashToken(rawToken);
+
+		return this.prisma.refreshToken.findFirst({
 			where: {
 				user_id: userId,
+				token_hash: tokenHash,
 				revoked_at: null,
 				expires_at: { gt: new Date() },
 			},
 			include: { user: true },
 		});
-
-		for (const stored of tokens) {
-			const isMatch = await bcrypt.compare(rawToken, stored.token_hash);
-			if (isMatch) return stored;
-		}
-
-		return null;
 	}
 
 	private async generateTokens(userId: string, email: string) {
-		const payload = { sub: userId, email };
-
 		const [accessToken, refreshToken] = await Promise.all([
-			this.jwtService.signAccessToken(payload),
-			this.jwtService.signRefreshToken(payload),
+			this.jwtService.signAccessToken({ sub: userId, email }),
+			// jti (JWT ID) ensures each refresh token is unique even if issued
+			// within the same second for the same user — prevents SHA-256 hash collisions.
+			this.jwtService.signRefreshToken({ sub: userId, email, jti: randomUUID() }),
 		]);
 
 		return { accessToken, refreshToken };

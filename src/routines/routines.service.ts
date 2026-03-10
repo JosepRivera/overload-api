@@ -72,8 +72,14 @@ export class RoutinesService {
 		return routine;
 	}
 
+	// FIX BUG-005: findOne does not filter by is_active, so we add an explicit
+	// active check in update and deactivate to prevent mutations on deactivated routines.
 	async update(userId: string, id: string, input: UpdateRoutineInput) {
-		await this.findOne(userId, id);
+		const routine = await this.findOne(userId, id);
+
+		if (!routine.is_active) {
+			throw new NotFoundException("Routine not found");
+		}
 
 		if (input.name !== undefined) {
 			await this.assertUniqueNameForUser(userId, input.name, id);
@@ -89,7 +95,11 @@ export class RoutinesService {
 	}
 
 	async deactivate(userId: string, id: string) {
-		await this.findOne(userId, id);
+		const routine = await this.findOne(userId, id);
+
+		if (!routine.is_active) {
+			throw new NotFoundException("Routine not found");
+		}
 
 		await this.prisma.routine.update({
 			where: { id },

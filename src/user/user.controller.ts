@@ -1,6 +1,14 @@
-import { Controller, Get, Param, UseGuards } from "@nestjs/common";
+import {
+	Controller,
+	ForbiddenException,
+	Get,
+	Param,
+	ParseUUIDPipe,
+	UseGuards,
+} from "@nestjs/common";
 import {
 	ApiBearerAuth,
+	ApiForbiddenResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
@@ -30,7 +38,14 @@ export class UserController {
 	@ApiOperation({ summary: "Get a user by ID" })
 	@ApiOkResponse({ description: "Returns the user without password" })
 	@ApiNotFoundResponse({ description: "User not found" })
-	async getUserById(@Param("id") id: string) {
+	@ApiForbiddenResponse({ description: "Cannot access another user's profile" })
+	async getUserById(
+		@CurrentUser() currentUser: JWTPayload & { sub: string },
+		@Param("id", ParseUUIDPipe) id: string,
+	) {
+		if (currentUser.sub !== id) {
+			throw new ForbiddenException("Cannot access another user's profile");
+		}
 		return this.userService.findByIdSafe(id);
 	}
 }

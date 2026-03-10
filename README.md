@@ -92,8 +92,8 @@ Built with **NestJS 11**, it exposes a REST API with JWT + Refresh Token authent
 | ------------------------------------------------------------------------------------------- | ------------- |
 | **Authentication** — Register, login, logout and JWT refresh tokens                         | ✅ Done        |
 | **Exercise Management** — Full CRUD for the user's personal exercise catalog                | ✅ Done        |
-| **Routines** — Training plans with target sets, reps and rest times                         | 🚧 In progress |
-| **Workout Execution** — Real-time tracking of active training sessions                      | 📋 Planned     |
+| **Routines** — Training plans with target sets, reps and rest times                         | ✅ Done |
+| **Workout Execution** — Real-time tracking of active training sessions                      | 🚧 In progress     |
 | **Set Logging** — Weight and rep tracking with last-used weight history                     | 📋 Planned     |
 | **Training History** — Past sessions with advanced filters                                  | 📋 Planned     |
 | **Automatic PR Detection** — Algorithm that identifies new records instantly                | 📋 Planned     |

@@ -26,7 +26,7 @@ import type { AuthUser } from "@/jwt/types/jwt.types";
 import { CreateExerciseDto } from "./dto/create-exercise.dto";
 import { UpdateExerciseDto } from "./dto/update-exercise.dto";
 // biome-ignore lint/style/useImportType: required for NestJS DI
-import { ExerciseService } from "./exercise.service";
+import { ExerciseService } from "./exercises.service";
 
 @ApiTags("exercises")
 @ApiBearerAuth()

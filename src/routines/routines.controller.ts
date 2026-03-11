@@ -26,7 +26,7 @@ import { JwtAuthGuard } from "@/jwt/jwt-auth.guard";
 import type { AuthUser } from "@/jwt/types/jwt.types";
 import { AddRoutineExerciseDto } from "./dto/add-routine-exercise.dto";
 import { CreateRoutineDto } from "./dto/create-routine.dto";
-import { ReorderRoutineExercisesDto } from "./dto/reorder-routine-exercises.dto";
+import { ReorderRoutineExercisesDto } from "./dto/reorder-routine-exercise.dto";
 import { UpdateRoutineDto } from "./dto/update-routine.dto";
 import { UpdateRoutineExerciseDto } from "./dto/update-routine-exercise.dto";
 // biome-ignore lint/style/useImportType: required for NestJS DI

@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { ExerciseModule } from "@/exercise/exercise.module";
+import { ExerciseModule } from "@/exercises/exercises.module";
 import { RoutinesController } from "./routines.controller";
 import { RoutinesService } from "./routines.service";
 

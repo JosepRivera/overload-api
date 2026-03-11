@@ -5,12 +5,12 @@ import {
 	NotFoundException,
 } from "@nestjs/common";
 // biome-ignore lint/style/useImportType: required for NestJS DI
-import { ExerciseService } from "@/exercise/exercise.service";
+import { ExerciseService } from "@/exercises/exercises.service";
 // biome-ignore lint/style/useImportType: required for NestJS DI
 import { PrismaService } from "@/prisma/prisma.service";
 import type { AddRoutineExerciseInput } from "./dto/add-routine-exercise.dto";
 import type { CreateRoutineInput } from "./dto/create-routine.dto";
-import type { ReorderRoutineExercisesInput } from "./dto/reorder-routine-exercises.dto";
+import type { ReorderRoutineExercisesInput } from "./dto/reorder-routine-exercise.dto";
 import type { UpdateRoutineInput } from "./dto/update-routine.dto";
 import type { UpdateRoutineExerciseInput } from "./dto/update-routine-exercise.dto";
 

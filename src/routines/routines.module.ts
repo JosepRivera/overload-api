@@ -7,5 +7,6 @@ import { RoutinesService } from "./routines.service";
 	imports: [ExerciseModule],
 	providers: [RoutinesService],
 	controllers: [RoutinesController],
+	exports: [RoutinesService],
 })
 export class RoutinesModule {}

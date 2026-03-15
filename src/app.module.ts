@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { AnalyticsModule } from "./analytics/analytics.module";
 import { AuthModule } from "./auth/auth.module";
 import { ExerciseModule } from "./exercises/exercises.module";
 import { JwtModule } from "./jwt/jwt.module";
@@ -18,6 +19,7 @@ import { WorkoutsModule } from "./workouts/workouts.module";
 		RoutinesModule,
 		WorkoutsModule,
 		SetsModule,
+		AnalyticsModule,
 	],
 })
 export class AppModule {}

@@ -14,7 +14,7 @@
 		"stop": "docker compose down",
 		"db:migrate": "docker exec -it overload-app-dev pnpm prisma migrate dev",
 		"db:gen": "docker exec overload-app-dev pnpm prisma generate",
-		"db:seed": "docker exec overload-app-dev tsx prisma/seed.ts",
+		"db:seed": "docker exec overload-app-dev pnpm tsx prisma/seed.ts",
 		"db:reset": "docker exec -it overload-app-dev pnpm prisma migrate reset",
 		"shell": "docker exec -it overload-app-dev sh",
 		"clean": "docker compose down -v"

@@ -72,8 +72,6 @@ export class RoutinesService {
 		return routine;
 	}
 
-	// FIX BUG-005: findOne does not filter by is_active, so we add an explicit
-	// active check in update and deactivate to prevent mutations on deactivated routines.
 	async update(userId: string, id: string, input: UpdateRoutineInput) {
 		const routine = await this.findOne(userId, id);
 

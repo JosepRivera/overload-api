@@ -23,11 +23,12 @@ import {
 	ApiQuery,
 	ApiTags,
 } from "@nestjs/swagger";
+import { ZodValidationPipe } from "nestjs-zod";
 import { CurrentUser } from "@/jwt/current-user.decorator";
 import { JwtAuthGuard } from "@/jwt/jwt-auth.guard";
 import type { AuthUser } from "@/jwt/types/jwt.types";
 import { CreateWorkoutDto } from "./dto/create-workout.dto";
-import type { ListWorkoutsDto } from "./dto/list-workout.dto";
+import { type ListWorkoutsDto, listWorkoutsSchema } from "./dto/list-workout.dto";
 import { UpdateWorkoutDto } from "./dto/update-workout.dto";
 // biome-ignore lint/style/useImportType: required for NestJS DI
 import { WorkoutsService } from "./workouts.service";
@@ -63,7 +64,10 @@ export class WorkoutsController {
 		type: Number,
 		description: "Items per page (default: 20, max: 100)",
 	})
-	async findAll(@CurrentUser() user: AuthUser, @Query() query: ListWorkoutsDto) {
+	async findAll(
+		@CurrentUser() user: AuthUser,
+		@Query(new ZodValidationPipe(listWorkoutsSchema)) query: ListWorkoutsDto,
+	) {
 		return this.workoutsService.findAll(user.sub, query.page, query.limit);
 	}
 

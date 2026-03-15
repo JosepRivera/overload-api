@@ -4,6 +4,7 @@ import { ExerciseModule } from "./exercises/exercises.module";
 import { JwtModule } from "./jwt/jwt.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { RoutinesModule } from "./routines/routines.module";
+import { SetsModule } from "./sets/sets.module";
 import { UserModule } from "./user/user.module";
 import { WorkoutsModule } from "./workouts/workouts.module";
 
@@ -16,6 +17,7 @@ import { WorkoutsModule } from "./workouts/workouts.module";
 		ExerciseModule,
 		RoutinesModule,
 		WorkoutsModule,
+		SetsModule,
 	],
 })
 export class AppModule {}

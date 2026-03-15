@@ -7,5 +7,6 @@ import { WorkoutsService } from "./workouts.service";
 	imports: [RoutinesModule],
 	controllers: [WorkoutsController],
 	providers: [WorkoutsService],
+	exports: [WorkoutsService],
 })
 export class WorkoutsModule {}

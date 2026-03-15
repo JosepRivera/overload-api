@@ -1,12 +1,13 @@
 import { createZodDto } from "nestjs-zod";
-import { z } from "zod";
+import type { z } from "zod";
+import { createSetSchema } from "./create-set.dto";
 
-export const updateSetSchema = z.object({
-	weight: z.number().min(0).max(9999.99).optional(),
-	reps: z.number().int().min(1).optional(),
-	rpe: z.number().min(1).max(10).multipleOf(0.5).optional().nullable(),
-	is_warmup: z.boolean().optional(),
-});
+export const updateSetSchema = createSetSchema
+	.omit({ exercise_id: true })
+	.partial()
+	.refine((data) => Object.values(data).some((v) => v !== undefined), {
+		message: "At least one field must be provided",
+	});
 
 export class UpdateSetDto extends createZodDto(updateSetSchema) {}
 export type UpdateSetInput = z.infer<typeof updateSetSchema>;

@@ -3,7 +3,6 @@ import { z } from "zod";
 
 export const createSetSchema = z.object({
 	exercise_id: z.uuid(),
-	set_number: z.number().int().min(1),
 	weight: z.number().min(0).max(9999.99),
 	reps: z.number().int().min(1),
 	rpe: z.number().min(1).max(10).multipleOf(0.5).optional().nullable(),

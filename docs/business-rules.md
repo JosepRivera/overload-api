@@ -185,6 +185,7 @@ Sets are the **atomic unit of training data** — a single exercise performed fo
 ### Set Immutability
 - Sets can only be added to **active (in-progress) workouts**.
 - Once a workout is finished, its sets cannot be modified.
+- Sets belonging to a finished workout are immutable — they cannot be updated or deleted.
 
 ---
 

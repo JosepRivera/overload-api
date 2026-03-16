@@ -7,11 +7,15 @@
 [![NestJS](https://img.shields.io/badge/NestJS-v11.1-E0234E?style=for-the-badge&logo=nestjs&logoColor=white&labelColor=E0234E&color=2d2d2d)](https://nestjs.com/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white&labelColor=3178C6&color=2d2d2d)](https://www.typescriptlang.org/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?style=for-the-badge&logo=postgresql&logoColor=white&labelColor=4169E1&color=2d2d2d)](https://www.postgresql.org/)
-[![Prisma](https://img.shields.io/badge/Prisma-7.4-2D3748?style=for-the-badge&logo=prisma&logoColor=white&labelColor=2D3748&color=2d2d2d)](https://www.prisma.io/)
+[![Prisma](https://img.shields.io/badge/Prisma-7.5-2D3748?style=for-the-badge&logo=prisma&logoColor=white&labelColor=2D3748&color=2d2d2d)](https://www.prisma.io/)
 [![Node.js](https://img.shields.io/badge/Node.js-v24-339933?style=for-the-badge&logo=nodedotjs&logoColor=white&labelColor=339933&color=2d2d2d)](https://nodejs.org/)
 [![Docker](https://img.shields.io/badge/Docker-29-2496ED?style=for-the-badge&logo=docker&logoColor=white&labelColor=2496ED&color=2d2d2d)](https://www.docker.com/)
 [![pnpm](https://img.shields.io/badge/pnpm-10-F69220?style=for-the-badge&logo=pnpm&logoColor=white&labelColor=F69220&color=2d2d2d)](https://pnpm.io/)
 [![Biome](https://img.shields.io/badge/Biome-2.4-60A5FA?style=for-the-badge&logo=biome&logoColor=white&labelColor=60A5FA&color=2d2d2d)](https://biomejs.dev/)
+[![Vitest](https://img.shields.io/badge/Vitest-4.1-6E9F18?style=for-the-badge&logo=vitest&logoColor=white&labelColor=6E9F18&color=2d2d2d)](https://vitest.dev/)
+[![Zod](https://img.shields.io/badge/Zod-4.x-3E67B1?style=for-the-badge&logo=zod&logoColor=white&labelColor=3E67B1&color=2d2d2d)](https://zod.dev/)
+[![Swagger](https://img.shields.io/badge/Swagger-UI-85EA2D?style=for-the-badge&logo=swagger&logoColor=black&labelColor=85EA2D&color=2d2d2d)](https://swagger.io/)
+[![JWT](https://img.shields.io/badge/JWT-Auth-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white&labelColor=000000&color=2d2d2d)](https://jwt.io/)
 [![MIT License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge&logo=opensourceinitiative&logoColor=white&labelColor=yellow&color=2d2d2d)](./LICENSE)
 
 **REST API for advanced strength training tracking.**  
@@ -26,7 +30,6 @@ Manage workouts, sets, weights, personal records and training volume.
 - [Overload API](#overload-api)
   - [Table of Contents](#table-of-contents)
   - [Description](#description)
-  - [Tech Stack](#tech-stack)
   - [Features \& Roadmap](#features--roadmap)
   - [Project Structure](#project-structure)
   - [Database Schema](#database-schema)
@@ -41,6 +44,7 @@ Manage workouts, sets, weights, personal records and training volume.
     - [Development](#development)
     - [Database](#database)
     - [When to use each database command](#when-to-use-each-database-command)
+    - [Tests](#tests)
     - [Code Quality](#code-quality)
   - [API Documentation](#api-documentation)
   - [License](#license)
@@ -54,35 +58,6 @@ Manage workouts, sets, weights, personal records and training volume.
 Most gym apps are simple logs. This API goes further: it automatically calculates total training volume, detects new PRs the moment they happen, and estimates 1RM so athletes can plan their loads with data, not guesswork.
 
 Built with **NestJS 11**, it exposes a REST API with JWT + Refresh Token authentication, a modular architecture, and full Docker support for development.
-
----
-
-## Tech Stack
-
-**Core**
-
-![NestJS](https://img.shields.io/badge/NestJS-E0234E?style=flat-square&logo=nestjs&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=nodedotjs&logoColor=white)
-
-**Database & ORM**
-
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white)
-![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=flat-square&logo=prisma&logoColor=white)
-
-**Auth & Validation**
-
-![JWT](https://img.shields.io/badge/JWT-000000?style=flat-square&logo=jsonwebtokens&logoColor=white)
-![Zod](https://img.shields.io/badge/Zod-3E67B1?style=flat-square&logo=zod&logoColor=white)
-![Bcrypt](https://img.shields.io/badge/bcrypt-338?style=flat-square&logoColor=white)
-
-**Infrastructure & Tooling**
-
-![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
-![pnpm](https://img.shields.io/badge/pnpm-F69220?style=flat-square&logo=pnpm&logoColor=white)
-![Biome](https://img.shields.io/badge/Biome-60A5FA?style=flat-square&logo=biome&logoColor=white)
-![Swagger](https://img.shields.io/badge/Swagger-85EA2D?style=flat-square&logo=swagger&logoColor=black)
-![Jest](https://img.shields.io/badge/Jest-C21325?style=flat-square&logo=jest&logoColor=white)
 
 ---
 
@@ -126,7 +101,9 @@ overload-api/
 │   ├── types/               # Type extensions
 │   ├── app.module.ts        # Root module
 │   └── main.ts              # Bootstrap: Swagger, Helmet, CORS, global pipes
+├── test/                    # E2E test suites and helpers
 ├── docker-compose.yml       # Development environment with hot-reload
+├── docker-compose.test.yml  # Isolated test environment
 └── Dockerfile               # Development build stage
 ```
 
@@ -271,6 +248,16 @@ pnpm db:migrate
 | Conflicting migration history      | `pnpm db:reset`                 |
 | Changed Dockerfile or dependencies | `pnpm dev:build`                |
 | Wipe everything and start fresh    | `pnpm clean` → `pnpm dev:build` |
+
+### Tests
+
+| Command              | Description                                     |
+| -------------------- | ----------------------------------------------- |
+| `pnpm test`          | Run unit tests                                  |
+| `pnpm test:watch`    | Run unit tests in watch mode                    |
+| `pnpm test:cov`      | Run unit tests with coverage report             |
+| `pnpm test:e2e`      | Run e2e tests in Docker                         |
+| `pnpm test:e2e:down` | Stop and remove e2e test containers and volumes |
 
 ### Code Quality
 

@@ -110,7 +110,12 @@ export class RoutinesService {
 	// ─────────────────────────────────────────────
 
 	async addExercise(userId: string, routineId: string, input: AddRoutineExerciseInput) {
-		await this.findOne(userId, routineId);
+		const routine = await this.findOne(userId, routineId);
+
+		if (!routine.is_active) {
+			throw new NotFoundException("Routine not found");
+		}
+
 		await this.exerciseService.findOneActive(userId, input.exercise_id);
 		await this.assertExerciseNotInRoutine(routineId, input.exercise_id);
 
@@ -207,7 +212,17 @@ export class RoutinesService {
 			throw new BadRequestException("One or more exercise IDs do not belong to this routine");
 		}
 
-		// Update all order_index values in a single transaction
+		// Paso 1: índices temporales negativos para evitar conflictos con unique constraint
+		await this.prisma.$transaction(
+			input.exercises.map(({ id }, i) =>
+				this.prisma.routineExercise.update({
+					where: { id },
+					data: { order_index: -(i + 1) },
+				}),
+			),
+		);
+
+		// Paso 2: índices finales
 		await this.prisma.$transaction(
 			input.exercises.map(({ id, order_index }) =>
 				this.prisma.routineExercise.update({

@@ -88,17 +88,17 @@ Built with **NestJS 11**, it exposes a REST API with JWT + Refresh Token authent
 
 ## Features & Roadmap
 
-| Module                                                                                      | Status        |
-| ------------------------------------------------------------------------------------------- | ------------- |
-| **Authentication** — Register, login, logout and JWT refresh tokens                         | ✅ Done        |
-| **Exercise Management** — Full CRUD for the user's personal exercise catalog                | ✅ Done        |
-| **Routines** — Training plans with target sets, reps and rest times                         | ✅ Done        |
-| **Workout Execution** — Real-time tracking of active training sessions                      | ✅ Done        |
-| **Set Logging** — Weight and rep tracking with last-used weight history                     | 🚧 In progress |
-| **Training History** — Past sessions with advanced filters                                  | 📋 Planned     |
-| **Automatic PR Detection** — Algorithm that identifies new records instantly                | 📋 Planned     |
-| **Volume Calculation** — Total volume stats (weight × reps × sets) per session and exercise | 📋 Planned     |
-| **1RM Estimation** — One rep max calculation using the Epley formula                        | 📋 Planned     |
+| Module                                                                                      | Status |
+| ------------------------------------------------------------------------------------------- | ------ |
+| **Authentication** — Register, login, logout and JWT refresh tokens                         | ✅ Done |
+| **Exercise Management** — Full CRUD for the user's personal exercise catalog                | ✅ Done |
+| **Routines** — Training plans with target sets, reps and rest times                         | ✅ Done |
+| **Workout Execution** — Real-time tracking of active training sessions                      | ✅ Done |
+| **Set Logging** — Weight and rep tracking with last-used weight history                     | ✅ Done |
+| **Training History** — Past sessions with advanced filters                                  | ✅ Done |
+| **Automatic PR Detection** — Algorithm that identifies new records instantly                | ✅ Done |
+| **Volume Calculation** — Total volume stats (weight × reps × sets) per session and exercise | ✅ Done |
+| **1RM Estimation** — One rep max calculation using the Epley formula                        | ✅ Done |
 
 ---
 

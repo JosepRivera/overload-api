@@ -1,0 +1,54 @@
+services:
+  postgres-test:
+    image: postgres:17-alpine
+    container_name: overload-postgres-test
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: overload_test
+    networks:
+      - overload-test-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d overload_test"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  app-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    container_name: overload-app-test
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres-test:5432/overload_test
+      NODE_ENV: test
+      PORT: 3001
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_ACCESS_TOKEN_TTL: ${JWT_ACCESS_TOKEN_TTL}
+      JWT_REFRESH_TOKEN_TTL: ${JWT_REFRESH_TOKEN_TTL}
+      BCRYPT_ROUNDS: 4
+    volumes:
+      - ./src:/app/src
+      - ./prisma:/app/prisma
+      - ./generated:/app/generated
+      - ./test:/app/test
+      - /app/node_modules
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+    networks:
+      - overload-test-network
+    command: >
+      sh -c "
+        echo '[*] Running migrations on test database...' &&
+        pnpm prisma migrate deploy &&
+        echo '[OK] Migrations applied!' &&
+        pnpm vitest run --project e2e --reporter=verbose
+      "
+
+networks:
+  overload-test-network:
+    driver: bridge

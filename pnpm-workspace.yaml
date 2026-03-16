@@ -2,6 +2,8 @@ onlyBuiltDependencies:
   - '@nestjs/core'
   - '@prisma/engines'
   - '@scarf/scarf'
+  - '@swc/core'
   - bcrypt
   - esbuild
   - prisma
+  - unrs-resolver

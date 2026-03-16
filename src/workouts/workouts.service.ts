@@ -31,7 +31,10 @@ export class WorkoutsService {
 		}
 
 		if (input.routine_id) {
-			await this.routinesService.findOne(userId, input.routine_id);
+			const routine = await this.routinesService.findOne(userId, input.routine_id);
+			if (!routine.is_active) {
+				throw new NotFoundException("Routine not found");
+			}
 		}
 
 		return this.prisma.workout.create({

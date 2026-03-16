@@ -1,4 +1,5 @@
 import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
+import type { PrismaSet } from "@/prisma/prisma.service";
 // biome-ignore lint/style/useImportType: required for NestJS DI
 import { PrismaService } from "@/prisma/prisma.service";
 import type { CreateSetInput } from "./dto/create-set.dto";
@@ -41,7 +42,7 @@ export class SetsService {
 			},
 		});
 
-		return set;
+		return this.serializeSet(set);
 	}
 
 	async findAll(userId: string, workoutId: string) {
@@ -52,7 +53,7 @@ export class SetsService {
 			orderBy: [{ exercise_id: "asc" }, { set_number: "asc" }],
 		});
 
-		return sets;
+		return sets.map((s) => this.serializeSet(s));
 	}
 
 	async findOne(userId: string, workoutId: string, setId: string) {
@@ -60,7 +61,7 @@ export class SetsService {
 
 		const set = await this.findSetOrThrow(workoutId, setId);
 
-		return set;
+		return this.serializeSet(set);
 	}
 
 	async update(userId: string, workoutId: string, setId: string, dto: UpdateSetInput) {
@@ -77,7 +78,7 @@ export class SetsService {
 			data: dto,
 		});
 
-		return setUpdated;
+		return this.serializeSet(setUpdated);
 	}
 
 	async remove(userId: string, workoutId: string, setId: string) {
@@ -92,6 +93,14 @@ export class SetsService {
 		await this.prisma.set.delete({
 			where: { id: setId },
 		});
+	}
+
+	private serializeSet(set: PrismaSet) {
+		return {
+			...set,
+			weight: Number(set.weight),
+			rpe: set.rpe !== null ? Number(set.rpe) : null,
+		};
 	}
 
 	private async assertWorkoutAccess(userId: string, workoutId: string) {

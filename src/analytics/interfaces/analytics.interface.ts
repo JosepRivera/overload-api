@@ -15,3 +15,9 @@ export interface WorkoutVolume {
 	workout_id: string;
 	total_volume: number;
 }
+
+export interface Exercise1RM {
+	exercise_id: string;
+	estimated_1rm: number | null;
+	based_on: { weight: number; reps: number } | null;
+}

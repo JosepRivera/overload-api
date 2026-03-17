@@ -19,7 +19,7 @@
 		"shell": "docker exec -it overload-app-dev sh",
 		"clean": "docker compose down -v",
 		"test": "vitest run --project unit",
-		"test:e2e": "docker compose -f docker-compose.test.yml up --build --abort-on-container-exit --exit-code-from app-test",
+		"test:e2e": "docker compose -f docker-compose.test.yml up --build --abort-on-container-exit --exit-code-from app-test --remove-orphans",
 		"test:e2e:down": "docker compose -f docker-compose.test.yml down -v",
 		"test:cov": "vitest run --project unit --coverage",
 		"test:watch": "vitest --project unit"

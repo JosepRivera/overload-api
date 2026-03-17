@@ -49,7 +49,11 @@ export class JwtService {
 				};
 			}
 
-			if (error instanceof errors.JWTInvalid) {
+			if (
+				error instanceof errors.JWTInvalid ||
+				error instanceof errors.JWSInvalid ||
+				error instanceof errors.JWSSignatureVerificationFailed
+			) {
 				return {
 					valid: false,
 					expired: false,

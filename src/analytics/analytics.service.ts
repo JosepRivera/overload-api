@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 // biome-ignore lint/style/useImportType: required for NestJS DI
 import { PrismaService } from "@/prisma/prisma.service";
 import type {
+	Exercise1RM,
 	ExercisePrs,
 	SessionProgression,
 	WorkoutVolume,
@@ -25,11 +26,51 @@ export class AnalyticsService {
 			select: { weight: true, reps: true },
 		});
 
-		const weightPr = aggregate._max.weight ? Number(aggregate._max.weight) : null;
+		const weightPr = aggregate._max.weight !== null ? Number(aggregate._max.weight) : null;
 		const volumes = sets.map((s) => Number(s.weight) * s.reps);
 		const volumePr = volumes.length > 0 ? Math.max(...volumes) : null;
 
 		return { weight_pr: weightPr, volume_pr: volumePr };
+	}
+
+	async getExercise1rm(userId: string, exerciseId: string): Promise<Exercise1RM> {
+		await this.assertExerciseAccess(userId, exerciseId);
+
+		const sets = await this.prisma.set.findMany({
+			where: {
+				exercise_id: exerciseId,
+				is_warmup: false,
+				reps: { lte: 10 },
+			},
+			select: { weight: true, reps: true },
+		});
+
+		if (sets.length === 0) {
+			return { exercise_id: exerciseId, estimated_1rm: null, based_on: null };
+		}
+
+		// Pick the set that yields the highest estimated 1RM, not just the heaviest weight.
+		// e.g. 90kg×3 → 99, but 80kg×8 → 101.3 — the latter is the better estimate.
+		let best: { weight: number; reps: number; estimated: number } | null = null;
+
+		for (const s of sets) {
+			const weight = Number(s.weight);
+			const estimated = weight * (1 + s.reps / 30.0);
+
+			if (best === null || estimated > best.estimated) {
+				best = { weight, reps: s.reps, estimated };
+			}
+		}
+
+		// best is guaranteed non-null here (sets.length > 0)
+		// biome-ignore lint/style/noNonNullAssertion: guarded by sets.length check above
+		const { weight, reps, estimated } = best!;
+
+		return {
+			exercise_id: exerciseId,
+			estimated_1rm: Math.round(estimated * 10) / 10, // 1 decimal place
+			based_on: { weight, reps },
+		};
 	}
 
 	async getExerciseProgression(

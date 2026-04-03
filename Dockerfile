@@ -33,6 +33,7 @@ COPY --from=build /app/dist ./dist
 # Copy package manifest and prisma schema (required by prisma migrate deploy)
 COPY package.json ./
 COPY prisma ./prisma/
+COPY prisma.config.ts ./
 
 EXPOSE 3000
 CMD ["sh", "-c", "node_modules/.bin/prisma migrate deploy && node dist/main.js"]

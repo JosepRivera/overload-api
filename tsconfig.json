@@ -3,10 +3,10 @@
 	"compilerOptions": {
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
+		"ignoreDeprecations": "6.0",
 		"outDir": "./dist",
-		"baseUrl": "./",
 		"paths": {
-			"@/*": ["src/*"]
+			"@/*": ["./src/*"]
 		},
 		"types": ["vitest/globals"]
 	}

@@ -47,7 +47,6 @@ Manage workouts, sets, weights, personal records and training volume.
     - [Tests](#tests)
     - [Code Quality](#code-quality)
   - [API Documentation](#api-documentation)
-  - [License](#license)
 
 ---
 
@@ -278,8 +277,3 @@ http://localhost:3000/api/docs
 
 Protected endpoints require a Bearer Token — get one from `POST /auth/login` and paste it into the **Authorize** button in Swagger UI.
 
----
-
-## License
-
-This project is licensed under the **MIT License**. See the [LICENSE](./LICENSE) file for details.

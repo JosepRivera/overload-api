@@ -27,7 +27,7 @@ ENV NODE_ENV=production
 # Copy all node_modules from build (includes prisma CLI needed for migrate deploy)
 COPY --from=build /app/node_modules ./node_modules
 # Copy generated Prisma client
-COPY --from=build /app/generated ./generated
+COPY --from=build /app/src/generated ./src/generated
 # Copy compiled application bundle
 COPY --from=build /app/dist ./dist
 # Copy package manifest and prisma schema (required by prisma migrate deploy)

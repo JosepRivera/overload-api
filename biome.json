@@ -1,5 +1,5 @@
 {
-	"$schema": "https://biomejs.dev/schemas/latest/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.5.3/schema.json",
 	"vcs": {
 		"enabled": true,
 		"clientKind": "git",
@@ -12,12 +12,6 @@
 		"enabled": true,
 		"indentStyle": "tab",
 		"lineWidth": 100
-	},
-	"linter": {
-		"enabled": true,
-		"rules": {
-			"recommended": true
-		}
 	},
 	"javascript": {
 		"parser": {
@@ -36,5 +30,29 @@
 				"organizeImports": "on"
 			}
 		}
-	}
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"preset": "recommended",
+			"correctness": {
+				"useImportExtensions": "error"
+			},
+			"style": {
+				"useNodejsImportProtocol": "error",
+				"useImportType": "error"
+			}
+		},
+		"domains": {
+			"test": "recommended"
+		}
+	},
+	"overrides": [
+		{
+			"includes": ["generated/**", "**/*.config.ts", "**/*.config.js"],
+			"linter": {
+				"enabled": false
+			}
+		}
+	]
 }

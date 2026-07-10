@@ -41,7 +41,6 @@ services:
     volumes:
       - ./src:/app/src
       - ./prisma:/app/prisma
-      - ./generated:/app/generated
       - /app/node_modules
     depends_on:
       postgres:
@@ -52,9 +51,10 @@ services:
       sh -c "
         echo '[*] Checking database connection...' &&
         echo '[DB] postgresql://${POSTGRES_USER}:***@postgres:5432/${POSTGRES_DB}' &&
+        pnpm prisma generate &&
         pnpm prisma migrate deploy &&
         echo '[OK] Database ready!' &&
-        pnpm run start:dev
+        pnpm tsx watch src/main.ts
       "
 
 volumes:

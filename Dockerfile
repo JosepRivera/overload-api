@@ -44,4 +44,4 @@ COPY prisma ./prisma/
 COPY prisma.config.ts ./
 
 EXPOSE 3000
-CMD ["sh", "-c", "node_modules/.bin/prisma migrate deploy && node dist/main.js"]
+CMD ["node", "dist/main.js"]

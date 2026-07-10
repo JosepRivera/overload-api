@@ -33,7 +33,6 @@ services:
     volumes:
       - ./src:/app/src
       - ./prisma:/app/prisma
-      - ./generated:/app/generated
       - ./test:/app/test
       - /app/node_modules
     depends_on:
@@ -43,7 +42,8 @@ services:
       - overload-test-network
     command: >
       sh -c "
-        echo '[*] Running migrations on test database...' &&
+        echo '[*] Generating Prisma client and running migrations...' &&
+        pnpm prisma generate &&
         pnpm prisma migrate deploy &&
         echo '[OK] Migrations applied!' &&
         pnpm vitest run --project e2e --reporter=verbose

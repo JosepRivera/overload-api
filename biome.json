@@ -36,7 +36,6 @@
 		"rules": {
 			"preset": "recommended",
 			"correctness": {
-				"useImportExtensions": "error"
 			},
 			"style": {
 				"useNodejsImportProtocol": "error",

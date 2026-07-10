@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { JwtService } from "@/jwt/jwt.service";
+import { JwtService } from "@/jwt/jwt.service.js";
 
 // ---------------------------------------------------------------------------
 // Suite

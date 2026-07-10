@@ -8,11 +8,11 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
-import { RegisterDto } from "@/user/dto/create-user.dto";
+import { RegisterDto } from "@/user/dto/create-user.dto.js";
 // biome-ignore lint/style/useImportType: required for NestJS DI
-import { AuthService } from "./auth.service";
-import { LoginDto } from "./dto/login.dto";
-import { RefreshTokenDto } from "./dto/refresh-token.dto";
+import { AuthService } from "./auth.service.js";
+import { LoginDto } from "./dto/login.dto.js";
+import { RefreshTokenDto } from "./dto/refresh-token.dto.js";
 
 @ApiTags("auth")
 @Controller("auth")

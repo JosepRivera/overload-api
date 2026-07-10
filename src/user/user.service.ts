@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import bcrypt from "bcrypt";
-import { env } from "@/config/env";
+import { env } from "@/config/env.js";
 // biome-ignore lint/style/useImportType: required for NestJS DI
-import { PrismaService } from "../prisma/prisma.service";
-import type { RegisterInput } from "./dto/create-user.dto";
+import { PrismaService } from "../prisma/prisma.service.js";
+import type { RegisterInput } from "./dto/create-user.dto.js";
 
 @Injectable()
 export class UserService {

@@ -1,6 +1,6 @@
 import { createZodDto } from "nestjs-zod";
 import type { z } from "zod";
-import { createRoutineSchema } from "./create-routine.dto";
+import { createRoutineSchema } from "./create-routine.dto.js";
 
 const updateRoutineSchema = createRoutineSchema.partial();
 

@@ -1,13 +1,13 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 // biome-ignore lint/style/useImportType: required for NestJS DI
-import { PrismaService } from "@/prisma/prisma.service";
+import { PrismaService } from "@/prisma/prisma.service.js";
 import type {
 	Exercise1RM,
 	ExercisePrs,
 	SessionProgression,
 	WorkoutVolume,
-} from "../analytics/interfaces/analytics.interface";
-import type { ProgressionQueryInput } from "./dto/progression-query.dto";
+} from "../analytics/interfaces/analytics.interface.js";
+import type { ProgressionQueryInput } from "./dto/progression-query.dto.js";
 
 @Injectable()
 export class AnalyticsService {
@@ -116,7 +116,7 @@ export class AnalyticsService {
 
 			progression.push({
 				workout_id: workoutId,
-				date: workoutSets[0]!.workout.started_at,
+				date: workoutSets[0]?.workout.started_at ?? new Date(),
 				total_volume: totalVolume,
 				avg_weight: avgWeight,
 				avg_reps: avgReps,

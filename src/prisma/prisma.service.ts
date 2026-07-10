@@ -1,7 +1,7 @@
 import { Injectable, type OnModuleDestroy, type OnModuleInit } from "@nestjs/common";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "../generated/prisma/client";
-import { env } from "../config/env";
+import { env } from "../config/env.js";
+import { PrismaClient } from "../generated/prisma/client.js";
 
 export type {
 	Exercise as PrismaExercise,
@@ -10,7 +10,7 @@ export type {
 	Set as PrismaSet,
 	User as PrismaUser,
 	Workout as PrismaWorkout,
-} from "../generated/prisma/client";
+} from "../generated/prisma/client.js";
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {

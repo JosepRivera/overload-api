@@ -24,14 +24,14 @@ import {
 	ApiTags,
 } from "@nestjs/swagger";
 import { ZodValidationPipe } from "nestjs-zod";
-import { CurrentUser } from "@/jwt/current-user.decorator";
-import { JwtAuthGuard } from "@/jwt/jwt-auth.guard";
-import type { AuthUser } from "@/jwt/types/jwt.types";
-import { CreateWorkoutDto } from "./dto/create-workout.dto";
-import { type ListWorkoutsDto, listWorkoutsSchema } from "./dto/list-workout.dto";
-import { UpdateWorkoutDto } from "./dto/update-workout.dto";
+import { CurrentUser } from "@/jwt/current-user.decorator.js";
+import { JwtAuthGuard } from "@/jwt/jwt-auth.guard.js";
+import type { AuthUser } from "@/jwt/types/jwt.types.js";
+import { CreateWorkoutDto } from "./dto/create-workout.dto.js";
+import { type ListWorkoutsDto, listWorkoutsSchema } from "./dto/list-workout.dto.js";
+import { UpdateWorkoutDto } from "./dto/update-workout.dto.js";
 // biome-ignore lint/style/useImportType: required for NestJS DI
-import { WorkoutsService } from "./workouts.service";
+import { WorkoutsService } from "./workouts.service.js";
 
 @ApiTags("workouts")
 @ApiBearerAuth()

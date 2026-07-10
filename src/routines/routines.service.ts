@@ -5,14 +5,14 @@ import {
 	NotFoundException,
 } from "@nestjs/common";
 // biome-ignore lint/style/useImportType: required for NestJS DI
-import { ExerciseService } from "@/exercises/exercises.service";
+import { ExerciseService } from "@/exercises/exercises.service.js";
 // biome-ignore lint/style/useImportType: required for NestJS DI
-import { PrismaService } from "@/prisma/prisma.service";
-import type { AddRoutineExerciseInput } from "./dto/add-routine-exercise.dto";
-import type { CreateRoutineInput } from "./dto/create-routine.dto";
-import type { ReorderRoutineExercisesInput } from "./dto/reorder-routine-exercise.dto";
-import type { UpdateRoutineInput } from "./dto/update-routine.dto";
-import type { UpdateRoutineExerciseInput } from "./dto/update-routine-exercise.dto";
+import { PrismaService } from "@/prisma/prisma.service.js";
+import type { AddRoutineExerciseInput } from "./dto/add-routine-exercise.dto.js";
+import type { CreateRoutineInput } from "./dto/create-routine.dto.js";
+import type { ReorderRoutineExercisesInput } from "./dto/reorder-routine-exercise.dto.js";
+import type { UpdateRoutineInput } from "./dto/update-routine.dto.js";
+import type { UpdateRoutineExerciseInput } from "./dto/update-routine-exercise.dto.js";
 
 @Injectable()
 export class RoutinesService {

@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { errors, type JWTPayload, jwtVerify, SignJWT } from "jose";
-import { env } from "@/config/env";
-import type { VerifyResult } from "./interfaces/verify-result.interface";
+import { env } from "@/config/env.js";
+import type { VerifyResult } from "./interfaces/verify-result.interface.js";
 
 @Injectable()
 export class JwtService {

@@ -2,11 +2,11 @@ import type { INestApplication } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import { ZodValidationPipe } from "nestjs-zod";
 import request from "supertest";
-import { AppModule } from "@/app.module";
-import { TransformInterceptor } from "@/common/transform.interceptor";
-import { PrismaService } from "@/prisma/prisma.service";
-import { authHeader, registerAndLogin } from "./helpers/auth.helper";
-import { cleanDatabase } from "./helpers/db.helper";
+import { AppModule } from "@/app.module.ts";
+import { TransformInterceptor } from "@/common/transform.interceptor.ts";
+import { PrismaService } from "@/prisma/prisma.service.ts";
+import { authHeader, registerAndLogin } from "./helpers/auth.helper.ts";
+import { cleanDatabase } from "./helpers/db.helper.ts";
 
 describe("Analytics E2E", () => {
 	let app: INestApplication;

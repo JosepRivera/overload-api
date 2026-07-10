@@ -21,13 +21,13 @@ import {
 	ApiOperation,
 	ApiTags,
 } from "@nestjs/swagger";
-import { CurrentUser } from "@/jwt/current-user.decorator";
-import { JwtAuthGuard } from "@/jwt/jwt-auth.guard";
-import type { AuthUser } from "@/jwt/types/jwt.types";
-import { CreateSetDto } from "./dto/create-set.dto";
-import { UpdateSetDto } from "./dto/update-set.dto";
+import { CurrentUser } from "@/jwt/current-user.decorator.js";
+import { JwtAuthGuard } from "@/jwt/jwt-auth.guard.js";
+import type { AuthUser } from "@/jwt/types/jwt.types.js";
+import { CreateSetDto } from "./dto/create-set.dto.js";
+import { UpdateSetDto } from "./dto/update-set.dto.js";
 // biome-ignore lint/style/useImportType: required for NestJS DI
-import { SetsService } from "./sets.service";
+import { SetsService } from "./sets.service.js";
 
 @ApiTags("sets")
 @ApiBearerAuth()

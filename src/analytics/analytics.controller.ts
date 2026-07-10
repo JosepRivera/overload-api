@@ -8,12 +8,12 @@ import {
 	ApiTags,
 } from "@nestjs/swagger";
 import { ZodValidationPipe } from "nestjs-zod";
-import { CurrentUser } from "@/jwt/current-user.decorator";
-import { JwtAuthGuard } from "@/jwt/jwt-auth.guard";
-import type { AuthUser } from "@/jwt/types/jwt.types";
+import { CurrentUser } from "@/jwt/current-user.decorator.js";
+import { JwtAuthGuard } from "@/jwt/jwt-auth.guard.js";
+import type { AuthUser } from "@/jwt/types/jwt.types.js";
 // biome-ignore lint/style/useImportType: required for NestJS DI
-import { AnalyticsService } from "./analytics.service";
-import { type ProgressionQueryDto, progressionQuerySchema } from "./dto/progression-query.dto";
+import { AnalyticsService } from "./analytics.service.js";
+import { type ProgressionQueryDto, progressionQuerySchema } from "./dto/progression-query.dto.js";
 
 @ApiTags("analytics")
 @ApiBearerAuth()

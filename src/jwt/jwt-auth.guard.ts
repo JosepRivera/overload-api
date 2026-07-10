@@ -6,7 +6,7 @@ import {
 } from "@nestjs/common";
 import type { Request } from "express";
 // biome-ignore lint/style/useImportType: required for NestJS DI
-import { JwtService } from "./jwt.service";
+import { JwtService } from "./jwt.service.js";
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {

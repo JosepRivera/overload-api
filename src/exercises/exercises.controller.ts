@@ -20,13 +20,13 @@ import {
 	ApiQuery,
 	ApiTags,
 } from "@nestjs/swagger";
-import { CurrentUser } from "@/jwt/current-user.decorator";
-import { JwtAuthGuard } from "@/jwt/jwt-auth.guard";
-import type { AuthUser } from "@/jwt/types/jwt.types";
-import { CreateExerciseDto } from "./dto/create-exercise.dto";
-import { UpdateExerciseDto } from "./dto/update-exercise.dto";
+import { CurrentUser } from "@/jwt/current-user.decorator.js";
+import { JwtAuthGuard } from "@/jwt/jwt-auth.guard.js";
+import type { AuthUser } from "@/jwt/types/jwt.types.js";
+import { CreateExerciseDto } from "./dto/create-exercise.dto.js";
+import { UpdateExerciseDto } from "./dto/update-exercise.dto.js";
 // biome-ignore lint/style/useImportType: required for NestJS DI
-import { ExerciseService } from "./exercises.service";
+import { ExerciseService } from "./exercises.service.js";
 
 @ApiTags("exercises")
 @ApiBearerAuth()

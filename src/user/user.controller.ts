@@ -15,10 +15,10 @@ import {
 	ApiTags,
 } from "@nestjs/swagger";
 import type { JWTPayload } from "jose";
-import { CurrentUser } from "@/jwt/current-user.decorator";
-import { JwtAuthGuard } from "@/jwt/jwt-auth.guard";
+import { CurrentUser } from "@/jwt/current-user.decorator.js";
+import { JwtAuthGuard } from "@/jwt/jwt-auth.guard.js";
 // biome-ignore lint/style/useImportType: required for NestJS DI
-import { UserService } from "./user.service";
+import { UserService } from "./user.service.js";
 
 @ApiTags("users")
 @ApiBearerAuth()

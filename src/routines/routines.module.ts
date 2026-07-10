@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
-import { ExerciseModule } from "@/exercises/exercises.module";
-import { RoutinesController } from "./routines.controller";
-import { RoutinesService } from "./routines.service";
+import { ExerciseModule } from "@/exercises/exercises.module.js";
+import { RoutinesController } from "./routines.controller.js";
+import { RoutinesService } from "./routines.service.js";
 
 @Module({
 	imports: [ExerciseModule],

@@ -1,9 +1,9 @@
 import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
-import type { PrismaSet } from "@/prisma/prisma.service";
+import type { PrismaSet } from "@/prisma/prisma.service.js";
 // biome-ignore lint/style/useImportType: required for NestJS DI
-import { PrismaService } from "@/prisma/prisma.service";
-import type { CreateSetInput } from "./dto/create-set.dto";
-import type { UpdateSetInput } from "./dto/update-set.dto";
+import { PrismaService } from "@/prisma/prisma.service.js";
+import type { CreateSetInput } from "./dto/create-set.dto.js";
+import type { UpdateSetInput } from "./dto/update-set.dto.js";
 
 @Injectable()
 export class SetsService {

@@ -21,16 +21,16 @@ import {
 	ApiOperation,
 	ApiTags,
 } from "@nestjs/swagger";
-import { CurrentUser } from "@/jwt/current-user.decorator";
-import { JwtAuthGuard } from "@/jwt/jwt-auth.guard";
-import type { AuthUser } from "@/jwt/types/jwt.types";
-import { AddRoutineExerciseDto } from "./dto/add-routine-exercise.dto";
-import { CreateRoutineDto } from "./dto/create-routine.dto";
-import { ReorderRoutineExercisesDto } from "./dto/reorder-routine-exercise.dto";
-import { UpdateRoutineDto } from "./dto/update-routine.dto";
-import { UpdateRoutineExerciseDto } from "./dto/update-routine-exercise.dto";
+import { CurrentUser } from "@/jwt/current-user.decorator.js";
+import { JwtAuthGuard } from "@/jwt/jwt-auth.guard.js";
+import type { AuthUser } from "@/jwt/types/jwt.types.js";
+import { AddRoutineExerciseDto } from "./dto/add-routine-exercise.dto.js";
+import { CreateRoutineDto } from "./dto/create-routine.dto.js";
+import { ReorderRoutineExercisesDto } from "./dto/reorder-routine-exercise.dto.js";
+import { UpdateRoutineDto } from "./dto/update-routine.dto.js";
+import { UpdateRoutineExerciseDto } from "./dto/update-routine-exercise.dto.js";
 // biome-ignore lint/style/useImportType: required for NestJS DI
-import { RoutinesService } from "./routines.service";
+import { RoutinesService } from "./routines.service.js";
 
 @ApiTags("routines")
 @ApiBearerAuth()

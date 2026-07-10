@@ -1,6 +1,6 @@
 import { createZodDto } from "nestjs-zod";
 import type { z } from "zod";
-import { createSetSchema } from "./create-set.dto";
+import { createSetSchema } from "./create-set.dto.js";
 
 export const updateSetSchema = createSetSchema
 	.omit({ exercise_id: true })

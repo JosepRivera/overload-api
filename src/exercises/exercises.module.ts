@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
-import { ExerciseController } from "./exercises.controller";
-import { ExerciseService } from "./exercises.service";
+import { ExerciseController } from "./exercises.controller.js";
+import { ExerciseService } from "./exercises.service.js";
 
 @Module({
 	providers: [ExerciseService],

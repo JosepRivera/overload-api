@@ -1,8 +1,8 @@
 import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 // biome-ignore lint/style/useImportType: required for NestJS DI
-import { PrismaService } from "@/prisma/prisma.service";
-import type { CreateExerciseInput } from "./dto/create-exercise.dto";
-import type { UpdateExerciseInput } from "./dto/update-exercise.dto";
+import { PrismaService } from "@/prisma/prisma.service.js";
+import type { CreateExerciseInput } from "./dto/create-exercise.dto.js";
+import type { UpdateExerciseInput } from "./dto/update-exercise.dto.js";
 
 @Injectable()
 export class ExerciseService {

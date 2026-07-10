@@ -2,9 +2,9 @@ import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import helmet from "helmet";
 import { cleanupOpenApiDoc, ZodValidationPipe } from "nestjs-zod";
-import { env } from "@/config/env";
-import { AppModule } from "./app.module";
-import { TransformInterceptor } from "./common/transform.interceptor";
+import { env } from "@/config/env.js";
+import { AppModule } from "./app.module.js";
+import { TransformInterceptor } from "./common/transform.interceptor.js";
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);

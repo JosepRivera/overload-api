@@ -1,16 +1,16 @@
 import { createHash, randomUUID } from "node:crypto";
 import { ConflictException, Injectable, UnauthorizedException } from "@nestjs/common";
 import bcrypt from "bcrypt";
-import { env } from "@/config/env";
+import { env } from "@/config/env.js";
 // biome-ignore lint/style/useImportType: required for NestJS DI
-import { JwtService } from "@/jwt/jwt.service";
-import type { RegisterDto } from "@/user/dto/create-user.dto";
+import { JwtService } from "@/jwt/jwt.service.js";
+import type { RegisterDto } from "@/user/dto/create-user.dto.js";
 // biome-ignore lint/style/useImportType: required for NestJS DI
-import { UserService } from "@/user/user.service";
+import { UserService } from "@/user/user.service.js";
 // biome-ignore lint/style/useImportType: required for NestJS DI
-import { PrismaService } from "../prisma/prisma.service";
-import type { LoginDto } from "./dto/login.dto";
-import type { RefreshTokenDto } from "./dto/refresh-token.dto";
+import { PrismaService } from "../prisma/prisma.service.js";
+import type { LoginDto } from "./dto/login.dto.js";
+import type { RefreshTokenDto } from "./dto/refresh-token.dto.js";
 
 const MAX_ACTIVE_REFRESH_TOKENS = 5;
 
@@ -32,8 +32,8 @@ export class AuthService {
 			return new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // fallback 7d
 		}
 
-		const value = Number.parseInt(match[1]!, 10);
-		const unit = match[2]!.toLowerCase();
+		const value = Number.parseInt(match[1] ?? "0", 10);
+		const unit = match[2]?.toLowerCase();
 
 		const multipliers: Record<string, number> = {
 			ms: 1,
@@ -45,7 +45,7 @@ export class AuthService {
 			y: 365 * 24 * 60 * 60 * 1000,
 		};
 
-		return new Date(Date.now() + value * (multipliers[unit] ?? 0));
+		return new Date(Date.now() + value * (multipliers[unit ?? ""] ?? 0));
 	}
 
 	// FIX BUG-002: Use SHA-256 instead of bcrypt for refresh token hashing.
@@ -80,7 +80,7 @@ export class AuthService {
 
 		if (activeTokens.length >= MAX_ACTIVE_REFRESH_TOKENS) {
 			await this.prisma.refreshToken.update({
-				where: { id: activeTokens[0]!.id },
+				where: { id: activeTokens[0]?.id },
 				data: { revoked_at: new Date() },
 			});
 		}
@@ -165,7 +165,7 @@ export class AuthService {
 		const userId = result.decoded.sub as string;
 		const storedToken = await this.findValidRefreshToken(userId, dto.refreshToken);
 
-		if (!storedToken || !storedToken.user) {
+		if (!storedToken?.user) {
 			throw new UnauthorizedException("Refresh token revoked or not found");
 		}
 

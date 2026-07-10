@@ -5,11 +5,11 @@ import {
 	NotFoundException,
 } from "@nestjs/common";
 // biome-ignore lint/style/useImportType: required for NestJS DI
-import { PrismaService } from "@/prisma/prisma.service";
+import { PrismaService } from "@/prisma/prisma.service.js";
 // biome-ignore lint/style/useImportType: required for NestJS DI
-import { RoutinesService } from "@/routines/routines.service";
-import type { CreateWorkoutInput } from "./dto/create-workout.dto";
-import type { UpdateWorkoutInput } from "./dto/update-workout.dto";
+import { RoutinesService } from "@/routines/routines.service.js";
+import type { CreateWorkoutInput } from "./dto/create-workout.dto.js";
+import type { UpdateWorkoutInput } from "./dto/update-workout.dto.js";
 
 @Injectable()
 export class WorkoutsService {

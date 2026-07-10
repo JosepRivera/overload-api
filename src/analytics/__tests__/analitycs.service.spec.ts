@@ -1,6 +1,6 @@
 import { NotFoundException } from "@nestjs/common";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { AnalyticsService } from "@/analytics/analytics.service";
+import { AnalyticsService } from "@/analytics/analytics.service.js";
 
 // ---------------------------------------------------------------------------
 // Prisma mock

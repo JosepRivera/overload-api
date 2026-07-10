@@ -1,36 +1,44 @@
-# syntax=docker/dockerfile:1
+# syntax=docker/dockerfile:1.7
 FROM node:24-alpine AS base
-RUN corepack enable && corepack prepare pnpm@10.31.0 --activate
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME/bin:$PATH"
+RUN corepack enable
 WORKDIR /app
 
-# ─── Dev stage ────────────────────────────────────────
-FROM base AS dev
-COPY package.json pnpm-lock.yaml ./
+# ─── Full deps (dev + prod) — used by dev & build stages ───
+FROM base AS deps
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY prisma ./prisma/
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    pnpm install --frozen-lockfile
 RUN pnpm prisma generate
+
+# ─── Dev stage (local dev via compose) ─────────────────────
+FROM deps AS dev
 COPY . .
 
-# ─── Build stage ──────────────────────────────────────
-FROM base AS build
-COPY package.json pnpm-lock.yaml ./
-COPY prisma ./prisma/
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
-RUN pnpm prisma generate
+# ─── Build stage (compile TypeScript) ──────────────────────
+FROM deps AS build
 COPY . .
 RUN pnpm build
 
-# ─── Production stage ─────────────────────────────────
-FROM base AS prod
-ENV NODE_ENV=production
+# ─── Production-only deps (no devDependencies) ─────────────
+FROM base AS prod-deps
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY prisma ./prisma/
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    pnpm install --prod --frozen-lockfile
 
-# Copy all node_modules from build (includes prisma CLI needed for migrate deploy)
-COPY --from=build /app/node_modules ./node_modules
-# Copy generated Prisma client
+# ─── Production image ──────────────────────────────────────
+FROM node:24-alpine AS prod
+ENV NODE_ENV=production
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME/bin:$PATH"
+WORKDIR /app
+
+COPY --from=prod-deps /app/node_modules ./node_modules
 COPY --from=build /app/src/generated ./src/generated
-# Copy compiled application bundle
 COPY --from=build /app/dist ./dist
-# Copy package manifest and prisma schema (required by prisma migrate deploy)
 COPY package.json ./
 COPY prisma ./prisma/
 COPY prisma.config.ts ./

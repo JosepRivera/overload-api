@@ -116,7 +116,7 @@ export class AnalyticsService {
 
 			progression.push({
 				workout_id: workoutId,
-				date: workoutSets[0].workout.started_at,
+				date: workoutSets[0]!.workout.started_at,
 				total_volume: totalVolume,
 				avg_weight: avgWeight,
 				avg_reps: avgReps,

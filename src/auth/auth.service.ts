@@ -32,8 +32,8 @@ export class AuthService {
 			return new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // fallback 7d
 		}
 
-		const value = Number.parseInt(match[1], 10);
-		const unit = match[2].toLowerCase();
+		const value = Number.parseInt(match[1]!, 10);
+		const unit = match[2]!.toLowerCase();
 
 		const multipliers: Record<string, number> = {
 			ms: 1,
@@ -80,7 +80,7 @@ export class AuthService {
 
 		if (activeTokens.length >= MAX_ACTIVE_REFRESH_TOKENS) {
 			await this.prisma.refreshToken.update({
-				where: { id: activeTokens[0].id },
+				where: { id: activeTokens[0]!.id },
 				data: { revoked_at: new Date() },
 			});
 		}

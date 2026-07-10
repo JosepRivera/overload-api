@@ -11,7 +11,6 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY prisma ./prisma/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm install --frozen-lockfile
-RUN pnpm prisma generate
 
 # ─── Dev stage (local dev via compose) ─────────────────────
 FROM deps AS dev
@@ -20,6 +19,7 @@ COPY . .
 # ─── Build stage (compile TypeScript) ──────────────────────
 FROM deps AS build
 COPY . .
+RUN pnpm prisma generate
 RUN pnpm build
 
 # ─── Production-only deps (no devDependencies) ─────────────

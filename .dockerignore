@@ -19,6 +19,9 @@ coverage
 dist
 build
 
+# Generated Prisma client (generated fresh in Docker build)
+src/generated
+
 # Env files
 .env*
 

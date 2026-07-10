@@ -28,8 +28,6 @@ export default defineConfig({
 					globals: true,
 					environment: "node",
 					include: ["test/**/*.e2e-spec.ts"],
-					fileParallelism: false,
-					maxWorkers: 1,
 					isolate: false,
 					setupFiles: ["dotenv/config"],
 				},

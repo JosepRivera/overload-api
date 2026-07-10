@@ -7,7 +7,7 @@
 		"node": ">=24.0.0 <25"
 	},
 	"scripts": {
-		"start:dev": "nest start --watch",
+		"start:dev": "tsx watch src/main.ts",
 		"build": "nest build",
 		"lint": "biome check --write ./src ./test",
 		"dev": "docker compose up",
@@ -20,8 +20,8 @@
 		"shell": "docker exec -it overload-app-dev sh",
 		"clean": "docker compose down -v",
 		"test": "vitest run --project unit",
-		"test:e2e": "docker compose -f docker-compose.test.yml up --build --abort-on-container-exit --exit-code-from app-test --remove-orphans",
-		"test:e2e:down": "docker compose -f docker-compose.test.yml down -v"
+		"test:e2e": "docker compose -f compose.test.yaml up --build --abort-on-container-exit --exit-code-from app-test --remove-orphans",
+		"test:e2e:down": "docker compose -f compose.test.yaml down -v"
 	},
 	"dependencies": {
 		"@nestjs/common": "^11.1.28",
@@ -43,22 +43,21 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.5.3",
-		"@nestjs/cli": "^11.0.23",
+		"@nestjs/cli": "^11.0.24",
 		"@nestjs/schematics": "^11.1.0",
 		"@nestjs/testing": "^11.1.28",
-		"@tsconfig/node24": "^24.0.4",
+		"@swc/cli": "^0.8.1",
+		"@swc/core": "^1.15.43",
+		"@swc/helpers": "^0.5.23",
 		"@types/bcrypt": "^6.0.0",
 		"@types/express": "^5.0.6",
-		"@types/jest": "^30.0.0",
 		"@types/ms": "^2.1.0",
 		"@types/node": "^26.1.1",
 		"@types/supertest": "^7.2.0",
-		"jest": "^30.4.2",
 		"prisma": "^7.8.0",
 		"supertest": "^7.2.2",
-		"ts-jest": "^29.4.11",
-		"ts-loader": "^9.6.2",
 		"tsx": "^4.23.0",
-		"typescript": "^6.0.3"
+		"typescript": "^5.9.3",
+		"vitest": "^4.1.10"
 	}
 }

@@ -14,7 +14,7 @@
 [![Biome](https://img.shields.io/badge/Biome-2.4-60A5FA?style=for-the-badge&logo=biome&logoColor=white&labelColor=60A5FA&color=2d2d2d)](https://biomejs.dev/)
 [![Vitest](https://img.shields.io/badge/Vitest-4.1-6E9F18?style=for-the-badge&logo=vitest&logoColor=white&labelColor=6E9F18&color=2d2d2d)](https://vitest.dev/)
 [![Zod](https://img.shields.io/badge/Zod-4.x-3E67B1?style=for-the-badge&logo=zod&logoColor=white&labelColor=3E67B1&color=2d2d2d)](https://zod.dev/)
-[![Swagger](https://img.shields.io/badge/Swagger-UI-85EA2D?style=for-the-badge&logo=swagger&logoColor=black&labelColor=85EA2D&color=2d2d2d)](https://swagger.io/)
+[![Scalar](https://img.shields.io/badge/Scalar-API%20Reference-5865F2?style=for-the-badge&logo=scalar&logoColor=white&labelColor=5865F2&color=2d2d2d)](https://scalar.com/)
 [![JWT](https://img.shields.io/badge/JWT-Auth-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white&labelColor=000000&color=2d2d2d)](https://jwt.io/)
 [![MIT License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge&logo=opensourceinitiative&logoColor=white&labelColor=yellow&color=2d2d2d)](./LICENSE)
 
@@ -80,7 +80,8 @@ Built with **NestJS 11**, it exposes a REST API with JWT + Refresh Token authent
 
 ```
 overload-api/
-├── docs/                    # Architecture, schema, decisions and assets
+├── apps/
+│   └── docs/                # Starlight documentation site (architecture, decisions, API guides)
 ├── generated/prisma/        # Auto-generated Prisma client — do not edit directly
 ├── prisma/
 │   ├── migrations/          # Migration history
@@ -89,7 +90,7 @@ overload-api/
 ├── src/
 │   ├── auth/                # Authentication (register, login, logout, refresh)
 │   ├── jwt/                 # JWT module: signing, verification and guard
-│   ├── user/                # User management
+│   ├── user/                # User profile management
 │   ├── exercises/           # Personal exercise catalog CRUD
 │   ├── routines/            # Training plan management
 │   ├── workouts/            # Workout execution and history
@@ -99,14 +100,14 @@ overload-api/
 │   ├── config/              # Environment variable validation with Zod
 │   ├── types/               # Type extensions
 │   ├── app.module.ts        # Root module
-│   └── main.ts              # Bootstrap: Swagger, Helmet, CORS, global pipes
+│   └── main.ts              # Bootstrap: Scalar, Helmet, CORS, global pipes
 ├── test/                    # E2E test suites and helpers
 ├── docker-compose.yml       # Development environment with hot-reload
 ├── docker-compose.test.yml  # Isolated test environment
 └── Dockerfile               # Development build stage
 ```
 
-> Full architecture details in [`docs/architecture.md`](./docs/architecture.md).
+> Full architecture details in [`apps/docs/src/content/docs/architecture/overview.md`](./apps/docs/src/content/docs/architecture/overview.md).
 
 ---
 
@@ -269,11 +270,13 @@ pnpm db:migrate
 
 ## API Documentation
 
-Once the server is running, the interactive Swagger documentation is available at:
+Once the server is running, the interactive Scalar API reference is available at:
 
 ```
 http://localhost:3000/api/docs
 ```
 
-Protected endpoints require a Bearer Token — get one from `POST /auth/login` and paste it into the **Authorize** button in Swagger UI.
+Protected endpoints require a Bearer Token — get one from `POST /auth/login` and paste it into the **Authorize** button in Scalar.
+
+Static guides and architecture docs are in the Starlight site under `apps/docs/`. Run `pnpm docs:dev` to preview them locally.
 

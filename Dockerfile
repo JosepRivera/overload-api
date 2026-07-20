@@ -8,6 +8,7 @@ WORKDIR /app
 # ─── Full deps (dev + prod) — used by dev & build stages ───
 FROM base AS deps
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/docs/package.json ./apps/docs/
 COPY prisma ./prisma/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm install --frozen-lockfile

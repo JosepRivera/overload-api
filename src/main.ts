@@ -1,5 +1,6 @@
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { apiReference } from "@scalar/nestjs-api-reference";
 import helmet from "helmet";
 import { cleanupOpenApiDoc, ZodValidationPipe } from "nestjs-zod";
 import { env } from "@/config/env.js";
@@ -8,7 +9,21 @@ import { TransformInterceptor } from "./common/transform.interceptor.js";
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
-	app.use(helmet());
+	app.use(
+		helmet({
+			contentSecurityPolicy: {
+				directives: {
+					defaultSrc: ["'self'"],
+					scriptSrc: ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net"],
+					styleSrc: ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net"],
+					imgSrc: ["'self'", "data:", "cdn.jsdelivr.net"],
+					connectSrc: ["'self'"],
+					fontSrc: ["'self'", "cdn.jsdelivr.net"],
+					objectSrc: ["'none'"],
+				},
+			},
+		}),
+	);
 
 	app.enableCors({
 		origin: env.CORS_ORIGIN,
@@ -28,11 +43,18 @@ async function bootstrap() {
 		.addBearerAuth()
 		.build();
 
-	const document = SwaggerModule.createDocument(app, config);
-	SwaggerModule.setup("api/docs", app, cleanupOpenApiDoc(document));
+	const document = cleanupOpenApiDoc(SwaggerModule.createDocument(app, config));
+	app.use(
+		"/api/docs",
+		apiReference({
+			content: document,
+			theme: "default",
+		}),
+	);
 
 	await app.listen(env.PORT, "0.0.0.0");
 	console.log(`Server running on http://localhost:${env.PORT}`);
-	console.log(`Swagger docs available at http://localhost:${env.PORT}/api/docs`);
+	console.log(`API reference available at http://localhost:${env.PORT}/api/docs`);
+	console.log(`Documentation available at http://localhost:4321`);
 }
 bootstrap();

@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: overload-api
+    name: overload-server
     runtime: docker
     dockerfilePath: ./Dockerfile
     dockerContext: .

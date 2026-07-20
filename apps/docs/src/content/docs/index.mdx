@@ -1,0 +1,36 @@
+---
+title: Overload API
+description: REST API for advanced strength training tracking.
+template: splash
+hero:
+  tagline: REST API for advanced strength training tracking. Progressive overload, calculated volume, PR detection and 1RM estimation.
+  image:
+    file: ../../assets/logo.png
+  actions:
+    - text: Architecture
+      link: /architecture/overview/
+      icon: open-book
+    - text: Interactive API Reference
+      link: /api/docs
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Explore the docs
+
+<CardGrid stagger>
+	<Card title="Architecture" icon="seti:json">
+		Read the high-level architecture, database schema, business rules and API conventions.
+	</Card>
+	<Card title="Decisions" icon="list-format">
+		Browse the ADRs that shaped the project: Zod, Biome, Prisma, PostgreSQL, JWT and more.
+	</Card>
+	<Card title="API Guides" icon="document">
+		Find module-by-module endpoint documentation with real request and response examples.
+	</Card>
+	<Card title="Interactive Reference" icon="external">
+		Try the API live with the Scalar reference at `/api/docs`.
+	</Card>
+</CardGrid>

@@ -72,7 +72,7 @@ services:
       - /app/node_modules
     networks:
       - overload-network
-    command: pnpm --filter apps-docs dev
+    command: sh -c "rm -f apps/docs/.astro/dev.json && pnpm --filter apps-docs dev"
 
 volumes:
   postgres_dev_data:

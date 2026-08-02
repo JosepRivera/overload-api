@@ -1,0 +1,36 @@
+---
+title: Overload
+description: Trackea tu entrenamiento de fuerza como datos, no como un cuaderno.
+template: splash
+hero:
+  tagline: Trackea tu entrenamiento de fuerza como datos, no como un cuaderno. Volumen, records personales y estimación de 1RM — calculados a partir de cada set que registras.
+  image:
+    file: ../../../assets/logo.png
+  actions:
+    - text: Empezar
+      link: /es/guides/quickstart/
+      icon: right-arrow
+    - text: Referencia interactiva de la API
+      link: /api/docs
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Explora la documentación
+
+<CardGrid stagger>
+	<Card title="Empieza acá" icon="rocket">
+		¿Nuevo en la API? El [Quickstart](/es/guides/quickstart/) te lleva de cero a un request autenticado en unos cinco minutos.
+	</Card>
+	<Card title="Guías" icon="open-book">
+		Recorridos orientados a tareas: [autenticación](/es/guides/authentication/), y [trackear un workout completo](/es/guides/track-a-workout/) de punta a punta.
+	</Card>
+	<Card title="Arquitectura" icon="seti:json">
+		El diseño de alto nivel, el esquema de base de datos, las reglas de negocio — incluyendo el razonamiento detrás de cada una — y las convenciones de la API.
+	</Card>
+	<Card title="Referencia de la API" icon="document">
+		Documentación de endpoints módulo por módulo con ejemplos reales de request y response, más la [referencia interactiva](/api/docs).
+	</Card>
+</CardGrid>

@@ -1,0 +1,122 @@
+---
+title: Autenticarte contra la API
+description: Cómo obtener, usar, rotar y revocar tokens — el ciclo de sesión completo con ejemplos ejecutables.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+Todos los endpoints excepto `POST /auth/register` y `POST /auth/login` requieren un access token válido. Esta guía cubre el ciclo completo: conseguir un token, usarlo, rotarlo antes de que expire, y revocarlo en el logout.
+
+Si solo quieres que un request funcione, el [Quickstart](/es/guides/quickstart/) es más corto.
+
+## Los dos tokens
+
+La API emite dos tokens que cumplen funciones muy distintas. Confundirlos es el error de integración más común.
+
+| Token           | Duración | Se guarda del lado del servidor | Se usa para                      |
+| --------------- | -------- | ---------------------------------- | ------------------------------------ |
+| `accessToken`     | 15 min      | Nunca                                 | Cada request autenticado                 |
+| `refreshToken`     | 7 días      | Sí, como hash SHA-256                    | Obtener un access token nuevo             |
+
+El access token se verifica criptográficamente en cada request, sin consulta a la base de datos. Por eso no se puede revocar antes de que expire — y por eso es de corta duración. El refresh token es el que sí puedes revocar.
+
+<Aside type="danger" title="Nunca envíes el refresh token como header Bearer">
+El refresh token va en el body JSON de `POST /auth/refresh` y `POST /auth/logout`, y en ningún otro lado. El header `Authorization: Bearer` siempre lleva el access token.
+</Aside>
+
+## Conseguir un token
+
+Dos endpoints emiten tokens. El registro te loguea directamente, así que nunca hace falta llamar a los dos.
+
+### Usuario nuevo
+
+```bash
+curl -X POST http://localhost:3000/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "tu@ejemplo.com",
+    "name": "Tu Nombre",
+    "password": "minimo-8-caracteres"
+  }'
+```
+
+Devuelve `201` con ambos tokens. Un email duplicado devuelve `409`.
+
+### Usuario existente
+
+```bash
+curl -X POST http://localhost:3000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "tu@ejemplo.com",
+    "password": "minimo-8-caracteres"
+  }'
+```
+
+Devuelve `200` con ambos tokens. Credenciales incorrectas devuelven `401`.
+
+## Usar el token
+
+Envía el access token en cada request:
+
+```bash
+curl http://localhost:3000/exercises \
+  -H "Authorization: Bearer <accessToken>"
+```
+
+Requests con un token ausente, mal formado o expirado devuelven `401`. Requests con un token válido para un recurso que pertenece a otro usuario devuelven `403` — nunca `404`, así no puedes sondear datos ajenos.
+
+## Refrescar antes de que expire
+
+<Steps>
+
+1. Cuando un request devuelva `401`, intercambia tu refresh token por un par nuevo:
+
+   ```bash
+   curl -X POST http://localhost:3000/auth/refresh \
+     -H "Content-Type: application/json" \
+     -d '{ "refreshToken": "<refreshToken>" }'
+   ```
+
+2. Reemplaza **ambos** tokens guardados por los que acabas de recibir.
+
+   Refrescar rota el par: el refresh token que enviaste se revoca en el instante en que se emite el nuevo.
+
+</Steps>
+
+<Aside type="caution" title="Un refresh token se usa una sola vez">
+Reusar un refresh token que ya intercambiaste devuelve `401`. Si tu cliente reintenta un refresh fallido con el token viejo, se va a auto-bloquear y el usuario tiene que loguearse de nuevo. Guarda el token nuevo antes de reintentar cualquier cosa.
+</Aside>
+
+## Cerrar sesión
+
+```bash
+curl -X POST http://localhost:3000/auth/logout \
+  -H "Content-Type: application/json" \
+  -d '{ "refreshToken": "<refreshToken>" }'
+```
+
+Esto revoca ese refresh token de inmediato. El access token asociado sigue válido hasta que expira — hasta 15 minutos después. Si necesitas un logout duro en tu cliente, descarta también el access token localmente.
+
+## Límites de sesión
+
+Un usuario puede tener **cinco refresh tokens activos** a la vez — piénsalo como cinco dispositivos logueados. En el sexto login, el token más antiguo se revoca automáticamente y ese dispositivo queda desconectado en silencio en su próximo refresh.
+
+Vale la pena mostrarlo en tu cliente: un usuario que se loguea en un sexto dispositivo no va a saber por qué el más antiguo dejó de funcionar.
+
+## Manejar el 401 en un cliente
+
+El patrón que funciona:
+
+1. Envía el request con el access token.
+2. Ante un `401`, llama a `/auth/refresh` **una sola vez**.
+3. Si el refresh tiene éxito, guarda ambos tokens nuevos y reintenta el request original.
+4. Si el refresh falla, borra los tokens guardados y manda al usuario a loguearse.
+
+Nunca hagas loop en el paso 2. Un refresh fallido significa que la sesión se perdió, y reintentar solo empeora las cosas.
+
+## Relacionado
+
+- [Referencia de Auth](/es/api/auth/) — forma de los requests y responses.
+- [Reglas de negocio](/es/architecture/business-rules/) — el ciclo de vida completo de cuenta y sesión.
+- [Errores](/es/reference/errors/) — qué significa cada código de estado.

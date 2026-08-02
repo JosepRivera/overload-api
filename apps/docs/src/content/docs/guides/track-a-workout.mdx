@@ -1,0 +1,196 @@
+---
+title: Track a workout end to end
+description: The full loop — from creating an exercise to reading the personal record it produced.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+This is the core loop of the API. Everything else exists to support it:
+
+```
+create exercise → build routine → start workout → log sets
+      → finish workout → read volume, PRs and 1RM
+```
+
+The routine step is optional — you can start a workout and log sets without one. Every request below needs an access token; see [Authentication](/guides/authentication/) if you do not have one yet.
+
+```bash
+export TOKEN="your-access-token"
+export API="http://localhost:3000"
+```
+
+## 1. Create an exercise
+
+Exercises are your personal catalog. You log sets against them, and they are what analytics groups by.
+
+```bash
+curl -X POST $API/exercises \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Bench Press",
+    "category": "chest",
+    "type": "compound"
+  }'
+```
+
+`category` must be one of `chest`, `back`, `legs`, `shoulders`, `arms`, `core`, `cardio`, `other`.
+`type` must be one of `compound`, `isolation`, `cardio`, `stretching`.
+
+Save the returned `id` as `EXERCISE_ID`.
+
+<Aside type="note">
+Exercise names are unique per user, case-insensitive, among **active** exercises. Creating a second "bench press" returns `409` — unless the first one is archived.
+</Aside>
+
+## 2. Build a routine (optional)
+
+A routine is a reusable plan: which exercises, in what order, with target sets, reps and rest.
+
+<Steps>
+
+1. Create the routine:
+
+   ```bash
+   curl -X POST $API/routines \
+     -H "Authorization: Bearer $TOKEN" \
+     -H "Content-Type: application/json" \
+     -d '{ "name": "Push Day", "description": "Chest, shoulders, triceps" }'
+   ```
+
+2. Add exercises to it, one call per exercise:
+
+   ```bash
+   curl -X POST $API/routines/$ROUTINE_ID/exercises \
+     -H "Authorization: Bearer $TOKEN" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "exercise_id": "'$EXERCISE_ID'",
+       "target_sets": 4,
+       "target_reps_min": 6,
+       "target_reps_max": 10,
+       "target_rest_sec": 120,
+       "order_index": 1
+     }'
+   ```
+
+   `order_index` is unique within a routine. To rearrange later, use `POST /routines/:id/exercises/reorder` instead of editing indexes one by one.
+
+</Steps>
+
+## 3. Start the workout
+
+```bash
+curl -X POST $API/workouts \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "started_at": "2026-07-31T18:00:00.000Z",
+    "routine_id": "'$ROUTINE_ID'"
+  }'
+```
+
+`started_at` is required and cannot be in the future. `routine_id` is optional — leave it out for an improvised session.
+
+Save the returned `id` as `WORKOUT_ID`.
+
+<Aside type="caution" title="Only one workout can be active at a time">
+A workout is active while `finished_at` is `null`. Starting a second one while another is open returns `409`. Retrieve the open one with `GET /workouts/active`, then finish or delete it.
+</Aside>
+
+## 4. Log your sets
+
+Sets live under the workout. `set_number` is assigned automatically — it increments per exercise within the workout, so you never send it.
+
+```bash
+curl -X POST $API/workouts/$WORKOUT_ID/sets \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "exercise_id": "'$EXERCISE_ID'",
+    "weight": 60,
+    "reps": 10,
+    "is_warmup": true
+  }'
+```
+
+Then the working sets:
+
+```bash
+curl -X POST $API/workouts/$WORKOUT_ID/sets \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "exercise_id": "'$EXERCISE_ID'",
+    "weight": 100,
+    "reps": 5,
+    "rpe": 8.5
+  }'
+```
+
+Field notes:
+
+- `weight` is always kilograms, `0` to `9999.99`. Bodyweight movements use `0`.
+- `reps` is a positive integer.
+- `rpe` is optional, `1` to `10`, in steps of `0.5`.
+- `is_warmup` defaults to `false`.
+
+<Aside type="danger" title="Warmup sets are excluded from every metric">
+A set marked `is_warmup: true` is stored, but ignored by volume, personal records and 1RM. If you forget the flag, a light warmup can pollute your progression data — and there is no way for the API to guess which sets were warmups.
+</Aside>
+
+## 5. Finish the workout
+
+```bash
+curl -X POST $API/workouts/$WORKOUT_ID/finish \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+This stamps `finished_at`. From that point the session is closed: adding, editing or deleting its sets returns `409`. Fix your data **before** finishing.
+
+## 6. Read what it produced
+
+Metrics are computed from your sets at the moment you ask, never stored. That means fixing a wrong set also fixes every metric derived from it.
+
+Volume for the session — the sum of `weight × reps` across non-warmup sets:
+
+```bash
+curl $API/analytics/workouts/$WORKOUT_ID/volume \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+Personal records for the exercise — heaviest set, and highest single-set volume:
+
+```bash
+curl $API/analytics/exercises/$EXERCISE_ID/prs \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+Estimated one rep max:
+
+```bash
+curl $API/analytics/exercises/$EXERCISE_ID/1rm \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+Session-by-session progression, most recent first:
+
+```bash
+curl "$API/analytics/exercises/$EXERCISE_ID/progression?limit=10" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+## Fixing a mistake
+
+| Situation                              | What to do                                                        |
+| -------------------------------------- | ----------------------------------------------------------------- |
+| Wrong weight or reps, workout still open | `PATCH /workouts/:workoutId/sets/:id`                            |
+| Set logged by mistake, workout still open | `DELETE /workouts/:workoutId/sets/:id`                          |
+| Workout already finished                | Sets are frozen. `DELETE /workouts/:id` removes the whole session. |
+| Exercise you no longer use              | `PATCH /exercises/:id/archive` — history is preserved              |
+
+## Related
+
+- [Sets reference](/api/sets/) and [Analytics reference](/api/analytics/)
+- [Business Rules](/architecture/business-rules/) — every rule the API enforces
+- [Glossary](/reference/glossary/) — volume, PR, 1RM, RPE explained

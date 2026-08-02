@@ -1,14 +1,14 @@
 ---
-title: Architecture — Overload API
-description: "Overload API is a REST API for advanced strength training tracking built around the principle of progressive overload: gradually increasing the training stimulu"
+title: Architecture — Overload
+description: "Overload is a REST API for advanced strength training tracking built around the principle of progressive overload: gradually increasing the training stimulu"
 ---
 
 
-# Architecture — Overload API
+# Architecture — Overload
 
 ## Overview
 
-Overload API is a REST API for advanced strength training tracking built around the principle of **progressive overload**: gradually increasing the training stimulus to drive continuous and measurable muscular adaptations.
+Overload is a REST API for advanced strength training tracking built around the principle of **progressive overload**: gradually increasing the training stimulus to drive continuous and measurable muscular adaptations.
 
 Built with **NestJS 11** following a strict modular architecture, **PostgreSQL** as the primary database, and **Prisma** as the ORM.
 
@@ -117,7 +117,7 @@ POST /auth/logout   → revoke refresh token (revoked_at = NOW())
 
 ```
 Docker Compose (development)
-├── overload-postgres-dev   # PostgreSQL 16 — port 5432
+├── overload-postgres-dev   # PostgreSQL 18 — port 5432
 └── overload-app-dev        # NestJS app with hot-reload — port 3000
                             # Debugger exposed on port 9229
 ```
@@ -136,16 +136,15 @@ See full schema reference: [database-schema.md](./database-schema.md)
 
 ## Key Design Decisions
 
-| Decision             | Choice                                | ADR                                                           |
-| -------------------- | ------------------------------------- | ------------------------------------------------------------- |
-| Validation           | Zod over class-validator              | [0001](./decisions/0001-zod-over-class-validator.md)          |
-| Linting & Formatting | Biome over ESLint + Prettier          | [0002](./decisions/0002-biome-over-eslint-prettier.md)        |
-| ORM                  | Prisma over TypeORM                   | [0003](./decisions/0003-prisma-over-typeorm.md)               |
-| Database             | PostgreSQL over MongoDB               | [0004](./decisions/0004-postgresql-over-mongodb.md)           |
-| Authentication       | JWT stateless + refresh tokens in DB  | [0005](./decisions/0005-jwt-stateless-with-refresh-tokens.md) |
-| Metrics              | Calculated on-demand, never persisted | [0006](./decisions/0006-metrics-calculated-on-demand.md)      |
-| Exercise deletion    | Soft delete via is_archived           | [0007](./decisions/0007-soft-delete-on-exercises.md)          |
-| Warmup sets          | Excluded from stats and PRs           | [0008](./decisions/0008-warmup-sets-excluded-from-stats.md)   |
-| Active workouts      | Max 1 per user at a time              | [0009](./decisions/0009-one-active-workout-per-user.md)       |
-| Refresh tokens       | Max 5 active per user                 | [0010](./decisions/0010-max-five-refresh-tokens-per-user.md)  |
-| JWT library          | jose over @nestjs/jwt                 | [0011](./decisions/0011-jose-over-nestjs-jwt.md)              |
+Tooling choices — Zod over class-validator, Biome over ESLint + Prettier, Prisma over TypeORM, PostgreSQL over MongoDB, jose over `@nestjs/jwt` — are visible directly in [`package.json`](https://github.com/JosepRivera/overload-server/blob/main/package.json) and not re-documented here.
+
+The decisions that shape actual behavior, with the reasoning and rejected alternatives behind each one, live in [Business Rules](/architecture/business-rules/):
+
+| Decision           | Choice                                | Where                                                                       |
+| ------------------- | -------------------------------------- | ---------------------------------------------------------------------------- |
+| Authentication      | Stateless access tokens + persisted refresh tokens | [Session Management](/architecture/business-rules/#session-management) |
+| Metrics             | Calculated on-demand, never persisted  | [Analytics & Metrics](/architecture/business-rules/#analytics--metrics)     |
+| Exercise deletion   | Soft delete via `is_archived`          | [Archiving](/architecture/business-rules/#archiving-soft-delete)            |
+| Warmup sets         | Excluded from stats and PRs            | [Warmup Sets](/architecture/business-rules/#warmup-sets)                    |
+| Active workouts     | Max 1 per user at a time               | [Starting a Workout](/architecture/business-rules/#starting-a-workout)      |
+| Refresh tokens      | Max 5 active per user                  | [Session Management](/architecture/business-rules/#session-management)      |

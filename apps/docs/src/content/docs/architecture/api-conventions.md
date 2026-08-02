@@ -1,9 +1,9 @@
 ---
-title: API Conventions — Overload API
+title: API Conventions — Overload
 ---
 
 
-# API Conventions — Overload API
+# API Conventions — Overload
 
 ## Base URL
 
@@ -45,28 +45,7 @@ For responses with no body (delete operations), only the HTTP status code is ret
 
 ### Error
 
-All error responses follow this structure:
-
-```json
-{
-  "statusCode": 400,
-  "error": "Bad Request",
-  "message": "Descriptive error message"
-}
-```
-
-For validation errors with multiple fields:
-
-```json
-{
-  "statusCode": 400,
-  "error": "Bad Request",
-  "message": [
-    "name must not be empty",
-    "category must be one of: chest, back, legs, shoulders, arms, core, cardio, other"
-  ]
-}
-```
+See the [Errors reference](/reference/errors/) for the two error shapes the API returns and a full table of status codes.
 
 ---
 
@@ -121,31 +100,27 @@ GET /exercises/550e8400-e29b-41d4-a716-446655440000
 
 ## Query Parameters
 
-### Pagination
+Not every list endpoint supports the same query parameters — check each module's page in the [API Reference](/api/) for what it actually accepts. Two examples of what exists today:
+
+**Pagination** — only on `GET /workouts`:
 
 ```
 GET /workouts?page=1&limit=20
 ```
 
-- Default: `page=1`, `limit=20`
-- Max limit: `100`
+Default `page=1`, `limit=20`; max `limit` is `100`.
 
-### Filtering
-
-```
-GET /exercises?category=chest
-GET /workouts?routineId=<uuid>
-```
-
-### Sorting
+**Filtering** — only on `GET /exercises`, and only this one flag:
 
 ```
-GET /exercises?sort=name&order=asc
-GET /workouts?sort=startedAt&order=desc
+GET /exercises?includeArchived=true
 ```
 
-- Default sort: `createdAt desc`
-- `order` values: `asc` or `desc`
+Without it, archived exercises are hidden by default.
+
+:::note
+`exercises` is not paginated and has no `sort` parameter. `routines` has neither pagination nor filtering. There is no global convention here yet — each endpoint documents its own query parameters.
+:::
 
 ---
 

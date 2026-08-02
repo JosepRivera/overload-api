@@ -1,22 +1,47 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import { defineConfig } from 'astro/config';
 import starlightThemeNova from 'starlight-theme-nova';
+
+const REPO_URL = 'https://github.com/JosepRivera/overload-server';
 
 // https://astro.build/config
 export default defineConfig({
+	// TODO: set `site` to the public docs URL once this site is deployed.
+	// Required for canonical URLs, sitemap generation and social card previews.
 	integrations: [
 		starlight({
-			title: 'Overload API',
-			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/JosepRivera/overload-api' }],
+			title: 'Overload',
+			description:
+				'REST API for strength training tracking — volume, personal records and 1RM estimation, calculated from every set you log.',
+			favicon: '/favicon.svg',
+			social: [{ icon: 'github', label: 'GitHub', href: REPO_URL }],
+			editLink: { baseUrl: `${REPO_URL}/edit/main/apps/docs/` },
+			lastUpdated: true,
+			tableOfContents: { minHeadingLevel: 2, maxHeadingLevel: 3 },
 			plugins: [starlightThemeNova()],
+			locales: {
+				root: { label: 'English', lang: 'en' },
+				es: { label: 'Español', lang: 'es' },
+			},
 			sidebar: [
 				{
-					label: 'Overview',
-					items: [{ slug: 'index' }],
+					label: 'Start Here',
+					translations: { es: 'Empieza aquí' },
+					items: [{ slug: 'index' }, { slug: 'guides/quickstart' }],
+				},
+				{
+					label: 'Guides',
+					translations: { es: 'Guías' },
+					items: [
+						{ slug: 'guides/authentication' },
+						{ slug: 'guides/track-a-workout' },
+						{ slug: 'guides/deployment', badge: { text: 'Draft', variant: 'caution' } },
+					],
 				},
 				{
 					label: 'Architecture',
+					translations: { es: 'Arquitectura' },
 					items: [
 						{ slug: 'architecture/overview' },
 						{ slug: 'architecture/database-schema' },
@@ -25,14 +50,32 @@ export default defineConfig({
 					],
 				},
 				{
-					label: 'Decisions',
-					items: [{ autogenerate: { directory: 'decisions' } }],
+					label: 'API Reference',
+					translations: { es: 'Referencia de la API' },
+					items: [
+						{
+							label: 'Interactive API Reference',
+							translations: { es: 'Referencia interactiva de la API' },
+							link: '/api/docs',
+							attrs: { target: '_blank' },
+						},
+						{ slug: 'api' },
+						{ slug: 'api/auth' },
+						{ slug: 'api/users' },
+						{ slug: 'api/exercises' },
+						{ slug: 'api/routines' },
+						{ slug: 'api/workouts' },
+						{ slug: 'api/sets' },
+						{ slug: 'api/analytics' },
+					],
 				},
 				{
-					label: 'API',
+					label: 'Reference',
+					translations: { es: 'Referencia' },
 					items: [
-						{ label: 'Interactive API Reference', link: '/api/docs' },
-						{ autogenerate: { directory: 'api' } },
+						{ slug: 'reference/errors' },
+						{ slug: 'reference/glossary' },
+						{ slug: 'reference/changelog', badge: { text: 'Draft', variant: 'caution' } },
 					],
 				},
 			],

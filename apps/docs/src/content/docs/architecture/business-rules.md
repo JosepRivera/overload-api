@@ -1,10 +1,10 @@
 ---
-title: Business Rules — Overload API
+title: Business Rules — Overload
 description: "- Overview"
 ---
 
 
-# Business Rules — Overload API
+# Business Rules — Overload
 
 ## Table of Contents
 
@@ -22,7 +22,7 @@ description: "- Overview"
 
 ## Overview
 
-Overload API is a strength training tracker built around **progressive overload**: the practice of gradually increasing training stimulus (weight, reps, volume) to drive measurable muscular adaptation over time.
+Overload is a strength training tracker built around **progressive overload**: the practice of gradually increasing training stimulus (weight, reps, volume) to drive measurable muscular adaptation over time.
 
 The core loop is:
 
@@ -58,8 +58,12 @@ System calculates volume, PRs and 1RM on demand from logged sets
 - The access token is **stateless** — never stored in the database. Validated cryptographically on every request.
 - The refresh token **is** stored as a SHA-256 hash — never as plain text.
 - A user can have **at most 5 active refresh tokens** simultaneously (i.e. 5 logged-in devices/sessions). When the limit is reached, the **oldest active token is automatically revoked**.
+
+> **Why 5, and why auto-revoke instead of blocking?** No limit lets a compromised account accumulate dozens of untracked sessions. A limit of 1 (single-session) is the safest option but forces logout everywhere on every new login — poor UX for anyone with more than one device. Explicit device management (name and revoke devices individually, GitHub PAT-style) is more flexible but not worth the added complexity at this stage. 5 covers the realistic device count for one person while still bounding exposure. The cost: a 6th login silently signs out the oldest session, with nothing in the API surfacing why — client apps should account for this.
 - On every token refresh, the old refresh token is revoked and a new one is issued (token rotation).
 - On logout, the refresh token is immediately revoked (`revoked_at = NOW()`).
+
+> **Why stateless access tokens + persisted refresh tokens?** The alternative — full server-side sessions — means a database lookup on every authenticated request. Fully stateless JWTs (no refresh token at all) would be faster still, but a stolen access token stays valid until it expires, with no way to revoke it. This design gets the best of both: access tokens verify cryptographically with zero DB cost, while refresh tokens — the only long-lived credential — can be revoked immediately on logout or compromise. The trade-off is a stolen *access* token remains valid for up to 15 minutes; that window is the deliberate cost of avoiding a DB hit on every request.
 
 ### Account States
 | State               | Behavior                                             |
@@ -101,7 +105,7 @@ Exercises are the **personal catalog** of movements a user can log sets against.
 - The user can **restore** an archived exercise at any time.
 - When listing exercises, archived ones are excluded by default. The client can opt in to include them.
 
-**Why:** Training history is the core value of the app. Deleting an exercise would destroy all historical set data linked to it.
+> **Why soft delete instead of hard delete?** A hard delete with `ON DELETE CASCADE` would destroy every set ever logged against that exercise — unacceptable when history is the core value of the app. Setting the exercise reference to `NULL` on its sets avoids the cascade but leaves historical data unqueryable by exercise. Moving deleted exercises to a separate archive table preserves everything but adds join complexity for no real benefit. Archiving in place keeps history intact and queryable with a single flag, at the cost of every catalog query needing an explicit `WHERE is_archived = FALSE`.
 
 ### Exercise States
 | State                 | Visible in catalog | Can log sets against it | Can be restored |
@@ -151,6 +155,8 @@ A workout represents a **real training session** performed by the user.
 ### Starting a Workout
 - A user can have **at most 1 active workout** at a time (enforced at both service and database level via a unique partial index on `user_id WHERE finished_at IS NULL`).
 - Starting a new workout while one is already active returns a conflict error — the user must finish or delete the current one first.
+
+> **Why not allow concurrent workouts, or auto-finish the old one?** Allowing several active sessions at once makes "which workout does this set belong to" ambiguous — a real problem across multiple devices. Silently auto-finishing the previous workout on a new start was considered too, but it mutates data without an explicit user action, potentially marking a genuinely unfinished session as complete. Requiring the user to close the previous one first keeps "the active workout" an unambiguous concept everywhere — the API, the client, and analytics. The cost: a crashed app leaves a workout open indefinitely until the user manually finishes or deletes it.
 - `routine_id` is optional — the user can start a "free workout" with no template.
 - `started_at` is required (client-provided timestamp, e.g. when the user tapped "Start").
 
@@ -188,6 +194,8 @@ Sets are the **atomic unit of training data** — a single exercise performed fo
 - This reflects real training practice: warmup sets use lighter weights and are not representative of actual performance.
 - The user must correctly mark warmup sets — data quality depends on user discipline.
 
+> **Why record them at all, instead of not storing warmups?** Not recording warmups is simpler, but loses the ability to ever review or analyze a session's full history. Including them in stats was rejected outright — it inflates volume and produces false PRs from light weights, making the numbers actively misleading. Recording and excluding is the only option that keeps both a complete session history and honest metrics. The cost is entirely on the user: nothing here is enforced beyond the flag, so mislabeled sets pollute the data with no way for the API to catch it.
+
 ### Set Immutability
 - Sets can only be added to **active (in-progress) workouts**.
 - Once a workout is finished, its sets cannot be modified.
@@ -198,6 +206,8 @@ Sets are the **atomic unit of training data** — a single exercise performed fo
 ## Analytics & Metrics
 
 All metrics are **calculated on-demand** at query time. Nothing is pre-computed or stored in the database — calculations always reflect the current state of the data.
+
+> **Why not store these?** Materialized views update automatically but add schema complexity and a refresh-staleness question. Denormalized columns (a `total_volume` on `workouts`, updated on every set change) are fast to read but risk silently drifting from reality if the update logic ever has a bug — and by definition you would not notice until the numbers looked wrong. Event-driven recalculation needs queue infrastructure this project's scale does not justify. Calculating on read means the schema only ever stores raw facts, a bug in the formula is fixed by deploying the fix — not a backfill — and the numbers are always provably correct. The cost is query time for users with very large histories; see the partitioning notes in [Database Schema](/architecture/database-schema/) if that becomes real.
 
 ### Volume
 - **Per set:** `weight × reps`

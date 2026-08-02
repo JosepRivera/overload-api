@@ -1,0 +1,136 @@
+---
+title: Quickstart
+description: De una máquina limpia a tu primer request autenticado en unos cinco minutos.
+---
+
+import { Steps, Aside, Tabs, TabItem } from '@astrojs/starlight/components';
+
+Esta guía te lleva de un clone recién hecho a un request autenticado real contra tu propia API corriendo. No hace falta conocimiento previo del codebase — síguela de arriba a abajo.
+
+Al final vas a tener el stack corriendo localmente, una cuenta de usuario, y un access token que puedes usar en cualquier endpoint.
+
+## Antes de empezar
+
+Necesitas [Docker](https://www.docker.com/) 29+ con Compose, y [pnpm](https://pnpm.io/) 11+. Todo lo demás corre dentro de contenedores.
+
+## Levantar la API
+
+<Steps>
+
+1. Clona el repositorio y entra:
+
+   ```bash
+   git clone https://github.com/JosepRivera/overload-server.git
+   cd overload-server
+   ```
+
+2. Crea tu archivo de entorno:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   Completa `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `PORT` y `JWT_SECRET`. El resto ya tiene defaults funcionales — ver [Variables de entorno](https://github.com/JosepRivera/overload-server#environment-variables) para la tabla completa.
+
+3. Levanta el stack:
+
+   ```bash
+   pnpm dev:build
+   ```
+
+   Usa `dev:build` la primera vez — instala dependencias y construye las imágenes. Después alcanza con `pnpm dev`.
+
+   Se levantan tres contenedores: PostgreSQL, la API y este sitio de documentación. Las migraciones pendientes se aplican automáticamente al iniciar.
+
+4. Confirma que la API responde:
+
+   ```bash
+   curl http://localhost:3000/api/docs
+   ```
+
+   Deberías recibir HTML — es la referencia interactiva de la API.
+
+</Steps>
+
+<Aside type="tip">
+Abre <a href="http://localhost:3000/api/docs" target="_blank">la referencia interactiva</a> en un navegador. Cada endpoint de abajo también se puede probar desde ahí con un botón.
+</Aside>
+
+## Haz tu primer request
+
+<Steps>
+
+1. Registra un usuario. Esto devuelve tokens de inmediato — no hace falta un paso de login por separado:
+
+   ```bash
+   curl -X POST http://localhost:3000/auth/register \
+     -H "Content-Type: application/json" \
+     -d '{
+       "email": "tu@ejemplo.com",
+       "name": "Tu Nombre",
+       "password": "minimo-8-caracteres"
+     }'
+   ```
+
+   La respuesta envuelve todo en `data`:
+
+   ```json
+   {
+     "data": {
+       "user": { "id": "…", "email": "tu@ejemplo.com", "name": "Tu Nombre" },
+       "accessToken": "eyJhbGciOi…",
+       "refreshToken": "eyJhbGciOi…"
+     }
+   }
+   ```
+
+2. Guarda el access token en una variable de shell para reusarlo:
+
+   ```bash
+   export TOKEN="pega-tu-accessToken-aca"
+   ```
+
+3. Llama a un endpoint autenticado:
+
+   ```bash
+   curl http://localhost:3000/users/me \
+     -H "Authorization: Bearer $TOKEN"
+   ```
+
+   Si te devuelve tu propio perfil, la autenticación funciona.
+
+</Steps>
+
+<Aside type="caution" title="Los access tokens expiran a los 15 minutos">
+Cuando un request empiece a devolver `401`, tu access token expiró. No te vuelvas a loguear — usa el refresh token en su lugar. La [guía de autenticación](/es/guides/authentication/) cubre el flujo completo de rotación.
+</Aside>
+
+## Crea algo real
+
+Un último paso, para que tengas datos con los que trabajar.
+
+<Aside type="tip" title="Atajo: seedear ejercicios">
+Si no quieres crearlos a mano, corre `pnpm db:seed` para cargar un set de ejercicios predefinidos (uno por categoría) y saltear el paso de abajo.
+</Aside>
+
+Crea un ejercicio:
+
+```bash
+curl -X POST http://localhost:3000/exercises \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Press de Banca",
+    "category": "chest",
+    "type": "compound"
+  }'
+```
+
+Guarda el `id` que te devuelve — lo vas a necesitar para registrar sets.
+
+## Dónde seguir
+
+- **[Autenticación](/es/guides/authentication/)** — el ciclo completo del token: refresh, logout, límites de sesión.
+- **[Trackear un workout](/es/guides/track-a-workout/)** — el loop completo, desde el ejercicio hasta el record personal.
+- **[Referencia de la API](/es/api/)** — cada endpoint, módulo por módulo.
+- **[Reglas de negocio](/es/architecture/business-rules/)** — las reglas que impone la API y por qué.

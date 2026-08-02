@@ -1,10 +1,10 @@
 ---
-title: Database Schema — Overload API
+title: Database Schema — Overload
 description: "- Tables"
 ---
 
 
-# Database Schema — Overload API
+# Database Schema — Overload
 
 ## Table of Contents
 

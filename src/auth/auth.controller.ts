@@ -3,6 +3,7 @@ import {
 	ApiBody,
 	ApiConflictResponse,
 	ApiCreatedResponse,
+	ApiNoContentResponse,
 	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
@@ -49,12 +50,12 @@ export class AuthController {
 	}
 
 	@Post("logout")
-	@HttpCode(200)
+	@HttpCode(204)
 	@ApiOperation({ summary: "Logout and revoke refresh token" })
 	@ApiBody({ type: RefreshTokenDto })
-	@ApiOkResponse({ description: "Logged out successfully" })
+	@ApiNoContentResponse({ description: "Logged out successfully" })
 	@ApiUnauthorizedResponse({ description: "Invalid refresh token" })
-	async logout(@Body() dto: RefreshTokenDto) {
+	async logout(@Body() dto: RefreshTokenDto): Promise<void> {
 		return this.authService.logout(dto);
 	}
 }

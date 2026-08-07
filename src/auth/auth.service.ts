@@ -197,7 +197,5 @@ export class AuthService {
 				data: { revokedAt: new Date() },
 			});
 		}
-
-		return { message: "Logged out successfully" };
 	}
 }

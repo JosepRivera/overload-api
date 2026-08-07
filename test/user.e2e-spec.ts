@@ -37,7 +37,7 @@ describe("User E2E", () => {
 	// ─────────────────────────────────────────────
 
 	describe("GET /users/me", () => {
-		it("happy path: perfil sin password_hash", async () => {
+		it("happy path: perfil sin passwordHash", async () => {
 			const { accessToken, user } = await registerAndLogin(app);
 
 			const res = await request(app.getHttpServer()).get("/users/me").set(authHeader(accessToken));
@@ -46,10 +46,10 @@ describe("User E2E", () => {
 			expect(res.body.data).toHaveProperty("id", user.id);
 			expect(res.body.data).toHaveProperty("email");
 			expect(res.body.data).toHaveProperty("name");
-			expect(res.body.data).not.toHaveProperty("password_hash");
+			expect(res.body.data).not.toHaveProperty("passwordHash");
 
 			const bodyStr = JSON.stringify(res.body);
-			expect(bodyStr).not.toContain("password_hash");
+			expect(bodyStr).not.toContain("passwordHash");
 		});
 
 		it("sin token → 401", async () => {

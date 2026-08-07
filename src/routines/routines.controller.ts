@@ -61,7 +61,7 @@ export class RoutinesController {
 
 	@Get(":id")
 	@ApiOperation({ summary: "Get a single routine with its exercises" })
-	@ApiOkResponse({ description: "Returns the routine with exercises ordered by order_index" })
+	@ApiOkResponse({ description: "Returns the routine with exercises ordered by orderIndex" })
 	@ApiNotFoundResponse({ description: "Routine not found" })
 	async findOne(@CurrentUser() user: AuthUser, @Param("id", ParseUUIDPipe) id: string) {
 		return this.routinesService.findOne(user.sub, id);
@@ -110,7 +110,7 @@ export class RoutinesController {
 
 	@Get(":id/exercises")
 	@ApiOperation({ summary: "List all exercises in a routine ordered by position" })
-	@ApiOkResponse({ description: "Returns all exercises ordered by order_index" })
+	@ApiOkResponse({ description: "Returns all exercises ordered by orderIndex" })
 	@ApiNotFoundResponse({ description: "Routine not found" })
 	async findAllExercises(
 		@CurrentUser() user: AuthUser,

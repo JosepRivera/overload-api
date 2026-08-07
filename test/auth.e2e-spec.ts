@@ -37,7 +37,7 @@ describe("Auth E2E", () => {
 	// ─────────────────────────────────────────────
 
 	describe("POST /auth/register", () => {
-		it("happy path: 201, devuelve accessToken, refreshToken y user sin password_hash", async () => {
+		it("happy path: 201, devuelve accessToken, refreshToken y user sin passwordHash", async () => {
 			const email = `test-${Date.now()}@test.com`;
 			const res = await request(app.getHttpServer())
 				.post("/auth/register")
@@ -49,7 +49,7 @@ describe("Auth E2E", () => {
 			expect(res.body.data).toHaveProperty("user");
 			expect(res.body.data.user).toHaveProperty("id");
 			expect(res.body.data.user).toHaveProperty("email", email);
-			expect(res.body.data.user).not.toHaveProperty("password_hash");
+			expect(res.body.data.user).not.toHaveProperty("passwordHash");
 		});
 
 		it("email duplicado → 409", async () => {
@@ -108,14 +108,14 @@ describe("Auth E2E", () => {
 			expect(res.status).toBe(400);
 		});
 
-		it("password_hash NUNCA aparece en el response", async () => {
+		it("passwordHash NUNCA aparece en el response", async () => {
 			const res = await request(app.getHttpServer())
 				.post("/auth/register")
 				.send({ email: `nohash-${Date.now()}@test.com`, password: "Password123!", name: "Test" });
 
 			expect(res.status).toBe(201);
 			const bodyStr = JSON.stringify(res.body);
-			expect(bodyStr).not.toContain("password_hash");
+			expect(bodyStr).not.toContain("passwordHash");
 		});
 	});
 

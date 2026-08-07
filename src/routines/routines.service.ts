@@ -30,7 +30,7 @@ export class RoutinesService {
 
 		return this.prisma.routine.create({
 			data: {
-				user_id: userId,
+				userId,
 				name: input.name,
 				description: input.description ?? null,
 			},
@@ -39,17 +39,17 @@ export class RoutinesService {
 
 	async findAll(userId: string) {
 		return this.prisma.routine.findMany({
-			where: { user_id: userId, is_active: true },
+			where: { userId, isActive: true },
 			orderBy: { name: "asc" },
 		});
 	}
 
 	async findOne(userId: string, id: string) {
 		const routine = await this.prisma.routine.findFirst({
-			where: { id, user_id: userId },
+			where: { id, userId },
 			include: {
-				routine_exercises: {
-					orderBy: { order_index: "asc" },
+				routineExercises: {
+					orderBy: { orderIndex: "asc" },
 					include: {
 						exercise: {
 							select: {
@@ -57,7 +57,7 @@ export class RoutinesService {
 								name: true,
 								category: true,
 								type: true,
-								is_archived: true,
+								isArchived: true,
 							},
 						},
 					},
@@ -75,7 +75,7 @@ export class RoutinesService {
 	async update(userId: string, id: string, input: UpdateRoutineInput) {
 		const routine = await this.findOne(userId, id);
 
-		if (!routine.is_active) {
+		if (!routine.isActive) {
 			throw new NotFoundException("Routine not found");
 		}
 
@@ -95,13 +95,13 @@ export class RoutinesService {
 	async deactivate(userId: string, id: string) {
 		const routine = await this.findOne(userId, id);
 
-		if (!routine.is_active) {
+		if (!routine.isActive) {
 			throw new NotFoundException("Routine not found");
 		}
 
 		await this.prisma.routine.update({
 			where: { id },
-			data: { is_active: false },
+			data: { isActive: false },
 		});
 	}
 
@@ -112,24 +112,24 @@ export class RoutinesService {
 	async addExercise(userId: string, routineId: string, input: AddRoutineExerciseInput) {
 		const routine = await this.findOne(userId, routineId);
 
-		if (!routine.is_active) {
+		if (!routine.isActive) {
 			throw new NotFoundException("Routine not found");
 		}
 
-		await this.exerciseService.findOneActive(userId, input.exercise_id);
-		await this.assertExerciseNotInRoutine(routineId, input.exercise_id);
+		await this.exerciseService.findOneActive(userId, input.exerciseId);
+		await this.assertExerciseNotInRoutine(routineId, input.exerciseId);
 
 		const nextOrderIndex = await this.getNextOrderIndex(routineId);
 
 		return this.prisma.routineExercise.create({
 			data: {
-				routine_id: routineId,
-				exercise_id: input.exercise_id,
-				target_sets: input.target_sets,
-				target_reps_min: input.target_reps_min,
-				target_reps_max: input.target_reps_max,
-				target_rest_sec: input.target_rest_sec,
-				order_index: nextOrderIndex,
+				routineId,
+				exerciseId: input.exerciseId,
+				targetSets: input.targetSets,
+				targetRepsMin: input.targetRepsMin,
+				targetRepsMax: input.targetRepsMax,
+				targetRestSec: input.targetRestSec,
+				orderIndex: nextOrderIndex,
 				notes: input.notes ?? null,
 			},
 		});
@@ -139,8 +139,8 @@ export class RoutinesService {
 		await this.findOne(userId, routineId);
 
 		return this.prisma.routineExercise.findMany({
-			where: { routine_id: routineId },
-			orderBy: { order_index: "asc" },
+			where: { routineId },
+			orderBy: { orderIndex: "asc" },
 			include: {
 				exercise: {
 					select: {
@@ -148,7 +148,7 @@ export class RoutinesService {
 						name: true,
 						category: true,
 						type: true,
-						is_archived: true,
+						isArchived: true,
 					},
 				},
 			},
@@ -166,22 +166,22 @@ export class RoutinesService {
 
 		// If only one of the two rep fields is being updated, resolve the other
 		// from the stored value to re-run the min <= max check correctly
-		const newMin = input.target_reps_min ?? routineExercise.target_reps_min;
-		const newMax = input.target_reps_max ?? routineExercise.target_reps_max;
+		const newMin = input.targetRepsMin ?? routineExercise.targetRepsMin;
+		const newMax = input.targetRepsMax ?? routineExercise.targetRepsMax;
 
 		if (newMax < newMin) {
 			throw new BadRequestException(
-				"target_reps_max must be greater than or equal to target_reps_min",
+				"targetRepsMax must be greater than or equal to targetRepsMin",
 			);
 		}
 
 		return this.prisma.routineExercise.update({
 			where: { id: routineExerciseId },
 			data: {
-				...(input.target_sets !== undefined && { target_sets: input.target_sets }),
-				...(input.target_reps_min !== undefined && { target_reps_min: input.target_reps_min }),
-				...(input.target_reps_max !== undefined && { target_reps_max: input.target_reps_max }),
-				...(input.target_rest_sec !== undefined && { target_rest_sec: input.target_rest_sec }),
+				...(input.targetSets !== undefined && { targetSets: input.targetSets }),
+				...(input.targetRepsMin !== undefined && { targetRepsMin: input.targetRepsMin }),
+				...(input.targetRepsMax !== undefined && { targetRepsMax: input.targetRepsMax }),
+				...(input.targetRestSec !== undefined && { targetRestSec: input.targetRestSec }),
 				...(input.notes !== undefined && { notes: input.notes }),
 			},
 		});
@@ -200,7 +200,7 @@ export class RoutinesService {
 		await this.findOne(userId, routineId);
 
 		const existing = await this.prisma.routineExercise.findMany({
-			where: { routine_id: routineId },
+			where: { routineId },
 			select: { id: true },
 		});
 
@@ -217,17 +217,17 @@ export class RoutinesService {
 			input.exercises.map(({ id }, i) =>
 				this.prisma.routineExercise.update({
 					where: { id },
-					data: { order_index: -(i + 1) },
+					data: { orderIndex: -(i + 1) },
 				}),
 			),
 		);
 
 		// Paso 2: índices finales
 		await this.prisma.$transaction(
-			input.exercises.map(({ id, order_index }) =>
+			input.exercises.map(({ id, orderIndex }) =>
 				this.prisma.routineExercise.update({
 					where: { id },
-					data: { order_index },
+					data: { orderIndex },
 				}),
 			),
 		);
@@ -240,8 +240,8 @@ export class RoutinesService {
 	private async assertUniqueNameForUser(userId: string, name: string, excludeId?: string) {
 		const existing = await this.prisma.routine.findFirst({
 			where: {
-				user_id: userId,
-				is_active: true,
+				userId,
+				isActive: true,
 				name: { equals: name, mode: "insensitive" },
 				...(excludeId && { id: { not: excludeId } }),
 			},
@@ -254,7 +254,7 @@ export class RoutinesService {
 
 	private async assertExerciseNotInRoutine(routineId: string, exerciseId: string) {
 		const existing = await this.prisma.routineExercise.findFirst({
-			where: { routine_id: routineId, exercise_id: exerciseId },
+			where: { routineId, exerciseId },
 		});
 
 		if (existing) {
@@ -264,17 +264,17 @@ export class RoutinesService {
 
 	private async getNextOrderIndex(routineId: string): Promise<number> {
 		const last = await this.prisma.routineExercise.findFirst({
-			where: { routine_id: routineId },
-			orderBy: { order_index: "desc" },
-			select: { order_index: true },
+			where: { routineId },
+			orderBy: { orderIndex: "desc" },
+			select: { orderIndex: true },
 		});
 
-		return last ? last.order_index + 1 : 0;
+		return last ? last.orderIndex + 1 : 0;
 	}
 
 	private async findRoutineExercise(routineId: string, routineExerciseId: string) {
 		const routineExercise = await this.prisma.routineExercise.findFirst({
-			where: { id: routineExerciseId, routine_id: routineId },
+			where: { id: routineExerciseId, routineId },
 		});
 
 		if (!routineExercise) {

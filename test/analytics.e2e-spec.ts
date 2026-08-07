@@ -41,7 +41,7 @@ describe("Analytics E2E", () => {
 		const workoutRes = await request(app.getHttpServer())
 			.post("/workouts")
 			.set(authHeader(accessToken))
-			.send({ started_at: validStartedAt() });
+			.send({ startedAt: validStartedAt() });
 
 		const workoutId = workoutRes.body.data.id;
 
@@ -67,7 +67,7 @@ describe("Analytics E2E", () => {
 		return request(app.getHttpServer())
 			.post(`/workouts/${workoutId}/sets`)
 			.set(authHeader(accessToken))
-			.send({ exercise_id: exerciseId, weight, reps, is_warmup: isWarmup });
+			.send({ exerciseId: exerciseId, weight, reps, isWarmup: isWarmup });
 	}
 
 	// ─────────────────────────────────────────────
@@ -75,7 +75,7 @@ describe("Analytics E2E", () => {
 	// ─────────────────────────────────────────────
 
 	describe("GET /analytics/exercises/:exerciseId/prs", () => {
-		it("happy path: devuelve weight_pr y volume_pr correctos", async () => {
+		it("happy path: devuelve weightPr y volumePr correctos", async () => {
 			const { accessToken, workoutId, exerciseId } = await setupBasic();
 
 			await addSet(accessToken, workoutId, exerciseId, 100, 5);
@@ -86,13 +86,13 @@ describe("Analytics E2E", () => {
 				.set(authHeader(accessToken));
 
 			expect(res.status).toBe(200);
-			// weight_pr = max weight = 120
-			expect(res.body.data.weight_pr).toBe(120);
-			// volume_pr = max(weight * reps) = max(100*5=500, 120*3=360) = 500
-			expect(res.body.data.volume_pr).toBe(500);
+			// weightPr = max weight = 120
+			expect(res.body.data.weightPr).toBe(120);
+			// volumePr = max(weight * reps) = max(100*5=500, 120*3=360) = 500
+			expect(res.body.data.volumePr).toBe(500);
 		});
 
-		it("sin sets: weight_pr = null, volume_pr = null", async () => {
+		it("sin sets: weightPr = null, volumePr = null", async () => {
 			const { accessToken, exerciseId } = await setupBasic();
 
 			const res = await request(app.getHttpServer())
@@ -100,11 +100,11 @@ describe("Analytics E2E", () => {
 				.set(authHeader(accessToken));
 
 			expect(res.status).toBe(200);
-			expect(res.body.data.weight_pr).toBeNull();
-			expect(res.body.data.volume_pr).toBeNull();
+			expect(res.body.data.weightPr).toBeNull();
+			expect(res.body.data.volumePr).toBeNull();
 		});
 
-		it("solo warmups: weight_pr = null, volume_pr = null", async () => {
+		it("solo warmups: weightPr = null, volumePr = null", async () => {
 			const { accessToken, workoutId, exerciseId } = await setupBasic();
 
 			await addSet(accessToken, workoutId, exerciseId, 60, 10, true);
@@ -115,8 +115,8 @@ describe("Analytics E2E", () => {
 				.set(authHeader(accessToken));
 
 			expect(res.status).toBe(200);
-			expect(res.body.data.weight_pr).toBeNull();
-			expect(res.body.data.volume_pr).toBeNull();
+			expect(res.body.data.weightPr).toBeNull();
+			expect(res.body.data.volumePr).toBeNull();
 		});
 
 		it("mix warmup + no-warmup: PRs calculados SOLO con no-warmup", async () => {
@@ -133,13 +133,13 @@ describe("Analytics E2E", () => {
 				.set(authHeader(accessToken));
 
 			expect(res.status).toBe(200);
-			// weight_pr must ignore warmup (200), so max of [100, 110] = 110
-			expect(res.body.data.weight_pr).toBe(110);
-			// volume_pr = max(100*5=500, 110*4=440) = 500, NOT including 200*10=2000 (warmup)
-			expect(res.body.data.volume_pr).toBe(500);
+			// weightPr must ignore warmup (200), so max of [100, 110] = 110
+			expect(res.body.data.weightPr).toBe(110);
+			// volumePr = max(100*5=500, 110*4=440) = 500, NOT including 200*10=2000 (warmup)
+			expect(res.body.data.volumePr).toBe(500);
 		});
 
-		it("weight_pr = mayor weight entre no-warmup", async () => {
+		it("weightPr = mayor weight entre no-warmup", async () => {
 			const { accessToken, workoutId, exerciseId } = await setupBasic();
 
 			await addSet(accessToken, workoutId, exerciseId, 80, 10, false);
@@ -151,16 +151,16 @@ describe("Analytics E2E", () => {
 				.set(authHeader(accessToken));
 
 			expect(res.status).toBe(200);
-			expect(res.body.data.weight_pr).toBe(130);
+			expect(res.body.data.weightPr).toBe(130);
 		});
 
-		it("volume_pr = mayor weight × reps entre no-warmup (no suma total)", async () => {
+		it("volumePr = mayor weight × reps entre no-warmup (no suma total)", async () => {
 			const { accessToken, workoutId, exerciseId } = await setupBasic();
 
 			// set1: 50 * 20 = 1000
 			// set2: 100 * 5 = 500
 			// set3: 80 * 10 = 800
-			// volume_pr = 1000 (set1)
+			// volumePr = 1000 (set1)
 			await addSet(accessToken, workoutId, exerciseId, 50, 20, false);
 			await addSet(accessToken, workoutId, exerciseId, 100, 5, false);
 			await addSet(accessToken, workoutId, exerciseId, 80, 10, false);
@@ -170,7 +170,7 @@ describe("Analytics E2E", () => {
 				.set(authHeader(accessToken));
 
 			expect(res.status).toBe(200);
-			expect(res.body.data.volume_pr).toBe(1000);
+			expect(res.body.data.volumePr).toBe(1000);
 		});
 
 		it("ejercicio de otro usuario → 404", async () => {
@@ -207,11 +207,11 @@ describe("Analytics E2E", () => {
 
 			const exerciseId = exRes.body.data.id;
 
-			// Create two workouts with different started_at
+			// Create two workouts with different startedAt
 			const w1Res = await request(app.getHttpServer())
 				.post("/workouts")
 				.set(authHeader(accessToken))
-				.send({ started_at: new Date(Date.now() - 7200_000).toISOString() }); // 2h ago
+				.send({ startedAt: new Date(Date.now() - 7200_000).toISOString() }); // 2h ago
 			const w1Id = w1Res.body.data.id;
 
 			await addSet(accessToken, w1Id, exerciseId, 80, 8, false);
@@ -223,7 +223,7 @@ describe("Analytics E2E", () => {
 			const w2Res = await request(app.getHttpServer())
 				.post("/workouts")
 				.set(authHeader(accessToken))
-				.send({ started_at: new Date(Date.now() - 3600_000).toISOString() }); // 1h ago
+				.send({ startedAt: new Date(Date.now() - 3600_000).toISOString() }); // 1h ago
 			const w2Id = w2Res.body.data.id;
 
 			await addSet(accessToken, w2Id, exerciseId, 90, 6, false);
@@ -241,7 +241,7 @@ describe("Analytics E2E", () => {
 			expect(dates[0]).toBeGreaterThan(dates[1]);
 		});
 
-		it("warmups excluidos de total_volume, avg_weight, avg_reps", async () => {
+		it("warmups excluidos de totalVolume, avgWeight, avgReps", async () => {
 			const { accessToken, workoutId, exerciseId } = await setupBasic();
 
 			// Warmup set: should be excluded
@@ -257,12 +257,12 @@ describe("Analytics E2E", () => {
 			expect(res.body.data.length).toBe(1);
 
 			const session = res.body.data[0];
-			// Only the working set: total_volume = 100 * 5 = 500
-			expect(session.total_volume).toBe(500);
-			// avg_weight = 100 (only working set)
-			expect(session.avg_weight).toBe(100);
-			// avg_reps = 5 (only working set)
-			expect(session.avg_reps).toBe(5);
+			// Only the working set: totalVolume = 100 * 5 = 500
+			expect(session.totalVolume).toBe(500);
+			// avgWeight = 100 (only working set)
+			expect(session.avgWeight).toBe(100);
+			// avgReps = 5 (only working set)
+			expect(session.avgReps).toBe(5);
 		});
 
 		it("?limit=5 respeta el límite", async () => {
@@ -280,7 +280,7 @@ describe("Analytics E2E", () => {
 				const wRes = await request(app.getHttpServer())
 					.post("/workouts")
 					.set(authHeader(accessToken))
-					.send({ started_at: new Date(Date.now() - i * 60_000).toISOString() }); // minutos, no horas
+					.send({ startedAt: new Date(Date.now() - i * 60_000).toISOString() }); // minutos, no horas
 				const wId = wRes.body.data.id;
 				await addSet(accessToken, wId, exerciseId, 100, 5, false);
 				await request(app.getHttpServer())
@@ -324,7 +324,7 @@ describe("Analytics E2E", () => {
 	// ─────────────────────────────────────────────
 
 	describe("GET /analytics/workouts/:workoutId/volume", () => {
-		it("total_volume = SUM(weight × reps) de no-warmup", async () => {
+		it("totalVolume = SUM(weight × reps) de no-warmup", async () => {
 			const { accessToken, workoutId, exerciseId } = await setupBasic();
 
 			await addSet(accessToken, workoutId, exerciseId, 100, 5, false); // 500
@@ -335,10 +335,10 @@ describe("Analytics E2E", () => {
 				.set(authHeader(accessToken));
 
 			expect(res.status).toBe(200);
-			expect(res.body.data.total_volume).toBe(1140); // 500 + 640
+			expect(res.body.data.totalVolume).toBe(1140); // 500 + 640
 		});
 
-		it("solo warmups → total_volume = 0", async () => {
+		it("solo warmups → totalVolume = 0", async () => {
 			const { accessToken, workoutId, exerciseId } = await setupBasic();
 
 			await addSet(accessToken, workoutId, exerciseId, 100, 10, true);
@@ -349,7 +349,7 @@ describe("Analytics E2E", () => {
 				.set(authHeader(accessToken));
 
 			expect(res.status).toBe(200);
-			expect(res.body.data.total_volume).toBe(0);
+			expect(res.body.data.totalVolume).toBe(0);
 		});
 
 		it("mix warmup + no-warmup: solo cuenta no-warmup", async () => {
@@ -363,10 +363,10 @@ describe("Analytics E2E", () => {
 				.set(authHeader(accessToken));
 
 			expect(res.status).toBe(200);
-			expect(res.body.data.total_volume).toBe(500);
+			expect(res.body.data.totalVolume).toBe(500);
 		});
 
-		it("sin sets → total_volume = 0", async () => {
+		it("sin sets → totalVolume = 0", async () => {
 			const { accessToken, workoutId } = await setupBasic();
 
 			const res = await request(app.getHttpServer())
@@ -374,7 +374,7 @@ describe("Analytics E2E", () => {
 				.set(authHeader(accessToken));
 
 			expect(res.status).toBe(200);
-			expect(res.body.data.total_volume).toBe(0);
+			expect(res.body.data.totalVolume).toBe(0);
 		});
 
 		it("workout de otro usuario → 404", async () => {

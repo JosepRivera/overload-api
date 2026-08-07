@@ -21,8 +21,8 @@ export class WorkoutsService {
 	async create(userId: string, input: CreateWorkoutInput) {
 		const activeWorkout = await this.prisma.workout.findFirst({
 			where: {
-				user_id: userId,
-				finished_at: null,
+				userId,
+				finishedAt: null,
 			},
 		});
 
@@ -30,19 +30,19 @@ export class WorkoutsService {
 			throw new ConflictException("You already have an active workout");
 		}
 
-		if (input.routine_id) {
-			const routine = await this.routinesService.findOne(userId, input.routine_id);
-			if (!routine.is_active) {
+		if (input.routineId) {
+			const routine = await this.routinesService.findOne(userId, input.routineId);
+			if (!routine.isActive) {
 				throw new NotFoundException("Routine not found");
 			}
 		}
 
 		return this.prisma.workout.create({
 			data: {
-				user_id: userId,
-				started_at: input.started_at,
+				userId,
+				startedAt: input.startedAt,
 				notes: input.notes ?? null,
-				...(input.routine_id && { routine_id: input.routine_id }),
+				...(input.routineId && { routineId: input.routineId }),
 			},
 		});
 	}
@@ -52,13 +52,13 @@ export class WorkoutsService {
 
 		const [workouts, total] = await Promise.all([
 			this.prisma.workout.findMany({
-				where: { user_id: userId, finished_at: { not: null } },
-				orderBy: { started_at: "desc" },
+				where: { userId, finishedAt: { not: null } },
+				orderBy: { startedAt: "desc" },
 				skip,
 				take: limit,
 			}),
 			this.prisma.workout.count({
-				where: { user_id: userId, finished_at: { not: null } },
+				where: { userId, finishedAt: { not: null } },
 			}),
 		]);
 
@@ -68,15 +68,15 @@ export class WorkoutsService {
 	async findActive(userId: string) {
 		return this.prisma.workout.findFirst({
 			where: {
-				user_id: userId,
-				finished_at: null,
+				userId,
+				finishedAt: null,
 			},
 		});
 	}
 
 	async findOne(userId: string, id: string) {
 		const workout = await this.prisma.workout.findFirst({
-			where: { id, user_id: userId },
+			where: { id, userId },
 		});
 
 		if (!workout) {
@@ -100,16 +100,16 @@ export class WorkoutsService {
 	async finish(userId: string, id: string) {
 		const workout = await this.findOne(userId, id);
 
-		if (workout.finished_at !== null) {
+		if (workout.finishedAt !== null) {
 			throw new BadRequestException("Workout is already finished");
 		}
 
-		this.validateWorkoutDuration(workout.started_at, new Date());
+		this.validateWorkoutDuration(workout.startedAt, new Date());
 
 		return this.prisma.workout.update({
 			where: { id },
 			data: {
-				finished_at: new Date(),
+				finishedAt: new Date(),
 			},
 		});
 	}
@@ -118,7 +118,7 @@ export class WorkoutsService {
 		await this.findOne(userId, id);
 
 		const setsCount = await this.prisma.set.count({
-			where: { workout_id: id },
+			where: { workoutId: id },
 		});
 
 		if (setsCount > 0) {

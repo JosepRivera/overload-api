@@ -34,10 +34,10 @@ function makeSet(
 	startedAt = new Date("2026-01-10"),
 ) {
 	return {
-		workout_id: workoutId,
+		workoutId,
 		weight: weight.toString(), // Prisma Decimal comes as string
 		reps,
-		workout: { started_at: startedAt },
+		workout: { startedAt },
 	};
 }
 
@@ -62,7 +62,7 @@ describe("AnalyticsService", () => {
 			prismaMock.exercise.findFirst.mockResolvedValue({ id: EXERCISE_ID });
 		});
 
-		it("returns weight_pr and volume_pr from non-warmup sets", async () => {
+		it("returns weightPr and volumePr from non-warmup sets", async () => {
 			prismaMock.set.aggregate.mockResolvedValue({ _max: { weight: "100" } });
 			prismaMock.set.findMany.mockResolvedValue([
 				makeSet(100, 5), // volume = 500
@@ -71,8 +71,8 @@ describe("AnalyticsService", () => {
 
 			const result = await service.getExercisePrs(USER_ID, EXERCISE_ID);
 
-			expect(result.weight_pr).toBe(100);
-			expect(result.volume_pr).toBe(640);
+			expect(result.weightPr).toBe(100);
+			expect(result.volumePr).toBe(640);
 		});
 
 		it("returns null for both PRs when there are no sets", async () => {
@@ -81,8 +81,8 @@ describe("AnalyticsService", () => {
 
 			const result = await service.getExercisePrs(USER_ID, EXERCISE_ID);
 
-			expect(result.weight_pr).toBeNull();
-			expect(result.volume_pr).toBeNull();
+			expect(result.weightPr).toBeNull();
+			expect(result.volumePr).toBeNull();
 		});
 
 		it("picks the correct volume PR when multiple sets have different weight×reps", async () => {
@@ -96,8 +96,8 @@ describe("AnalyticsService", () => {
 
 			const result = await service.getExercisePrs(USER_ID, EXERCISE_ID);
 
-			expect(result.weight_pr).toBe(120);
-			expect(result.volume_pr).toBe(400);
+			expect(result.weightPr).toBe(120);
+			expect(result.volumePr).toBe(400);
 		});
 
 		it("handles bodyweight sets (weight = 0) correctly", async () => {
@@ -106,8 +106,8 @@ describe("AnalyticsService", () => {
 
 			const result = await service.getExercisePrs(USER_ID, EXERCISE_ID);
 
-			expect(result.weight_pr).toBe(0); // ← era toBeNull(), estaba mal
-			expect(result.volume_pr).toBe(0);
+			expect(result.weightPr).toBe(0); // ← era toBeNull(), estaba mal
+			expect(result.volumePr).toBe(0);
 		});
 
 		it("throws NotFoundException when exercise does not belong to user", async () => {
@@ -126,15 +126,15 @@ describe("AnalyticsService", () => {
 			prismaMock.exercise.findFirst.mockResolvedValue({ id: EXERCISE_ID });
 		});
 
-		it("returns estimated_1rm and based_on using Epley formula", async () => {
+		it("returns estimated1rm and basedOn using Epley formula", async () => {
 			// 100kg × (1 + 5/30) = 100 × 1.1667 = 116.7
 			prismaMock.set.findMany.mockResolvedValue([{ weight: "100", reps: 5 }]);
 
 			const result = await service.getExercise1rm(USER_ID, EXERCISE_ID);
 
-			expect(result.exercise_id).toBe(EXERCISE_ID);
-			expect(result.estimated_1rm).toBeCloseTo(116.7, 1);
-			expect(result.based_on).toEqual({ weight: 100, reps: 5 });
+			expect(result.exerciseId).toBe(EXERCISE_ID);
+			expect(result.estimated1rm).toBeCloseTo(116.7, 1);
+			expect(result.basedOn).toEqual({ weight: 100, reps: 5 });
 		});
 
 		it("picks the set with the highest estimated 1RM, not the heaviest weight", async () => {
@@ -147,8 +147,8 @@ describe("AnalyticsService", () => {
 
 			const result = await service.getExercise1rm(USER_ID, EXERCISE_ID);
 
-			expect(result.based_on).toEqual({ weight: 80, reps: 8 });
-			expect(result.estimated_1rm).toBeCloseTo(101.3, 1);
+			expect(result.basedOn).toEqual({ weight: 80, reps: 8 });
+			expect(result.estimated1rm).toBeCloseTo(101.3, 1);
 		});
 
 		it("returns null fields when there are no eligible sets (reps <= 10, non-warmup)", async () => {
@@ -156,8 +156,8 @@ describe("AnalyticsService", () => {
 
 			const result = await service.getExercise1rm(USER_ID, EXERCISE_ID);
 
-			expect(result.estimated_1rm).toBeNull();
-			expect(result.based_on).toBeNull();
+			expect(result.estimated1rm).toBeNull();
+			expect(result.basedOn).toBeNull();
 		});
 
 		it("correctly applies Epley for a single-rep set (reps = 1)", async () => {
@@ -166,8 +166,8 @@ describe("AnalyticsService", () => {
 
 			const result = await service.getExercise1rm(USER_ID, EXERCISE_ID);
 
-			expect(result.estimated_1rm).toBeCloseTo(155.0, 1);
-			expect(result.based_on).toEqual({ weight: 150, reps: 1 });
+			expect(result.estimated1rm).toBeCloseTo(155.0, 1);
+			expect(result.basedOn).toEqual({ weight: 150, reps: 1 });
 		});
 
 		it("correctly applies Epley at the reps = 10 boundary", async () => {
@@ -176,7 +176,7 @@ describe("AnalyticsService", () => {
 
 			const result = await service.getExercise1rm(USER_ID, EXERCISE_ID);
 
-			expect(result.estimated_1rm).toBeCloseTo(133.3, 1);
+			expect(result.estimated1rm).toBeCloseTo(133.3, 1);
 		});
 
 		it("ignores sets with reps > 10 (Prisma filter handles this, service receives empty)", async () => {
@@ -185,16 +185,16 @@ describe("AnalyticsService", () => {
 
 			const result = await service.getExercise1rm(USER_ID, EXERCISE_ID);
 
-			expect(result.estimated_1rm).toBeNull();
+			expect(result.estimated1rm).toBeNull();
 		});
 
-		it("returns estimated_1rm rounded to 1 decimal place", async () => {
+		it("returns estimated1rm rounded to 1 decimal place", async () => {
 			// 95kg × (1 + 7/30) = 95 × 1.2333 = 117.17 → rounded to 117.2
 			prismaMock.set.findMany.mockResolvedValue([{ weight: "95", reps: 7 }]);
 
 			const result = await service.getExercise1rm(USER_ID, EXERCISE_ID);
 
-			expect(result.estimated_1rm).toBe(117.2);
+			expect(result.estimated1rm).toBe(117.2);
 		});
 
 		it("handles bodyweight sets (weight = 0) — returns 0 1RM", async () => {
@@ -202,8 +202,8 @@ describe("AnalyticsService", () => {
 
 			const result = await service.getExercise1rm(USER_ID, EXERCISE_ID);
 
-			expect(result.estimated_1rm).toBe(0);
-			expect(result.based_on).toEqual({ weight: 0, reps: 5 });
+			expect(result.estimated1rm).toBe(0);
+			expect(result.basedOn).toEqual({ weight: 0, reps: 5 });
 		});
 
 		it("throws NotFoundException when exercise does not belong to user", async () => {
@@ -231,8 +231,8 @@ describe("AnalyticsService", () => {
 
 			const result = await service.getWorkoutVolume(USER_ID, WORKOUT_ID);
 
-			expect(result.workout_id).toBe(WORKOUT_ID);
-			expect(result.total_volume).toBe(1740);
+			expect(result.workoutId).toBe(WORKOUT_ID);
+			expect(result.totalVolume).toBe(1740);
 		});
 
 		it("returns 0 volume when workout has no non-warmup sets", async () => {
@@ -240,7 +240,7 @@ describe("AnalyticsService", () => {
 
 			const result = await service.getWorkoutVolume(USER_ID, WORKOUT_ID);
 
-			expect(result.total_volume).toBe(0);
+			expect(result.totalVolume).toBe(0);
 		});
 
 		it("returns 0 volume for a bodyweight-only workout", async () => {
@@ -251,7 +251,7 @@ describe("AnalyticsService", () => {
 
 			const result = await service.getWorkoutVolume(USER_ID, WORKOUT_ID);
 
-			expect(result.total_volume).toBe(0);
+			expect(result.totalVolume).toBe(0);
 		});
 
 		it("throws NotFoundException when workout does not belong to user", async () => {
@@ -272,7 +272,7 @@ describe("AnalyticsService", () => {
 			prismaMock.exercise.findFirst.mockResolvedValue({ id: EXERCISE_ID });
 		});
 
-		it("groups sets by workout and computes avg_weight, avg_reps and total_volume per session", async () => {
+		it("groups sets by workout and computes avgWeight, avgReps and totalVolume per session", async () => {
 			const date = new Date("2026-01-15");
 			prismaMock.set.findMany.mockResolvedValue([
 				makeSet(100, 5, WORKOUT_ID, date),
@@ -282,10 +282,10 @@ describe("AnalyticsService", () => {
 			const result = await service.getExerciseProgression(USER_ID, EXERCISE_ID, { limit: 20 });
 
 			expect(result).toHaveLength(1);
-			expect(result[0].workout_id).toBe(WORKOUT_ID);
-			expect(result[0].total_volume).toBe(1000);
-			expect(result[0].avg_weight).toBe(100);
-			expect(result[0].avg_reps).toBe(5);
+			expect(result[0].workoutId).toBe(WORKOUT_ID);
+			expect(result[0].totalVolume).toBe(1000);
+			expect(result[0].avgWeight).toBe(100);
+			expect(result[0].avgReps).toBe(5);
 			expect(result[0].date).toEqual(date);
 		});
 
@@ -346,9 +346,9 @@ describe("AnalyticsService", () => {
 
 			const result = await service.getExerciseProgression(USER_ID, EXERCISE_ID, { limit: 20 });
 
-			expect(result[0].avg_weight).toBe(90);
-			expect(result[0].avg_reps).toBe(7.5);
-			expect(result[0].total_volume).toBe(1300);
+			expect(result[0].avgWeight).toBe(90);
+			expect(result[0].avgReps).toBe(7.5);
+			expect(result[0].totalVolume).toBe(1300);
 		});
 
 		it("throws NotFoundException when exercise does not belong to user", async () => {

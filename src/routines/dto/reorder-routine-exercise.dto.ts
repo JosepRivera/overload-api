@@ -6,16 +6,16 @@ const reorderRoutineExercisesSchema = z.object({
 		.array(
 			z.object({
 				id: z.uuid({ error: "id must be a valid UUID" }),
-				order_index: z.number().int().min(0, { error: "order_index must be 0 or more" }),
+				orderIndex: z.number().int().min(0, { error: "orderIndex must be 0 or more" }),
 			}),
 		)
 		.min(1, { error: "exercises array must not be empty" })
 		.refine(
 			(items) => {
-				const indices = items.map((i) => i.order_index);
+				const indices = items.map((i) => i.orderIndex);
 				return new Set(indices).size === indices.length;
 			},
-			{ error: "order_index values must be unique" },
+			{ error: "orderIndex values must be unique" },
 		)
 		.refine(
 			(items) => {

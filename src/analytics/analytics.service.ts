@@ -17,12 +17,12 @@ export class AnalyticsService {
 		await this.assertExerciseAccess(userId, exerciseId);
 
 		const aggregate = await this.prisma.set.aggregate({
-			where: { exercise_id: exerciseId, is_warmup: false },
+			where: { exerciseId, isWarmup: false },
 			_max: { weight: true },
 		});
 
 		const sets = await this.prisma.set.findMany({
-			where: { exercise_id: exerciseId, is_warmup: false },
+			where: { exerciseId, isWarmup: false },
 			select: { weight: true, reps: true },
 		});
 
@@ -30,7 +30,7 @@ export class AnalyticsService {
 		const volumes = sets.map((s) => Number(s.weight) * s.reps);
 		const volumePr = volumes.length > 0 ? Math.max(...volumes) : null;
 
-		return { weight_pr: weightPr, volume_pr: volumePr };
+		return { weightPr, volumePr };
 	}
 
 	async getExercise1rm(userId: string, exerciseId: string): Promise<Exercise1RM> {
@@ -38,15 +38,15 @@ export class AnalyticsService {
 
 		const sets = await this.prisma.set.findMany({
 			where: {
-				exercise_id: exerciseId,
-				is_warmup: false,
+				exerciseId,
+				isWarmup: false,
 				reps: { lte: 10 },
 			},
 			select: { weight: true, reps: true },
 		});
 
 		if (sets.length === 0) {
-			return { exercise_id: exerciseId, estimated_1rm: null, based_on: null };
+			return { exerciseId, estimated1rm: null, basedOn: null };
 		}
 
 		// Pick the set that yields the highest estimated 1RM, not just the heaviest weight.
@@ -67,9 +67,9 @@ export class AnalyticsService {
 		const { weight, reps, estimated } = best!;
 
 		return {
-			exercise_id: exerciseId,
-			estimated_1rm: Math.round(estimated * 10) / 10, // 1 decimal place
-			based_on: { weight, reps },
+			exerciseId,
+			estimated1rm: Math.round(estimated * 10) / 10, // 1 decimal place
+			basedOn: { weight, reps },
 		};
 	}
 
@@ -82,15 +82,15 @@ export class AnalyticsService {
 
 		const sets = await this.prisma.set.findMany({
 			where: {
-				exercise_id: exerciseId,
-				is_warmup: false,
+				exerciseId,
+				isWarmup: false,
 			},
 			select: {
-				workout_id: true,
+				workoutId: true,
 				weight: true,
 				reps: true,
 				workout: {
-					select: { started_at: true },
+					select: { startedAt: true },
 				},
 			},
 		});
@@ -98,11 +98,11 @@ export class AnalyticsService {
 		const grouped = new Map<string, typeof sets>();
 
 		for (const set of sets) {
-			const existing = grouped.get(set.workout_id);
+			const existing = grouped.get(set.workoutId);
 			if (existing) {
 				existing.push(set);
 			} else {
-				grouped.set(set.workout_id, [set]);
+				grouped.set(set.workoutId, [set]);
 			}
 		}
 
@@ -115,11 +115,11 @@ export class AnalyticsService {
 			const avgReps = workoutSets.reduce((acc, s) => acc + s.reps, 0) / workoutSets.length;
 
 			progression.push({
-				workout_id: workoutId,
-				date: workoutSets[0]?.workout.started_at ?? new Date(),
-				total_volume: totalVolume,
-				avg_weight: avgWeight,
-				avg_reps: avgReps,
+				workoutId,
+				date: workoutSets[0]?.workout.startedAt ?? new Date(),
+				totalVolume,
+				avgWeight,
+				avgReps,
 			});
 		}
 
@@ -134,18 +134,18 @@ export class AnalyticsService {
 		await this.assertWorkoutAccess(userId, workoutId);
 
 		const sets = await this.prisma.set.findMany({
-			where: { workout_id: workoutId, is_warmup: false },
+			where: { workoutId, isWarmup: false },
 			select: { weight: true, reps: true },
 		});
 
 		const totalVolume = sets.reduce((acc, s) => acc + Number(s.weight) * s.reps, 0);
 
-		return { workout_id: workoutId, total_volume: totalVolume };
+		return { workoutId, totalVolume };
 	}
 
 	private async assertExerciseAccess(userId: string, exerciseId: string) {
 		const exercise = await this.prisma.exercise.findFirst({
-			where: { id: exerciseId, user_id: userId },
+			where: { id: exerciseId, userId },
 		});
 
 		if (!exercise) {
@@ -157,7 +157,7 @@ export class AnalyticsService {
 
 	private async assertWorkoutAccess(userId: string, workoutId: string) {
 		const workout = await this.prisma.workout.findUnique({
-			where: { id: workoutId, user_id: userId },
+			where: { id: workoutId, userId },
 		});
 
 		if (!workout) {

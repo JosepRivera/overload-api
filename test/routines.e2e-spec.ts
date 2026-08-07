@@ -48,7 +48,7 @@ describe("Routines E2E", () => {
 			expect(res.status).toBe(201);
 			expect(res.body.data).toHaveProperty("id");
 			expect(res.body.data).toHaveProperty("name", "Push Day");
-			expect(res.body.data).toHaveProperty("is_active", true);
+			expect(res.body.data).toHaveProperty("isActive", true);
 		});
 
 		it("nombre duplicado mismo usuario → 409", async () => {
@@ -155,7 +155,7 @@ describe("Routines E2E", () => {
 	// ─────────────────────────────────────────────
 
 	describe("GET /routines/:id", () => {
-		it("happy path: incluye routine_exercises ordenados por order_index", async () => {
+		it("happy path: incluye routineExercises ordenados por orderIndex", async () => {
 			const { accessToken } = await registerAndLogin(app);
 
 			const routineRes = await request(app.getHttpServer())
@@ -180,22 +180,22 @@ describe("Routines E2E", () => {
 				.post(`/routines/${routineId}/exercises`)
 				.set(authHeader(accessToken))
 				.send({
-					exercise_id: ex1.body.data.id,
-					target_sets: 3,
-					target_reps_min: 8,
-					target_reps_max: 12,
-					target_rest_sec: 90,
+					exerciseId: ex1.body.data.id,
+					targetSets: 3,
+					targetRepsMin: 8,
+					targetRepsMax: 12,
+					targetRestSec: 90,
 				});
 
 			await request(app.getHttpServer())
 				.post(`/routines/${routineId}/exercises`)
 				.set(authHeader(accessToken))
 				.send({
-					exercise_id: ex2.body.data.id,
-					target_sets: 3,
-					target_reps_min: 8,
-					target_reps_max: 12,
-					target_rest_sec: 90,
+					exerciseId: ex2.body.data.id,
+					targetSets: 3,
+					targetRepsMin: 8,
+					targetRepsMax: 12,
+					targetRestSec: 90,
 				});
 
 			const res = await request(app.getHttpServer())
@@ -203,13 +203,13 @@ describe("Routines E2E", () => {
 				.set(authHeader(accessToken));
 
 			expect(res.status).toBe(200);
-			expect(res.body.data).toHaveProperty("routine_exercises");
-			expect(Array.isArray(res.body.data.routine_exercises)).toBe(true);
-			expect(res.body.data.routine_exercises.length).toBe(2);
+			expect(res.body.data).toHaveProperty("routineExercises");
+			expect(Array.isArray(res.body.data.routineExercises)).toBe(true);
+			expect(res.body.data.routineExercises.length).toBe(2);
 
-			// Verify order_index ordering
-			const indices = res.body.data.routine_exercises.map(
-				(re: { order_index: number }) => re.order_index,
+			// Verify orderIndex ordering
+			const indices = res.body.data.routineExercises.map(
+				(re: { orderIndex: number }) => re.orderIndex,
 			);
 			expect(indices[0]).toBeLessThanOrEqual(indices[1]);
 		});
@@ -370,16 +370,16 @@ describe("Routines E2E", () => {
 				.post(`/routines/${routineId}/exercises`)
 				.set(authHeader(accessToken))
 				.send({
-					exercise_id: exerciseId,
-					target_sets: 4,
-					target_reps_min: 6,
-					target_reps_max: 10,
-					target_rest_sec: 120,
+					exerciseId: exerciseId,
+					targetSets: 4,
+					targetRepsMin: 6,
+					targetRepsMax: 10,
+					targetRestSec: 120,
 				});
 
 			expect(res.status).toBe(201);
-			expect(res.body.data).toHaveProperty("exercise_id", exerciseId);
-			expect(res.body.data).toHaveProperty("routine_id", routineId);
+			expect(res.body.data).toHaveProperty("exerciseId", exerciseId);
+			expect(res.body.data).toHaveProperty("routineId", routineId);
 		});
 
 		it("ejercicio archivado → error", async () => {
@@ -407,11 +407,11 @@ describe("Routines E2E", () => {
 				.post(`/routines/${routineId}/exercises`)
 				.set(authHeader(accessToken))
 				.send({
-					exercise_id: exerciseId,
-					target_sets: 3,
-					target_reps_min: 8,
-					target_reps_max: 12,
-					target_rest_sec: 90,
+					exerciseId: exerciseId,
+					targetSets: 3,
+					targetRepsMin: 8,
+					targetRepsMax: 12,
+					targetRestSec: 90,
 				});
 
 			expect(res.status).toBe(404);
@@ -439,11 +439,11 @@ describe("Routines E2E", () => {
 				.post(`/routines/${routineId}/exercises`)
 				.set(authHeader(user1.accessToken))
 				.send({
-					exercise_id: exerciseId,
-					target_sets: 3,
-					target_reps_min: 8,
-					target_reps_max: 12,
-					target_rest_sec: 90,
+					exerciseId: exerciseId,
+					targetSets: 3,
+					targetRepsMin: 8,
+					targetRepsMax: 12,
+					targetRestSec: 90,
 				});
 
 			expect(res.status).toBe(404);
@@ -470,22 +470,22 @@ describe("Routines E2E", () => {
 				.post(`/routines/${routineId}/exercises`)
 				.set(authHeader(accessToken))
 				.send({
-					exercise_id: exerciseId,
-					target_sets: 3,
-					target_reps_min: 8,
-					target_reps_max: 12,
-					target_rest_sec: 90,
+					exerciseId: exerciseId,
+					targetSets: 3,
+					targetRepsMin: 8,
+					targetRepsMax: 12,
+					targetRestSec: 90,
 				});
 
 			const res = await request(app.getHttpServer())
 				.post(`/routines/${routineId}/exercises`)
 				.set(authHeader(accessToken))
 				.send({
-					exercise_id: exerciseId,
-					target_sets: 3,
-					target_reps_min: 8,
-					target_reps_max: 12,
-					target_rest_sec: 90,
+					exerciseId: exerciseId,
+					targetSets: 3,
+					targetRepsMin: 8,
+					targetRepsMax: 12,
+					targetRestSec: 90,
 				});
 
 			expect(res.status).toBe(409);
@@ -514,17 +514,17 @@ describe("Routines E2E", () => {
 				.post(`/routines/${routineId}/exercises`)
 				.set(authHeader(accessToken))
 				.send({
-					exercise_id: exRes.body.data.id,
-					target_sets: 3,
-					target_reps_min: 8,
-					target_reps_max: 12,
-					target_rest_sec: 90,
+					exerciseId: exRes.body.data.id,
+					targetSets: 3,
+					targetRepsMin: 8,
+					targetRepsMax: 12,
+					targetRestSec: 90,
 				});
 
 			expect(res.status).toBe(404);
 		});
 
-		it("target_reps_max < target_reps_min → 400", async () => {
+		it("targetRepsMax < targetRepsMin → 400", async () => {
 			const { accessToken } = await registerAndLogin(app);
 
 			const routineRes = await request(app.getHttpServer())
@@ -543,11 +543,11 @@ describe("Routines E2E", () => {
 				.post(`/routines/${routineId}/exercises`)
 				.set(authHeader(accessToken))
 				.send({
-					exercise_id: exRes.body.data.id,
-					target_sets: 3,
-					target_reps_min: 12,
-					target_reps_max: 8, // max < min
-					target_rest_sec: 90,
+					exerciseId: exRes.body.data.id,
+					targetSets: 3,
+					targetRepsMin: 12,
+					targetRepsMax: 8, // max < min
+					targetRestSec: 90,
 				});
 
 			expect(res.status).toBe(400);
@@ -583,22 +583,22 @@ describe("Routines E2E", () => {
 				.post(`/routines/${routineId}/exercises`)
 				.set(authHeader(accessToken))
 				.send({
-					exercise_id: ex1.body.data.id,
-					target_sets: 3,
-					target_reps_min: 8,
-					target_reps_max: 12,
-					target_rest_sec: 90,
+					exerciseId: ex1.body.data.id,
+					targetSets: 3,
+					targetRepsMin: 8,
+					targetRepsMax: 12,
+					targetRestSec: 90,
 				});
 
 			const re2 = await request(app.getHttpServer())
 				.post(`/routines/${routineId}/exercises`)
 				.set(authHeader(accessToken))
 				.send({
-					exercise_id: ex2.body.data.id,
-					target_sets: 3,
-					target_reps_min: 8,
-					target_reps_max: 12,
-					target_rest_sec: 90,
+					exerciseId: ex2.body.data.id,
+					targetSets: 3,
+					targetRepsMin: 8,
+					targetRepsMax: 12,
+					targetRestSec: 90,
 				});
 
 			const re1Id = re1.body.data.id;
@@ -610,8 +610,8 @@ describe("Routines E2E", () => {
 				.set(authHeader(accessToken))
 				.send({
 					exercises: [
-						{ id: re1Id, order_index: 1 },
-						{ id: re2Id, order_index: 0 },
+						{ id: re1Id, orderIndex: 1 },
+						{ id: re2Id, orderIndex: 0 },
 					],
 				});
 
@@ -622,11 +622,11 @@ describe("Routines E2E", () => {
 				.get(`/routines/${routineId}`)
 				.set(authHeader(accessToken));
 
-			const reordered = getRes.body.data.routine_exercises;
+			const reordered = getRes.body.data.routineExercises;
 			const firstItem = reordered.find((re: { id: string }) => re.id === re2Id);
 			const secondItem = reordered.find((re: { id: string }) => re.id === re1Id);
-			expect(firstItem.order_index).toBe(0);
-			expect(secondItem.order_index).toBe(1);
+			expect(firstItem.orderIndex).toBe(0);
+			expect(secondItem.orderIndex).toBe(1);
 		});
 
 		it("IDs parciales (no todos los ejercicios de la rutina) → error", async () => {
@@ -648,11 +648,11 @@ describe("Routines E2E", () => {
 				.post(`/routines/${routineId}/exercises`)
 				.set(authHeader(accessToken))
 				.send({
-					exercise_id: ex1.body.data.id,
-					target_sets: 3,
-					target_reps_min: 8,
-					target_reps_max: 12,
-					target_rest_sec: 90,
+					exerciseId: ex1.body.data.id,
+					targetSets: 3,
+					targetRepsMin: 8,
+					targetRepsMax: 12,
+					targetRestSec: 90,
 				});
 
 			// Send a non-existent ID in reorder
@@ -660,13 +660,13 @@ describe("Routines E2E", () => {
 				.post(`/routines/${routineId}/exercises/reorder`)
 				.set(authHeader(accessToken))
 				.send({
-					exercises: [{ id: "00000000-0000-0000-0000-000000000000", order_index: 0 }],
+					exercises: [{ id: "00000000-0000-0000-0000-000000000000", orderIndex: 0 }],
 				});
 
 			expect(res.status).toBe(400);
 		});
 
-		it("order_index duplicados en el payload → error", async () => {
+		it("orderIndex duplicados en el payload → error", async () => {
 			const { accessToken } = await registerAndLogin(app);
 
 			const routineRes = await request(app.getHttpServer())
@@ -690,32 +690,32 @@ describe("Routines E2E", () => {
 				.post(`/routines/${routineId}/exercises`)
 				.set(authHeader(accessToken))
 				.send({
-					exercise_id: ex1.body.data.id,
-					target_sets: 3,
-					target_reps_min: 8,
-					target_reps_max: 12,
-					target_rest_sec: 90,
+					exerciseId: ex1.body.data.id,
+					targetSets: 3,
+					targetRepsMin: 8,
+					targetRepsMax: 12,
+					targetRestSec: 90,
 				});
 
 			const re2 = await request(app.getHttpServer())
 				.post(`/routines/${routineId}/exercises`)
 				.set(authHeader(accessToken))
 				.send({
-					exercise_id: ex2.body.data.id,
-					target_sets: 3,
-					target_reps_min: 8,
-					target_reps_max: 12,
-					target_rest_sec: 90,
+					exerciseId: ex2.body.data.id,
+					targetSets: 3,
+					targetRepsMin: 8,
+					targetRepsMax: 12,
+					targetRestSec: 90,
 				});
 
-			// Both with same order_index
+			// Both with same orderIndex
 			const res = await request(app.getHttpServer())
 				.post(`/routines/${routineId}/exercises/reorder`)
 				.set(authHeader(accessToken))
 				.send({
 					exercises: [
-						{ id: re1.body.data.id, order_index: 0 },
-						{ id: re2.body.data.id, order_index: 0 },
+						{ id: re1.body.data.id, orderIndex: 0 },
+						{ id: re2.body.data.id, orderIndex: 0 },
 					],
 				});
 

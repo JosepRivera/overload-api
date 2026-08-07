@@ -12,7 +12,7 @@ export class ExerciseService {
 		await this.assertUniqueNameForUser(userId, input.name);
 		return this.prisma.exercise.create({
 			data: {
-				user_id: userId,
+				userId,
 				name: input.name,
 				category: input.category,
 				type: input.type,
@@ -24,8 +24,8 @@ export class ExerciseService {
 	async findAll(userId: string, includeArchived = false) {
 		return this.prisma.exercise.findMany({
 			where: {
-				user_id: userId,
-				...(includeArchived ? {} : { is_archived: false }),
+				userId,
+				...(includeArchived ? {} : { isArchived: false }),
 			},
 			orderBy: [{ name: "asc" }],
 		});
@@ -33,7 +33,7 @@ export class ExerciseService {
 
 	async findOne(userId: string, id: string) {
 		const exercise = await this.prisma.exercise.findFirst({
-			where: { id, user_id: userId },
+			where: { id, userId },
 		});
 		if (!exercise) {
 			throw new NotFoundException("Exercise not found");
@@ -43,7 +43,7 @@ export class ExerciseService {
 
 	async findOneActive(userId: string, id: string) {
 		const exercise = await this.prisma.exercise.findFirst({
-			where: { id, user_id: userId, is_archived: false },
+			where: { id, userId, isArchived: false },
 		});
 		if (!exercise) {
 			throw new NotFoundException("Exercise not found or is archived");
@@ -71,15 +71,15 @@ export class ExerciseService {
 		await this.findOne(userId, id);
 		return this.prisma.exercise.update({
 			where: { id },
-			data: { is_archived: true },
+			data: { isArchived: true },
 		});
 	}
 
 	private async assertUniqueNameForUser(userId: string, name: string, excludeId?: string) {
 		const existing = await this.prisma.exercise.findFirst({
 			where: {
-				user_id: userId,
-				is_archived: false,
+				userId,
+				isArchived: false,
 				name: { equals: name, mode: "insensitive" },
 				...(excludeId && { id: { not: excludeId } }),
 			},

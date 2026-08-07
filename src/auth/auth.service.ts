@@ -62,8 +62,8 @@ export class AuthService {
 		// Delete expired tokens first
 		await this.prisma.refreshToken.deleteMany({
 			where: {
-				user_id: userId,
-				expires_at: { lt: new Date() },
+				userId,
+				expiresAt: { lt: new Date() },
 			},
 		});
 
@@ -71,17 +71,17 @@ export class AuthService {
 		// If the limit is reached, revoke the oldest active token before creating a new one.
 		const activeTokens = await this.prisma.refreshToken.findMany({
 			where: {
-				user_id: userId,
-				revoked_at: null,
-				expires_at: { gt: new Date() },
+				userId,
+				revokedAt: null,
+				expiresAt: { gt: new Date() },
 			},
-			orderBy: { created_at: "asc" },
+			orderBy: { createdAt: "asc" },
 		});
 
 		if (activeTokens.length >= MAX_ACTIVE_REFRESH_TOKENS) {
 			await this.prisma.refreshToken.update({
 				where: { id: activeTokens[0]?.id },
-				data: { revoked_at: new Date() },
+				data: { revokedAt: new Date() },
 			});
 		}
 
@@ -89,9 +89,9 @@ export class AuthService {
 
 		return this.prisma.refreshToken.create({
 			data: {
-				user_id: userId,
-				token_hash: tokenHash,
-				expires_at: expiresAt,
+				userId,
+				tokenHash,
+				expiresAt,
 			},
 		});
 	}
@@ -103,10 +103,10 @@ export class AuthService {
 
 		return this.prisma.refreshToken.findFirst({
 			where: {
-				user_id: userId,
-				token_hash: tokenHash,
-				revoked_at: null,
-				expires_at: { gt: new Date() },
+				userId,
+				tokenHash,
+				revokedAt: null,
+				expiresAt: { gt: new Date() },
 			},
 			include: { user: true },
 		});
@@ -129,7 +129,7 @@ export class AuthService {
 			throw new UnauthorizedException("Invalid credentials");
 		}
 
-		const isPasswordValid = await this.validatePassword(dto.password, user.password_hash);
+		const isPasswordValid = await this.validatePassword(dto.password, user.passwordHash);
 		if (!isPasswordValid) {
 			throw new UnauthorizedException("Invalid credentials");
 		}
@@ -137,7 +137,7 @@ export class AuthService {
 		const tokens = await this.generateTokens(user.id, user.email);
 		await this.saveRefreshToken(user.id, tokens.refreshToken);
 
-		const { password_hash: _, ...userData } = user;
+		const { passwordHash: _, createdAt: __, updatedAt: ___, ...userData } = user;
 		return { ...tokens, user: userData };
 	}
 
@@ -152,7 +152,7 @@ export class AuthService {
 		const tokens = await this.generateTokens(user.id, user.email);
 		await this.saveRefreshToken(user.id, tokens.refreshToken);
 
-		const { password_hash: _, ...userData } = user;
+		const { passwordHash: _, createdAt: __, updatedAt: ___, ...userData } = user;
 		return { ...tokens, user: userData };
 	}
 
@@ -173,7 +173,7 @@ export class AuthService {
 
 		await this.prisma.refreshToken.update({
 			where: { id: storedToken.id },
-			data: { revoked_at: new Date() },
+			data: { revokedAt: new Date() },
 		});
 
 		await this.saveRefreshToken(storedToken.user.id, tokens.refreshToken);
@@ -194,7 +194,7 @@ export class AuthService {
 		if (storedToken) {
 			await this.prisma.refreshToken.update({
 				where: { id: storedToken.id },
-				data: { revoked_at: new Date() },
+				data: { revokedAt: new Date() },
 			});
 		}
 

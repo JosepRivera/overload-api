@@ -3,34 +3,34 @@ import { z } from "zod";
 
 const updateRoutineExerciseSchema = z
 	.object({
-		target_sets: z.number().int().min(1, { message: "target_sets must be at least 1" }).optional(),
-		target_reps_min: z
+		targetSets: z.number().int().min(1, { message: "targetSets must be at least 1" }).optional(),
+		targetRepsMin: z
 			.number()
 			.int()
-			.min(1, { message: "target_reps_min must be at least 1" })
+			.min(1, { message: "targetRepsMin must be at least 1" })
 			.optional(),
-		target_reps_max: z
+		targetRepsMax: z
 			.number()
 			.int()
-			.min(1, { message: "target_reps_max must be at least 1" })
+			.min(1, { message: "targetRepsMax must be at least 1" })
 			.optional(),
-		target_rest_sec: z
+		targetRestSec: z
 			.number()
 			.int()
-			.min(0, { message: "target_rest_sec must be 0 or more" })
+			.min(0, { message: "targetRestSec must be 0 or more" })
 			.optional(),
 		notes: z.string().trim().max(2000).optional().nullable(),
 	})
 	.refine(
 		(data) => {
-			if (data.target_reps_min !== undefined && data.target_reps_max !== undefined) {
-				return data.target_reps_max >= data.target_reps_min;
+			if (data.targetRepsMin !== undefined && data.targetRepsMax !== undefined) {
+				return data.targetRepsMax >= data.targetRepsMin;
 			}
 			return true;
 		},
 		{
-			message: "target_reps_max must be greater than or equal to target_reps_min",
-			path: ["target_reps_max"],
+			message: "targetRepsMax must be greater than or equal to targetRepsMin",
+			path: ["targetRepsMax"],
 		},
 	);
 

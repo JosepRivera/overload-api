@@ -12,33 +12,33 @@ export class SetsService {
 	async create(userId: string, workoutId: string, dto: CreateSetInput) {
 		const workout = await this.assertWorkoutAccess(userId, workoutId);
 
-		if (workout.finished_at !== null) {
+		if (workout.finishedAt !== null) {
 			throw new ConflictException("Cannot add sets to a finished workout");
 		}
 
 		const exercise = await this.prisma.exercise.findFirst({
-			where: { id: dto.exercise_id, user_id: userId },
+			where: { id: dto.exerciseId, userId },
 		});
 
 		if (!exercise) {
 			throw new NotFoundException("Exercise not found");
 		}
 
-		if (exercise.is_archived) {
+		if (exercise.isArchived) {
 			throw new ConflictException("Cannot log sets for an archived exercise");
 		}
 
-		const nextNumber = await this.getNextSetNumber(workoutId, dto.exercise_id);
+		const nextNumber = await this.getNextSetNumber(workoutId, dto.exerciseId);
 
 		const set = await this.prisma.set.create({
 			data: {
-				workout_id: workoutId,
-				exercise_id: dto.exercise_id,
-				set_number: nextNumber,
+				workoutId,
+				exerciseId: dto.exerciseId,
+				setNumber: nextNumber,
 				weight: dto.weight,
 				reps: dto.reps,
 				rpe: dto.rpe,
-				is_warmup: dto.is_warmup,
+				isWarmup: dto.isWarmup,
 			},
 		});
 
@@ -49,8 +49,8 @@ export class SetsService {
 		await this.assertWorkoutAccess(userId, workoutId);
 
 		const sets = await this.prisma.set.findMany({
-			where: { workout_id: workoutId },
-			orderBy: [{ exercise_id: "asc" }, { set_number: "asc" }],
+			where: { workoutId },
+			orderBy: [{ exerciseId: "asc" }, { setNumber: "asc" }],
 		});
 
 		return sets.map((s) => this.serializeSet(s));
@@ -67,7 +67,7 @@ export class SetsService {
 	async update(userId: string, workoutId: string, setId: string, dto: UpdateSetInput) {
 		const workout = await this.assertWorkoutAccess(userId, workoutId);
 
-		if (workout.finished_at !== null) {
+		if (workout.finishedAt !== null) {
 			throw new ConflictException("Cannot modify sets of a finished workout");
 		}
 
@@ -84,7 +84,7 @@ export class SetsService {
 	async remove(userId: string, workoutId: string, setId: string) {
 		const workout = await this.assertWorkoutAccess(userId, workoutId);
 
-		if (workout.finished_at !== null) {
+		if (workout.finishedAt !== null) {
 			throw new ConflictException("Cannot remove sets of a finished workout");
 		}
 
@@ -105,7 +105,7 @@ export class SetsService {
 
 	private async assertWorkoutAccess(userId: string, workoutId: string) {
 		const workout = await this.prisma.workout.findUnique({
-			where: { id: workoutId, user_id: userId },
+			where: { id: workoutId, userId },
 		});
 
 		if (!workout) {
@@ -117,7 +117,7 @@ export class SetsService {
 
 	private async findSetOrThrow(workoutId: string, setId: string) {
 		const set = await this.prisma.set.findUnique({
-			where: { id: setId, workout_id: workoutId },
+			where: { id: setId, workoutId },
 		});
 
 		if (!set) {
@@ -129,10 +129,10 @@ export class SetsService {
 
 	private async getNextSetNumber(workoutId: string, exerciseId: string): Promise<number> {
 		const last = await this.prisma.set.findFirst({
-			where: { workout_id: workoutId, exercise_id: exerciseId },
-			orderBy: { set_number: "desc" },
-			select: { set_number: true },
+			where: { workoutId, exerciseId },
+			orderBy: { setNumber: "desc" },
+			select: { setNumber: true },
 		});
-		return last ? last.set_number + 1 : 1;
+		return last ? last.setNumber + 1 : 1;
 	}
 }

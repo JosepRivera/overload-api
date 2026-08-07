@@ -46,9 +46,9 @@ export class AnalyticsController {
 		schema: {
 			example: {
 				data: {
-					exercise_id: "uuid",
-					estimated_1rm: 112.5,
-					based_on: { weight: 100, reps: 3 },
+					exerciseId: "uuid",
+					estimated1rm: 112.5,
+					basedOn: { weight: 100, reps: 3 },
 				},
 			},
 		},

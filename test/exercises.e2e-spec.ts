@@ -49,7 +49,7 @@ describe("Exercises E2E", () => {
 			expect(res.body.data).toHaveProperty("id");
 			expect(res.body.data).toHaveProperty("name", "Bench Press");
 			expect(res.body.data).toHaveProperty("category", "chest");
-			expect(res.body.data).toHaveProperty("is_archived", false);
+			expect(res.body.data).toHaveProperty("isArchived", false);
 		});
 
 		it("nombre duplicado mismo usuario → 409", async () => {
@@ -393,7 +393,7 @@ describe("Exercises E2E", () => {
 	// ─────────────────────────────────────────────
 
 	describe("PATCH /exercises/:id/archive (soft delete)", () => {
-		it("happy path: ejercicio queda con is_archived = true", async () => {
+		it("happy path: ejercicio queda con isArchived = true", async () => {
 			const { accessToken } = await registerAndLogin(app);
 
 			const createRes = await request(app.getHttpServer())
@@ -408,7 +408,7 @@ describe("Exercises E2E", () => {
 				.set(authHeader(accessToken));
 
 			expect(archiveRes.status).toBe(200);
-			expect(archiveRes.body.data.is_archived).toBe(true);
+			expect(archiveRes.body.data.isArchived).toBe(true);
 		});
 
 		it("no aparece en GET /exercises tras archivar", async () => {

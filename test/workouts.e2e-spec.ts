@@ -45,11 +45,11 @@ describe("Workouts E2E", () => {
 			const res = await request(app.getHttpServer())
 				.post("/workouts")
 				.set(authHeader(accessToken))
-				.send({ started_at: validStartedAt() });
+				.send({ startedAt: validStartedAt() });
 
 			expect(res.status).toBe(201);
 			expect(res.body.data).toHaveProperty("id");
-			expect(res.body.data).toHaveProperty("finished_at", null);
+			expect(res.body.data).toHaveProperty("finishedAt", null);
 		});
 
 		it("segundo workout activo mismo usuario → 409", async () => {
@@ -58,17 +58,17 @@ describe("Workouts E2E", () => {
 			await request(app.getHttpServer())
 				.post("/workouts")
 				.set(authHeader(accessToken))
-				.send({ started_at: validStartedAt() });
+				.send({ startedAt: validStartedAt() });
 
 			const res = await request(app.getHttpServer())
 				.post("/workouts")
 				.set(authHeader(accessToken))
-				.send({ started_at: validStartedAt() });
+				.send({ startedAt: validStartedAt() });
 
 			expect(res.status).toBe(409);
 		});
 
-		it("con routine_id válido → 201", async () => {
+		it("con routineId válido → 201", async () => {
 			const { accessToken } = await registerAndLogin(app);
 
 			const routineRes = await request(app.getHttpServer())
@@ -81,13 +81,13 @@ describe("Workouts E2E", () => {
 			const res = await request(app.getHttpServer())
 				.post("/workouts")
 				.set(authHeader(accessToken))
-				.send({ started_at: validStartedAt(), routine_id: routineId });
+				.send({ startedAt: validStartedAt(), routineId: routineId });
 
 			expect(res.status).toBe(201);
-			expect(res.body.data).toHaveProperty("routine_id", routineId);
+			expect(res.body.data).toHaveProperty("routineId", routineId);
 		});
 
-		it("con routine_id inactiva → 404", async () => {
+		it("con routineId inactiva → 404", async () => {
 			const { accessToken } = await registerAndLogin(app);
 
 			const routineRes = await request(app.getHttpServer())
@@ -104,7 +104,7 @@ describe("Workouts E2E", () => {
 			const res = await request(app.getHttpServer())
 				.post("/workouts")
 				.set(authHeader(accessToken))
-				.send({ started_at: validStartedAt(), routine_id: routineId });
+				.send({ startedAt: validStartedAt(), routineId: routineId });
 
 			expect(res.status).toBe(404);
 		});
@@ -112,12 +112,12 @@ describe("Workouts E2E", () => {
 		it("sin token → 401", async () => {
 			const res = await request(app.getHttpServer())
 				.post("/workouts")
-				.send({ started_at: validStartedAt() });
+				.send({ startedAt: validStartedAt() });
 
 			expect(res.status).toBe(401);
 		});
 
-		it("started_at faltante → 400", async () => {
+		it("startedAt faltante → 400", async () => {
 			const { accessToken } = await registerAndLogin(app);
 
 			const res = await request(app.getHttpServer())
@@ -141,7 +141,7 @@ describe("Workouts E2E", () => {
 			await request(app.getHttpServer())
 				.post("/workouts")
 				.set(authHeader(accessToken))
-				.send({ started_at: validStartedAt() });
+				.send({ startedAt: validStartedAt() });
 
 			const listRes = await request(app.getHttpServer())
 				.get("/workouts")
@@ -159,7 +159,7 @@ describe("Workouts E2E", () => {
 			const createRes = await request(app.getHttpServer())
 				.post("/workouts")
 				.set(authHeader(user1.accessToken))
-				.send({ started_at: validStartedAt() });
+				.send({ startedAt: validStartedAt() });
 
 			const id = createRes.body.data.id;
 
@@ -182,7 +182,7 @@ describe("Workouts E2E", () => {
 			const createRes = await request(app.getHttpServer())
 				.post("/workouts")
 				.set(authHeader(accessToken))
-				.send({ started_at: validStartedAt(), notes: "original" });
+				.send({ startedAt: validStartedAt(), notes: "original" });
 
 			const id = createRes.body.data.id;
 
@@ -202,7 +202,7 @@ describe("Workouts E2E", () => {
 			const createRes = await request(app.getHttpServer())
 				.post("/workouts")
 				.set(authHeader(user1.accessToken))
-				.send({ started_at: validStartedAt() });
+				.send({ startedAt: validStartedAt() });
 
 			const id = createRes.body.data.id;
 
@@ -220,13 +220,13 @@ describe("Workouts E2E", () => {
 	// ─────────────────────────────────────────────
 
 	describe("POST /workouts/:id/finish", () => {
-		it("happy path: finished_at seteado", async () => {
+		it("happy path: finishedAt seteado", async () => {
 			const { accessToken } = await registerAndLogin(app);
 
 			const createRes = await request(app.getHttpServer())
 				.post("/workouts")
 				.set(authHeader(accessToken))
-				.send({ started_at: validStartedAt() });
+				.send({ startedAt: validStartedAt() });
 
 			const id = createRes.body.data.id;
 
@@ -235,7 +235,7 @@ describe("Workouts E2E", () => {
 				.set(authHeader(accessToken));
 
 			expect(res.status).toBe(200);
-			expect(res.body.data.finished_at).not.toBeNull();
+			expect(res.body.data.finishedAt).not.toBeNull();
 		});
 
 		it("después de finish se puede crear otro workout activo", async () => {
@@ -244,7 +244,7 @@ describe("Workouts E2E", () => {
 			const createRes = await request(app.getHttpServer())
 				.post("/workouts")
 				.set(authHeader(accessToken))
-				.send({ started_at: validStartedAt() });
+				.send({ startedAt: validStartedAt() });
 
 			const id = createRes.body.data.id;
 
@@ -255,7 +255,7 @@ describe("Workouts E2E", () => {
 			const newWorkoutRes = await request(app.getHttpServer())
 				.post("/workouts")
 				.set(authHeader(accessToken))
-				.send({ started_at: validStartedAt() });
+				.send({ startedAt: validStartedAt() });
 
 			expect(newWorkoutRes.status).toBe(201);
 		});
@@ -266,7 +266,7 @@ describe("Workouts E2E", () => {
 			const createRes = await request(app.getHttpServer())
 				.post("/workouts")
 				.set(authHeader(accessToken))
-				.send({ started_at: validStartedAt() });
+				.send({ startedAt: validStartedAt() });
 
 			const id = createRes.body.data.id;
 
@@ -288,7 +288,7 @@ describe("Workouts E2E", () => {
 			const createRes = await request(app.getHttpServer())
 				.post("/workouts")
 				.set(authHeader(user1.accessToken))
-				.send({ started_at: validStartedAt() });
+				.send({ startedAt: validStartedAt() });
 
 			const id = createRes.body.data.id;
 
@@ -311,7 +311,7 @@ describe("Workouts E2E", () => {
 			const createRes = await request(app.getHttpServer())
 				.post("/workouts")
 				.set(authHeader(accessToken))
-				.send({ started_at: validStartedAt() });
+				.send({ startedAt: validStartedAt() });
 
 			const id = createRes.body.data.id;
 
@@ -328,7 +328,7 @@ describe("Workouts E2E", () => {
 			const workoutRes = await request(app.getHttpServer())
 				.post("/workouts")
 				.set(authHeader(accessToken))
-				.send({ started_at: validStartedAt() });
+				.send({ startedAt: validStartedAt() });
 
 			const workoutId = workoutRes.body.data.id;
 
@@ -341,7 +341,7 @@ describe("Workouts E2E", () => {
 				.post(`/workouts/${workoutId}/sets`)
 				.set(authHeader(accessToken))
 				.send({
-					exercise_id: exRes.body.data.id,
+					exerciseId: exRes.body.data.id,
 					weight: 100,
 					reps: 5,
 				});
@@ -359,7 +359,7 @@ describe("Workouts E2E", () => {
 			const createRes = await request(app.getHttpServer())
 				.post("/workouts")
 				.set(authHeader(accessToken))
-				.send({ started_at: validStartedAt() });
+				.send({ startedAt: validStartedAt() });
 
 			const id = createRes.body.data.id;
 
@@ -368,8 +368,8 @@ describe("Workouts E2E", () => {
 				.set(authHeader(accessToken));
 
 			// A finished workout with no sets should still error on delete since it has sets count = 0
-			// but the service checks finished_at indirectly via the findOne + sets check
-			// Actually the service only checks sets count, not finished_at for delete
+			// but the service checks finishedAt indirectly via the findOne + sets check
+			// Actually the service only checks sets count, not finishedAt for delete
 			// The finished workout without sets → 204 (service allows it)
 			const res = await request(app.getHttpServer())
 				.delete(`/workouts/${id}`)
@@ -386,7 +386,7 @@ describe("Workouts E2E", () => {
 			const createRes = await request(app.getHttpServer())
 				.post("/workouts")
 				.set(authHeader(user1.accessToken))
-				.send({ started_at: validStartedAt() });
+				.send({ startedAt: validStartedAt() });
 
 			const id = createRes.body.data.id;
 

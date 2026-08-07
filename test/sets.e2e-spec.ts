@@ -41,7 +41,7 @@ describe("Sets E2E", () => {
 		const workoutRes = await request(app.getHttpServer())
 			.post("/workouts")
 			.set(authHeader(accessToken))
-			.send({ started_at: validStartedAt() });
+			.send({ startedAt: validStartedAt() });
 
 		const workoutId = workoutRes.body.data.id;
 
@@ -60,60 +60,60 @@ describe("Sets E2E", () => {
 	// ─────────────────────────────────────────────
 
 	describe("POST /workouts/:workoutId/sets", () => {
-		it("happy path: 201, set_number generado automáticamente desde 1", async () => {
+		it("happy path: 201, setNumber generado automáticamente desde 1", async () => {
 			const { accessToken, workoutId, exerciseId } = await setupWorkoutAndExercise();
 
 			const res = await request(app.getHttpServer())
 				.post(`/workouts/${workoutId}/sets`)
 				.set(authHeader(accessToken))
-				.send({ exercise_id: exerciseId, weight: 100, reps: 5 });
+				.send({ exerciseId: exerciseId, weight: 100, reps: 5 });
 
 			expect(res.status).toBe(201);
-			expect(res.body.data).toHaveProperty("set_number", 1);
-			expect(res.body.data).toHaveProperty("exercise_id", exerciseId);
+			expect(res.body.data).toHaveProperty("setNumber", 1);
+			expect(res.body.data).toHaveProperty("exerciseId", exerciseId);
 			expect(res.body.data).toHaveProperty("weight", 100);
 			expect(res.body.data).toHaveProperty("reps", 5);
 		});
 
-		it("segundo set mismo ejercicio mismo workout → set_number = 2", async () => {
+		it("segundo set mismo ejercicio mismo workout → setNumber = 2", async () => {
 			const { accessToken, workoutId, exerciseId } = await setupWorkoutAndExercise();
 
 			await request(app.getHttpServer())
 				.post(`/workouts/${workoutId}/sets`)
 				.set(authHeader(accessToken))
-				.send({ exercise_id: exerciseId, weight: 100, reps: 5 });
+				.send({ exerciseId: exerciseId, weight: 100, reps: 5 });
 
 			const res = await request(app.getHttpServer())
 				.post(`/workouts/${workoutId}/sets`)
 				.set(authHeader(accessToken))
-				.send({ exercise_id: exerciseId, weight: 105, reps: 5 });
+				.send({ exerciseId: exerciseId, weight: 105, reps: 5 });
 
 			expect(res.status).toBe(201);
-			expect(res.body.data).toHaveProperty("set_number", 2);
+			expect(res.body.data).toHaveProperty("setNumber", 2);
 		});
 
-		it("is_warmup = true: set creado correctamente con is_warmup = true", async () => {
+		it("isWarmup = true: set creado correctamente con isWarmup = true", async () => {
 			const { accessToken, workoutId, exerciseId } = await setupWorkoutAndExercise();
 
 			const res = await request(app.getHttpServer())
 				.post(`/workouts/${workoutId}/sets`)
 				.set(authHeader(accessToken))
-				.send({ exercise_id: exerciseId, weight: 60, reps: 10, is_warmup: true });
+				.send({ exerciseId: exerciseId, weight: 60, reps: 10, isWarmup: true });
 
 			expect(res.status).toBe(201);
-			expect(res.body.data).toHaveProperty("is_warmup", true);
+			expect(res.body.data).toHaveProperty("isWarmup", true);
 		});
 
-		it("is_warmup = false (default): set creado con is_warmup = false", async () => {
+		it("isWarmup = false (default): set creado con isWarmup = false", async () => {
 			const { accessToken, workoutId, exerciseId } = await setupWorkoutAndExercise();
 
 			const res = await request(app.getHttpServer())
 				.post(`/workouts/${workoutId}/sets`)
 				.set(authHeader(accessToken))
-				.send({ exercise_id: exerciseId, weight: 100, reps: 5 });
+				.send({ exerciseId: exerciseId, weight: 100, reps: 5 });
 
 			expect(res.status).toBe(201);
-			expect(res.body.data).toHaveProperty("is_warmup", false);
+			expect(res.body.data).toHaveProperty("isWarmup", false);
 		});
 
 		it("weight = 0 válido (bodyweight)", async () => {
@@ -122,7 +122,7 @@ describe("Sets E2E", () => {
 			const res = await request(app.getHttpServer())
 				.post(`/workouts/${workoutId}/sets`)
 				.set(authHeader(accessToken))
-				.send({ exercise_id: exerciseId, weight: 0, reps: 10 });
+				.send({ exerciseId: exerciseId, weight: 0, reps: 10 });
 
 			expect(res.status).toBe(201);
 			expect(res.body.data).toHaveProperty("weight", 0);
@@ -138,7 +138,7 @@ describe("Sets E2E", () => {
 			const res = await request(app.getHttpServer())
 				.post(`/workouts/${workoutId}/sets`)
 				.set(authHeader(accessToken))
-				.send({ exercise_id: exerciseId, weight: 100, reps: 5 });
+				.send({ exerciseId: exerciseId, weight: 100, reps: 5 });
 
 			expect(res.status).toBe(409);
 		});
@@ -157,7 +157,7 @@ describe("Sets E2E", () => {
 			const res = await request(app.getHttpServer())
 				.post(`/workouts/${workoutId}/sets`)
 				.set(authHeader(accessToken))
-				.send({ exercise_id: user2ExId, weight: 100, reps: 5 });
+				.send({ exerciseId: user2ExId, weight: 100, reps: 5 });
 
 			expect(res.status).toBe(404);
 		});
@@ -172,7 +172,7 @@ describe("Sets E2E", () => {
 			const res = await request(app.getHttpServer())
 				.post(`/workouts/${workoutId}/sets`)
 				.set(authHeader(accessToken))
-				.send({ exercise_id: exerciseId, weight: 100, reps: 5 });
+				.send({ exerciseId: exerciseId, weight: 100, reps: 5 });
 
 			expect(res.status).toBe(409);
 		});
@@ -184,7 +184,7 @@ describe("Sets E2E", () => {
 			const res = await request(app.getHttpServer())
 				.post(`/workouts/${workoutId}/sets`)
 				.set(authHeader(user2.accessToken))
-				.send({ exercise_id: exerciseId, weight: 100, reps: 5 });
+				.send({ exerciseId: exerciseId, weight: 100, reps: 5 });
 
 			expect(res.status).toBe(404);
 		});
@@ -195,7 +195,7 @@ describe("Sets E2E", () => {
 			const res = await request(app.getHttpServer())
 				.post(`/workouts/${workoutId}/sets`)
 				.set(authHeader(accessToken))
-				.send({ exercise_id: exerciseId, weight: 100, reps: 5, rpe: 11 });
+				.send({ exerciseId: exerciseId, weight: 100, reps: 5, rpe: 11 });
 
 			expect(res.status).toBe(400);
 		});
@@ -206,7 +206,7 @@ describe("Sets E2E", () => {
 			const res = await request(app.getHttpServer())
 				.post(`/workouts/${workoutId}/sets`)
 				.set(authHeader(accessToken))
-				.send({ exercise_id: exerciseId, weight: 100, reps: 5, rpe: 0 });
+				.send({ exerciseId: exerciseId, weight: 100, reps: 5, rpe: 0 });
 
 			expect(res.status).toBe(400);
 		});
@@ -214,7 +214,7 @@ describe("Sets E2E", () => {
 		it("sin token → 401", async () => {
 			const res = await request(app.getHttpServer())
 				.post("/workouts/00000000-0000-0000-0000-000000000000/sets")
-				.send({ exercise_id: "00000000-0000-0000-0000-000000000001", weight: 100, reps: 5 });
+				.send({ exerciseId: "00000000-0000-0000-0000-000000000001", weight: 100, reps: 5 });
 
 			expect(res.status).toBe(401);
 		});
@@ -231,12 +231,12 @@ describe("Sets E2E", () => {
 			await request(app.getHttpServer())
 				.post(`/workouts/${workoutId}/sets`)
 				.set(authHeader(accessToken))
-				.send({ exercise_id: exerciseId, weight: 60, reps: 10, is_warmup: true });
+				.send({ exerciseId: exerciseId, weight: 60, reps: 10, isWarmup: true });
 
 			await request(app.getHttpServer())
 				.post(`/workouts/${workoutId}/sets`)
 				.set(authHeader(accessToken))
-				.send({ exercise_id: exerciseId, weight: 100, reps: 5, is_warmup: false });
+				.send({ exerciseId: exerciseId, weight: 100, reps: 5, isWarmup: false });
 
 			const res = await request(app.getHttpServer())
 				.get(`/workouts/${workoutId}/sets`)
@@ -246,8 +246,8 @@ describe("Sets E2E", () => {
 			expect(Array.isArray(res.body.data)).toBe(true);
 			expect(res.body.data.length).toBe(2);
 
-			const warmups = res.body.data.filter((s: { is_warmup: boolean }) => s.is_warmup);
-			const working = res.body.data.filter((s: { is_warmup: boolean }) => !s.is_warmup);
+			const warmups = res.body.data.filter((s: { isWarmup: boolean }) => s.isWarmup);
+			const working = res.body.data.filter((s: { isWarmup: boolean }) => !s.isWarmup);
 			expect(warmups.length).toBe(1);
 			expect(working.length).toBe(1);
 		});
@@ -275,7 +275,7 @@ describe("Sets E2E", () => {
 			const createRes = await request(app.getHttpServer())
 				.post(`/workouts/${workoutId}/sets`)
 				.set(authHeader(accessToken))
-				.send({ exercise_id: exerciseId, weight: 100, reps: 5 });
+				.send({ exerciseId: exerciseId, weight: 100, reps: 5 });
 
 			const setId = createRes.body.data.id;
 
@@ -295,7 +295,7 @@ describe("Sets E2E", () => {
 			const createRes = await request(app.getHttpServer())
 				.post(`/workouts/${workoutId}/sets`)
 				.set(authHeader(accessToken))
-				.send({ exercise_id: exerciseId, weight: 100, reps: 5 });
+				.send({ exerciseId: exerciseId, weight: 100, reps: 5 });
 
 			const setId = createRes.body.data.id;
 
@@ -336,7 +336,7 @@ describe("Sets E2E", () => {
 			const createRes = await request(app.getHttpServer())
 				.post(`/workouts/${workoutId}/sets`)
 				.set(authHeader(accessToken))
-				.send({ exercise_id: exerciseId, weight: 100, reps: 5 });
+				.send({ exerciseId: exerciseId, weight: 100, reps: 5 });
 
 			const setId = createRes.body.data.id;
 
@@ -353,7 +353,7 @@ describe("Sets E2E", () => {
 			const createRes = await request(app.getHttpServer())
 				.post(`/workouts/${workoutId}/sets`)
 				.set(authHeader(accessToken))
-				.send({ exercise_id: exerciseId, weight: 100, reps: 5 });
+				.send({ exerciseId: exerciseId, weight: 100, reps: 5 });
 
 			const setId = createRes.body.data.id;
 

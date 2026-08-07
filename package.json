@@ -2,7 +2,7 @@
 	"name": "overload-server",
 	"version": "0.0.1",
 	"author": "JosepRivera",
-	"packageManager": "pnpm@11.18.0",
+	"packageManager": "pnpm@11.20.0",
 	"engines": {
 		"node": ">=24.0.0 <25"
 	},
@@ -34,14 +34,14 @@
 		"bcrypt": "^6.0.0",
 		"dotenv": "^17.4.2",
 		"helmet": "^8.3.0",
-		"jose": "^6.2.6",
+		"jose": "^6.2.8",
 		"nestjs-zod": "^5.5.0",
 		"reflect-metadata": "^0.2.2",
 		"rxjs": "^7.8.2",
 		"zod": "^4.4.3"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.5.6",
+		"@biomejs/biome": "^2.5.7",
 		"@nestjs/cli": "^11.0.24",
 		"@nestjs/schematics": "^11.1.0",
 		"@nestjs/testing": "^11.1.28",
@@ -54,7 +54,7 @@
 		"@types/supertest": "^7.2.1",
 		"prisma": "^7.9.1",
 		"supertest": "^7.2.2",
-		"tsx": "^4.23.1",
+		"tsx": "^4.23.5",
 		"typescript": "^5.9.3",
 		"vitest": "^4.1.10"
 	}

@@ -238,12 +238,13 @@ describe("Auth E2E", () => {
 	// ─────────────────────────────────────────────
 
 	describe("POST /auth/logout", () => {
-		it("happy path: 200", async () => {
+		it("happy path: 204 sin body", async () => {
 			const { refreshToken } = await registerAndLogin(app);
 
 			const res = await request(app.getHttpServer()).post("/auth/logout").send({ refreshToken });
 
-			expect(res.status).toBe(200);
+			expect(res.status).toBe(204);
+			expect(res.body).toEqual({});
 		});
 
 		it("refresh token queda revocado tras logout → 401 en /refresh", async () => {

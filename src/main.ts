@@ -36,7 +36,7 @@ async function bootstrap() {
 	app.useGlobalInterceptors(new TransformInterceptor());
 
 	// Scalar/Starlight are dev-only tooling — no public consumers of this API yet.
-	if (env.NODE_ENV !== "production") {
+	if (env.NODE_ENV === "development") {
 		const config = new DocumentBuilder()
 			.setTitle("Overload API")
 			.setDescription("REST API for strength training tracking")
@@ -57,7 +57,7 @@ async function bootstrap() {
 
 	await app.listen(env.PORT, "0.0.0.0");
 	console.log(`Server running on http://localhost:${env.PORT}`);
-	if (env.NODE_ENV !== "production") {
+	if (env.NODE_ENV === "development") {
 		console.log(`API reference available at http://localhost:${env.PORT}/api/docs`);
 		console.log(`Documentation available at http://localhost:4321`);
 	}

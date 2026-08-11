@@ -35,32 +35,31 @@ async function bootstrap() {
 	app.useGlobalPipes(new ZodValidationPipe());
 	app.useGlobalInterceptors(new TransformInterceptor());
 
-	const builder = new DocumentBuilder()
-		.setTitle("Overload API")
-		.setDescription("REST API for strength training tracking")
-		.setVersion("1.0")
-		.addBearerAuth();
+	// Scalar/Starlight are dev-only tooling — no public consumers of this API yet.
+	if (env.NODE_ENV !== "production") {
+		const config = new DocumentBuilder()
+			.setTitle("Overload API")
+			.setDescription("REST API for strength training tracking")
+			.setVersion("1.0")
+			.addServer(`http://localhost:${env.PORT}`, "Development")
+			.addBearerAuth()
+			.build();
 
-	if (env.APP_URL) {
-		builder.addServer(env.APP_URL, "Production");
-	} else {
-		builder.addServer(`http://localhost:${env.PORT}`, "Development");
+		const document = cleanupOpenApiDoc(SwaggerModule.createDocument(app, config));
+		app.use(
+			"/api/docs",
+			apiReference({
+				content: document,
+				theme: "mars",
+			}),
+		);
 	}
-
-	const config = builder.build();
-
-	const document = cleanupOpenApiDoc(SwaggerModule.createDocument(app, config));
-	app.use(
-		"/api/docs",
-		apiReference({
-			content: document,
-			theme: "mars",
-		}),
-	);
 
 	await app.listen(env.PORT, "0.0.0.0");
 	console.log(`Server running on http://localhost:${env.PORT}`);
-	console.log(`API reference available at http://localhost:${env.PORT}/api/docs`);
-	console.log(`Documentation available at http://localhost:4321`);
+	if (env.NODE_ENV !== "production") {
+		console.log(`API reference available at http://localhost:${env.PORT}/api/docs`);
+		console.log(`Documentation available at http://localhost:4321`);
+	}
 }
 bootstrap();

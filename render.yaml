@@ -23,7 +23,5 @@ services:
         value: 7d
       - key: CORS_ORIGIN
         sync: false
-      - key: APP_URL
-        value: https://overload-server.onrender.com
       - key: BCRYPT_ROUNDS
         value: 10

@@ -10,12 +10,20 @@
 		"baseUrl": ".",
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
-		"ignoreDeprecations": "6.0",
 		"noEmit": true,
+		// Los specs importan con extensión .ts explícita; permitido porque no emitimos
+		// desde este config (tsconfig.build.json lo desactiva junto con noEmit).
+		"allowImportingTsExtensions": true,
+		// vitest.config.ts corre con globals: true, así que describe/it/expect existen
+		// en runtime. "node" va explícito porque declarar types desactiva el auto-include.
+		"types": ["node", "vitest/globals"],
 		"paths": {
 			"@/*": ["./src/*"]
 		},
 		"noUncheckedIndexedAccess": true
 	},
-	"exclude": ["node_modules", "dist", "test", "**/*.spec.ts"]
+	// apps/* son workspaces aparte con su propio tsconfig (apps/docs extiende el de Astro).
+	// Sin este include explícito, el root los absorbía y `tsc` fallaba con errores ajenos.
+	"include": ["src/**/*", "test/**/*", "prisma/**/*", "prisma.config.ts", "vitest.config.ts"],
+	"exclude": ["node_modules", "dist", "apps"]
 }

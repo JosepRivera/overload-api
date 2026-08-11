@@ -282,11 +282,11 @@ describe("AnalyticsService", () => {
 			const result = await service.getExerciseProgression(USER_ID, EXERCISE_ID, { limit: 20 });
 
 			expect(result).toHaveLength(1);
-			expect(result[0].workoutId).toBe(WORKOUT_ID);
-			expect(result[0].totalVolume).toBe(1000);
-			expect(result[0].avgWeight).toBe(100);
-			expect(result[0].avgReps).toBe(5);
-			expect(result[0].date).toEqual(date);
+			expect(result[0]?.workoutId).toBe(WORKOUT_ID);
+			expect(result[0]?.totalVolume).toBe(1000);
+			expect(result[0]?.avgWeight).toBe(100);
+			expect(result[0]?.avgReps).toBe(5);
+			expect(result[0]?.date).toEqual(date);
 		});
 
 		it("separates sets from different workouts into different sessions", async () => {
@@ -313,9 +313,9 @@ describe("AnalyticsService", () => {
 
 			const result = await service.getExerciseProgression(USER_ID, EXERCISE_ID, { limit: 20 });
 
-			expect(result[0].date).toEqual(recent);
-			expect(result[1].date).toEqual(mid);
-			expect(result[2].date).toEqual(old);
+			expect(result[0]?.date).toEqual(recent);
+			expect(result[1]?.date).toEqual(mid);
+			expect(result[2]?.date).toEqual(old);
 		});
 
 		it("respects the limit query parameter", async () => {
@@ -346,9 +346,9 @@ describe("AnalyticsService", () => {
 
 			const result = await service.getExerciseProgression(USER_ID, EXERCISE_ID, { limit: 20 });
 
-			expect(result[0].avgWeight).toBe(90);
-			expect(result[0].avgReps).toBe(7.5);
-			expect(result[0].totalVolume).toBe(1300);
+			expect(result[0]?.avgWeight).toBe(90);
+			expect(result[0]?.avgReps).toBe(7.5);
+			expect(result[0]?.totalVolume).toBe(1300);
 		});
 
 		it("throws NotFoundException when exercise does not belong to user", async () => {

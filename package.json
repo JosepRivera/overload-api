@@ -9,7 +9,8 @@
 	"scripts": {
 		"start": "nest start --watch",
 		"build": "nest build",
-		"lint": "biome check --write ./src ./test",
+		"lint": "biome check --write ./src ./test ./prisma",
+		"typecheck": "tsc --noEmit",
 		"dev": "docker compose up",
 		"dev:build": "pnpm install && docker compose up --build",
 		"dev:stop": "docker compose down",

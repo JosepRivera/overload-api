@@ -7,6 +7,9 @@
 		"strict": true,
 		"esModuleInterop": true,
 		"skipLibCheck": true,
+		// TypeScript ya no lo necesita para resolver paths, pero SWC si: sin baseUrl
+		// aborta con "base_dir must be absolute" porque no deduce el directorio base.
+		// No lo quites sin configurar antes jsc.baseUrl en SWC o migrar los imports @/.
 		"baseUrl": ".",
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,

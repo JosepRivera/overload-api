@@ -1,0 +1,8 @@
+{
+  // El editor trae su propio TypeScript (6.x), pero el proyecto compila con el 5.9.3
+  // de node_modules. Esa diferencia hacia que el editor marcara errores que `tsc` y CI
+  // no ven, como la deprecacion de baseUrl (TS5101), que en 5.9.3 ni siquiera aplica.
+  // Apuntar al TypeScript del workspace mantiene editor, CLI y CI diciendo lo mismo.
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true
+}

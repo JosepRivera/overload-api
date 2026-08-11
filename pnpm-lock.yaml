@@ -44,6 +44,9 @@ importers:
       nestjs-zod:
         specifier: ^5.5.0
         version: 5.5.0(@nestjs/common@11.1.29(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))(@nestjs/swagger@11.4.6(@nestjs/common@11.1.29(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))(@nestjs/core@11.1.29)(reflect-metadata@0.2.2))(rxjs@7.8.2)(zod@4.4.3)
+      prisma:
+        specifier: ^7.9.1
+        version: 7.9.1(@types/react@19.2.13)(magicast@0.5.3)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
@@ -87,9 +90,6 @@ importers:
       '@types/supertest':
         specifier: ^7.2.1
         version: 7.2.1
-      prisma:
-        specifier: ^7.9.1
-        version: 7.9.1(@types/react@19.2.13)(magicast@0.5.3)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
       supertest:
         specifier: ^7.2.2
         version: 7.2.2(supports-color@8.1.1)

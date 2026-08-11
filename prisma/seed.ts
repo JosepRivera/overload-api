@@ -32,7 +32,7 @@ export const WORKOUT_2 = "a1b2c3d4-0023-4001-a001-000000000001";
 export const WORKOUT_3 = "a1b2c3d4-0024-4001-a001-000000000001";
 export const WORKOUT_4 = "a1b2c3d4-0025-4001-a001-000000000001";
 
-// Sets usan clave compuesta (workout_id + exercise_id + set_number), no necesitan ID propio
+// Sets usan clave compuesta (workoutId + exerciseId + setNumber), no necesitan ID propio
 
 // ===================
 //   HELPERS
@@ -65,9 +65,9 @@ async function main() {
 				id: USER_MAIN,
 				email: "joseprivera@overload.dev",
 				name: "Josep Rivera",
-				password_hash: passwordHash,
-				is_active: true,
-				email_verified: false,
+				passwordHash: passwordHash,
+				isActive: true,
+				emailVerified: false,
 			},
 		});
 
@@ -83,12 +83,12 @@ async function main() {
 				update: {},
 				create: {
 					id: EXERCISE_BENCH,
-					user_id: USER_MAIN,
+					userId: USER_MAIN,
 					name: "Bench Press",
 					category: "chest",
 					type: "compound",
 					notes: "Bajar controlado 3 segundos",
-					is_archived: false,
+					isArchived: false,
 				},
 			}),
 			tx.exercise.upsert({
@@ -96,12 +96,12 @@ async function main() {
 				update: {},
 				create: {
 					id: EXERCISE_OHP,
-					user_id: USER_MAIN,
+					userId: USER_MAIN,
 					name: "Overhead Press",
 					category: "shoulders",
 					type: "compound",
 					notes: null,
-					is_archived: false,
+					isArchived: false,
 				},
 			}),
 			tx.exercise.upsert({
@@ -109,12 +109,12 @@ async function main() {
 				update: {},
 				create: {
 					id: EXERCISE_PULLUP,
-					user_id: USER_MAIN,
+					userId: USER_MAIN,
 					name: "Pull-up",
 					category: "back",
 					type: "compound",
 					notes: "Agarre prono, escápulas activas",
-					is_archived: false,
+					isArchived: false,
 				},
 			}),
 			tx.exercise.upsert({
@@ -122,12 +122,12 @@ async function main() {
 				update: {},
 				create: {
 					id: EXERCISE_ROW,
-					user_id: USER_MAIN,
+					userId: USER_MAIN,
 					name: "Barbell Row",
 					category: "back",
 					type: "compound",
 					notes: null,
-					is_archived: false,
+					isArchived: false,
 				},
 			}),
 			tx.exercise.upsert({
@@ -135,12 +135,12 @@ async function main() {
 				update: {},
 				create: {
 					id: EXERCISE_SQUAT,
-					user_id: USER_MAIN,
+					userId: USER_MAIN,
 					name: "Squat",
 					category: "legs",
 					type: "compound",
 					notes: "Profundidad paralela mínima",
-					is_archived: false,
+					isArchived: false,
 				},
 			}),
 			tx.exercise.upsert({
@@ -148,12 +148,12 @@ async function main() {
 				update: {},
 				create: {
 					id: EXERCISE_RDL,
-					user_id: USER_MAIN,
+					userId: USER_MAIN,
 					name: "Romanian Deadlift",
 					category: "legs",
 					type: "compound",
 					notes: null,
-					is_archived: false,
+					isArchived: false,
 				},
 			}),
 			tx.exercise.upsert({
@@ -161,12 +161,12 @@ async function main() {
 				update: {},
 				create: {
 					id: EXERCISE_CURL,
-					user_id: USER_MAIN,
+					userId: USER_MAIN,
 					name: "Bicep Curl",
 					category: "arms",
 					type: "isolation",
 					notes: null,
-					is_archived: false,
+					isArchived: false,
 				},
 			}),
 			tx.exercise.upsert({
@@ -174,12 +174,12 @@ async function main() {
 				update: {},
 				create: {
 					id: EXERCISE_PLANK,
-					user_id: USER_MAIN,
+					userId: USER_MAIN,
 					name: "Plank",
 					category: "core",
 					type: "stretching",
 					notes: null,
-					is_archived: false,
+					isArchived: false,
 				},
 			}),
 			tx.exercise.upsert({
@@ -187,12 +187,12 @@ async function main() {
 				update: {},
 				create: {
 					id: EXERCISE_ARCHIVED,
-					user_id: USER_MAIN,
+					userId: USER_MAIN,
 					name: "Lateral Raise",
 					category: "shoulders",
 					type: "isolation",
 					notes: null,
-					is_archived: true,
+					isArchived: true,
 				},
 			}),
 			tx.exercise.upsert({
@@ -200,12 +200,12 @@ async function main() {
 				update: {},
 				create: {
 					id: EXERCISE_ARCHIVED2,
-					user_id: USER_MAIN,
+					userId: USER_MAIN,
 					name: "Cable Fly",
 					category: "chest",
 					type: "isolation",
 					notes: "Ejercicio descontinuado",
-					is_archived: true,
+					isArchived: true,
 				},
 			}),
 		]);
@@ -221,10 +221,10 @@ async function main() {
 				update: {},
 				create: {
 					id: ROUTINE_PUSH_DAY,
-					user_id: USER_MAIN,
+					userId: USER_MAIN,
 					name: "Push Day",
 					description: "Press de pecho y hombro",
-					is_active: true,
+					isActive: true,
 				},
 			}),
 			tx.routine.upsert({
@@ -232,10 +232,10 @@ async function main() {
 				update: {},
 				create: {
 					id: ROUTINE_PULL_DAY,
-					user_id: USER_MAIN,
+					userId: USER_MAIN,
 					name: "Pull Day",
 					description: "Tracción y bíceps",
-					is_active: true,
+					isActive: true,
 				},
 			}),
 			tx.routine.upsert({
@@ -243,10 +243,10 @@ async function main() {
 				update: {},
 				create: {
 					id: ROUTINE_OLD_LEG,
-					user_id: USER_MAIN,
+					userId: USER_MAIN,
 					name: "Old Leg Day",
 					description: "Rutina de pierna descontinuada",
-					is_active: false,
+					isActive: false,
 				},
 			}),
 		]);
@@ -264,13 +264,13 @@ async function main() {
 				update: {},
 				create: {
 					id: ROUTINE_EX_PUSH_BENCH,
-					routine_id: ROUTINE_PUSH_DAY,
-					exercise_id: EXERCISE_BENCH,
-					target_sets: 4,
-					target_reps_min: 6,
-					target_reps_max: 10,
-					target_rest_sec: 120,
-					order_index: 0,
+					routineId: ROUTINE_PUSH_DAY,
+					exerciseId: EXERCISE_BENCH,
+					targetSets: 4,
+					targetRepsMin: 6,
+					targetRepsMax: 10,
+					targetRestSec: 120,
+					orderIndex: 0,
 					notes: null,
 				},
 			}),
@@ -279,13 +279,13 @@ async function main() {
 				update: {},
 				create: {
 					id: ROUTINE_EX_PUSH_OHP,
-					routine_id: ROUTINE_PUSH_DAY,
-					exercise_id: EXERCISE_OHP,
-					target_sets: 3,
-					target_reps_min: 8,
-					target_reps_max: 12,
-					target_rest_sec: 90,
-					order_index: 1,
+					routineId: ROUTINE_PUSH_DAY,
+					exerciseId: EXERCISE_OHP,
+					targetSets: 3,
+					targetRepsMin: 8,
+					targetRepsMax: 12,
+					targetRestSec: 90,
+					orderIndex: 1,
 					notes: null,
 				},
 			}),
@@ -294,13 +294,13 @@ async function main() {
 				update: {},
 				create: {
 					id: ROUTINE_EX_PULL_PULLUP,
-					routine_id: ROUTINE_PULL_DAY,
-					exercise_id: EXERCISE_PULLUP,
-					target_sets: 4,
-					target_reps_min: 5,
-					target_reps_max: 8,
-					target_rest_sec: 120,
-					order_index: 0,
+					routineId: ROUTINE_PULL_DAY,
+					exerciseId: EXERCISE_PULLUP,
+					targetSets: 4,
+					targetRepsMin: 5,
+					targetRepsMax: 8,
+					targetRestSec: 120,
+					orderIndex: 0,
 					notes: null,
 				},
 			}),
@@ -309,13 +309,13 @@ async function main() {
 				update: {},
 				create: {
 					id: ROUTINE_EX_PULL_ROW,
-					routine_id: ROUTINE_PULL_DAY,
-					exercise_id: EXERCISE_ROW,
-					target_sets: 3,
-					target_reps_min: 8,
-					target_reps_max: 12,
-					target_rest_sec: 90,
-					order_index: 1,
+					routineId: ROUTINE_PULL_DAY,
+					exerciseId: EXERCISE_ROW,
+					targetSets: 3,
+					targetRepsMin: 8,
+					targetRepsMax: 12,
+					targetRestSec: 90,
+					orderIndex: 1,
 					notes: "Codos a 45°",
 				},
 			}),
@@ -324,13 +324,13 @@ async function main() {
 				update: {},
 				create: {
 					id: ROUTINE_EX_PULL_CURL,
-					routine_id: ROUTINE_PULL_DAY,
-					exercise_id: EXERCISE_CURL,
-					target_sets: 3,
-					target_reps_min: 10,
-					target_reps_max: 15,
-					target_rest_sec: 60,
-					order_index: 2,
+					routineId: ROUTINE_PULL_DAY,
+					exerciseId: EXERCISE_CURL,
+					targetSets: 3,
+					targetRepsMin: 10,
+					targetRepsMax: 15,
+					targetRestSec: 60,
+					orderIndex: 2,
 					notes: null,
 				},
 			}),
@@ -339,13 +339,13 @@ async function main() {
 				update: {},
 				create: {
 					id: ROUTINE_EX_LEG_SQUAT,
-					routine_id: ROUTINE_OLD_LEG,
-					exercise_id: EXERCISE_SQUAT,
-					target_sets: 5,
-					target_reps_min: 5,
-					target_reps_max: 5,
-					target_rest_sec: 180,
-					order_index: 0,
+					routineId: ROUTINE_OLD_LEG,
+					exerciseId: EXERCISE_SQUAT,
+					targetSets: 5,
+					targetRepsMin: 5,
+					targetRepsMax: 5,
+					targetRestSec: 180,
+					orderIndex: 0,
 					notes: null,
 				},
 			}),
@@ -354,13 +354,13 @@ async function main() {
 				update: {},
 				create: {
 					id: ROUTINE_EX_LEG_RDL,
-					routine_id: ROUTINE_OLD_LEG,
-					exercise_id: EXERCISE_RDL,
-					target_sets: 3,
-					target_reps_min: 8,
-					target_reps_max: 10,
-					target_rest_sec: 120,
-					order_index: 1,
+					routineId: ROUTINE_OLD_LEG,
+					exerciseId: EXERCISE_RDL,
+					targetSets: 3,
+					targetRepsMin: 8,
+					targetRepsMax: 10,
+					targetRestSec: 120,
+					orderIndex: 1,
 					notes: null,
 				},
 			}),
@@ -372,20 +372,20 @@ async function main() {
 		// WORKOUT_1: completado, hace 10 días, Push Day, con notes
 		// WORKOUT_2: completado, hace 7 días,  Pull Day, sin notes
 		// WORKOUT_3: completado, hace 3 días,  sin routine, con notes
-		// WORKOUT_4: ACTIVO (finished_at null), hace 20 min, Push Day
+		// WORKOUT_4: ACTIVO (finishedAt null), hace 20 min, Push Day
 		//
-		// NOTA: daysAgo(N, M) resta N días Y M minutos → finished_at queda M minutos
-		// después de started_at (ambos en el pasado, finished > started ✓)
+		// NOTA: daysAgo(N, M) resta N días Y M minutos → finishedAt queda M minutos
+		// después de startedAt (ambos en el pasado, finished > started ✓)
 		await Promise.all([
 			tx.workout.upsert({
 				where: { id: WORKOUT_1 },
 				update: {},
 				create: {
 					id: WORKOUT_1,
-					user_id: USER_MAIN,
-					routine_id: ROUTINE_PUSH_DAY,
-					started_at: daysAgo(10),
-					finished_at: daysAgoPlus(10, 75),
+					userId: USER_MAIN,
+					routineId: ROUTINE_PUSH_DAY,
+					startedAt: daysAgo(10),
+					finishedAt: daysAgoPlus(10, 75),
 					notes: "Buena sesión, PR en bench",
 				},
 			}),
@@ -394,10 +394,10 @@ async function main() {
 				update: {},
 				create: {
 					id: WORKOUT_2,
-					user_id: USER_MAIN,
-					routine_id: ROUTINE_PULL_DAY,
-					started_at: daysAgo(7),
-					finished_at: daysAgoPlus(7, 60),
+					userId: USER_MAIN,
+					routineId: ROUTINE_PULL_DAY,
+					startedAt: daysAgo(7),
+					finishedAt: daysAgoPlus(7, 60),
 					notes: null,
 				},
 			}),
@@ -406,10 +406,10 @@ async function main() {
 				update: {},
 				create: {
 					id: WORKOUT_3,
-					user_id: USER_MAIN,
-					routine_id: null,
-					started_at: daysAgo(3),
-					finished_at: daysAgoPlus(3, 90),
+					userId: USER_MAIN,
+					routineId: null,
+					startedAt: daysAgo(3),
+					finishedAt: daysAgoPlus(3, 90),
 					notes: "Sin rutina, improvisado",
 				},
 			}),
@@ -418,10 +418,10 @@ async function main() {
 				update: {},
 				create: {
 					id: WORKOUT_4,
-					user_id: USER_MAIN,
-					routine_id: ROUTINE_PUSH_DAY,
-					started_at: minutesAgo(20),
-					finished_at: null,
+					userId: USER_MAIN,
+					routineId: ROUTINE_PUSH_DAY,
+					startedAt: minutesAgo(20),
+					finishedAt: null,
 					notes: null,
 				},
 			}),
@@ -433,8 +433,8 @@ async function main() {
 		// Total: 30 sets (8 warmup, 22 working)
 		//
 		// Reglas aplicadas:
-		// - is_warmup: true  → rpe siempre null, peso notablemente menor
-		// - is_warmup: false → rpe en algunos (7.0–9.5), null en otros
+		// - isWarmup: true  → rpe siempre null, peso notablemente menor
+		// - isWarmup: false → rpe en algunos (7.0–9.5), null en otros
 		// - weight: 0 válido para Pull-up (bodyweight)
 		// - Bicep Curl incluye sets con reps > 10 (12, 11) → Epley NO debe aplicar
 		// - Todos los demás working sets tienen reps <= 10 → Epley SÍ aplica
@@ -442,312 +442,312 @@ async function main() {
 			// ── WORKOUT_1 · Bench Press ──────────────
 			tx.set.upsert({
 				where: {
-					workout_id_exercise_id_set_number: {
-						workout_id: WORKOUT_1,
-						exercise_id: EXERCISE_BENCH,
-						set_number: 1,
+					workoutId_exerciseId_setNumber: {
+						workoutId: WORKOUT_1,
+						exerciseId: EXERCISE_BENCH,
+						setNumber: 1,
 					},
 				},
 				update: {},
 				create: {
-					workout_id: WORKOUT_1,
-					exercise_id: EXERCISE_BENCH,
-					set_number: 1,
+					workoutId: WORKOUT_1,
+					exerciseId: EXERCISE_BENCH,
+					setNumber: 1,
 					weight: 40,
 					reps: 15,
 					rpe: null,
-					is_warmup: true,
+					isWarmup: true,
 				},
 			}),
 			tx.set.upsert({
 				where: {
-					workout_id_exercise_id_set_number: {
-						workout_id: WORKOUT_1,
-						exercise_id: EXERCISE_BENCH,
-						set_number: 2,
+					workoutId_exerciseId_setNumber: {
+						workoutId: WORKOUT_1,
+						exerciseId: EXERCISE_BENCH,
+						setNumber: 2,
 					},
 				},
 				update: {},
 				create: {
-					workout_id: WORKOUT_1,
-					exercise_id: EXERCISE_BENCH,
-					set_number: 2,
+					workoutId: WORKOUT_1,
+					exerciseId: EXERCISE_BENCH,
+					setNumber: 2,
 					weight: 80,
 					reps: 8,
 					rpe: 8.0,
-					is_warmup: false,
+					isWarmup: false,
 				},
 			}),
 			tx.set.upsert({
 				where: {
-					workout_id_exercise_id_set_number: {
-						workout_id: WORKOUT_1,
-						exercise_id: EXERCISE_BENCH,
-						set_number: 3,
+					workoutId_exerciseId_setNumber: {
+						workoutId: WORKOUT_1,
+						exerciseId: EXERCISE_BENCH,
+						setNumber: 3,
 					},
 				},
 				update: {},
 				create: {
-					workout_id: WORKOUT_1,
-					exercise_id: EXERCISE_BENCH,
-					set_number: 3,
+					workoutId: WORKOUT_1,
+					exerciseId: EXERCISE_BENCH,
+					setNumber: 3,
 					weight: 82.5,
 					reps: 7,
 					rpe: 8.5,
-					is_warmup: false,
+					isWarmup: false,
 				},
 			}),
 			tx.set.upsert({
 				where: {
-					workout_id_exercise_id_set_number: {
-						workout_id: WORKOUT_1,
-						exercise_id: EXERCISE_BENCH,
-						set_number: 4,
+					workoutId_exerciseId_setNumber: {
+						workoutId: WORKOUT_1,
+						exerciseId: EXERCISE_BENCH,
+						setNumber: 4,
 					},
 				},
 				update: {},
 				create: {
-					workout_id: WORKOUT_1,
-					exercise_id: EXERCISE_BENCH,
-					set_number: 4,
+					workoutId: WORKOUT_1,
+					exerciseId: EXERCISE_BENCH,
+					setNumber: 4,
 					weight: 85,
 					reps: 6,
 					rpe: 9.0,
-					is_warmup: false,
+					isWarmup: false,
 				},
 			}),
 
 			// ── WORKOUT_1 · Overhead Press ───────────
 			tx.set.upsert({
 				where: {
-					workout_id_exercise_id_set_number: {
-						workout_id: WORKOUT_1,
-						exercise_id: EXERCISE_OHP,
-						set_number: 1,
+					workoutId_exerciseId_setNumber: {
+						workoutId: WORKOUT_1,
+						exerciseId: EXERCISE_OHP,
+						setNumber: 1,
 					},
 				},
 				update: {},
 				create: {
-					workout_id: WORKOUT_1,
-					exercise_id: EXERCISE_OHP,
-					set_number: 1,
+					workoutId: WORKOUT_1,
+					exerciseId: EXERCISE_OHP,
+					setNumber: 1,
 					weight: 30,
 					reps: 12,
 					rpe: null,
-					is_warmup: true,
+					isWarmup: true,
 				},
 			}),
 			tx.set.upsert({
 				where: {
-					workout_id_exercise_id_set_number: {
-						workout_id: WORKOUT_1,
-						exercise_id: EXERCISE_OHP,
-						set_number: 2,
+					workoutId_exerciseId_setNumber: {
+						workoutId: WORKOUT_1,
+						exerciseId: EXERCISE_OHP,
+						setNumber: 2,
 					},
 				},
 				update: {},
 				create: {
-					workout_id: WORKOUT_1,
-					exercise_id: EXERCISE_OHP,
-					set_number: 2,
+					workoutId: WORKOUT_1,
+					exerciseId: EXERCISE_OHP,
+					setNumber: 2,
 					weight: 55,
 					reps: 10,
 					rpe: 7.5,
-					is_warmup: false,
+					isWarmup: false,
 				},
 			}),
 			tx.set.upsert({
 				where: {
-					workout_id_exercise_id_set_number: {
-						workout_id: WORKOUT_1,
-						exercise_id: EXERCISE_OHP,
-						set_number: 3,
+					workoutId_exerciseId_setNumber: {
+						workoutId: WORKOUT_1,
+						exerciseId: EXERCISE_OHP,
+						setNumber: 3,
 					},
 				},
 				update: {},
 				create: {
-					workout_id: WORKOUT_1,
-					exercise_id: EXERCISE_OHP,
-					set_number: 3,
+					workoutId: WORKOUT_1,
+					exerciseId: EXERCISE_OHP,
+					setNumber: 3,
 					weight: 57.5,
 					reps: 9,
 					rpe: 8.0,
-					is_warmup: false,
+					isWarmup: false,
 				},
 			}),
 			tx.set.upsert({
 				where: {
-					workout_id_exercise_id_set_number: {
-						workout_id: WORKOUT_1,
-						exercise_id: EXERCISE_OHP,
-						set_number: 4,
+					workoutId_exerciseId_setNumber: {
+						workoutId: WORKOUT_1,
+						exerciseId: EXERCISE_OHP,
+						setNumber: 4,
 					},
 				},
 				update: {},
 				create: {
-					workout_id: WORKOUT_1,
-					exercise_id: EXERCISE_OHP,
-					set_number: 4,
+					workoutId: WORKOUT_1,
+					exerciseId: EXERCISE_OHP,
+					setNumber: 4,
 					weight: 60,
 					reps: 8,
 					rpe: 8.5,
-					is_warmup: false,
+					isWarmup: false,
 				},
 			}),
 
 			// ── WORKOUT_2 · Pull-up (weight 0 = bodyweight) ──
 			tx.set.upsert({
 				where: {
-					workout_id_exercise_id_set_number: {
-						workout_id: WORKOUT_2,
-						exercise_id: EXERCISE_PULLUP,
-						set_number: 1,
+					workoutId_exerciseId_setNumber: {
+						workoutId: WORKOUT_2,
+						exerciseId: EXERCISE_PULLUP,
+						setNumber: 1,
 					},
 				},
 				update: {},
 				create: {
-					workout_id: WORKOUT_2,
-					exercise_id: EXERCISE_PULLUP,
-					set_number: 1,
+					workoutId: WORKOUT_2,
+					exerciseId: EXERCISE_PULLUP,
+					setNumber: 1,
 					weight: 0,
 					reps: 10,
 					rpe: null,
-					is_warmup: true,
+					isWarmup: true,
 				},
 			}),
 			tx.set.upsert({
 				where: {
-					workout_id_exercise_id_set_number: {
-						workout_id: WORKOUT_2,
-						exercise_id: EXERCISE_PULLUP,
-						set_number: 2,
+					workoutId_exerciseId_setNumber: {
+						workoutId: WORKOUT_2,
+						exerciseId: EXERCISE_PULLUP,
+						setNumber: 2,
 					},
 				},
 				update: {},
 				create: {
-					workout_id: WORKOUT_2,
-					exercise_id: EXERCISE_PULLUP,
-					set_number: 2,
+					workoutId: WORKOUT_2,
+					exerciseId: EXERCISE_PULLUP,
+					setNumber: 2,
 					weight: 0,
 					reps: 7,
 					rpe: 8.0,
-					is_warmup: false,
+					isWarmup: false,
 				},
 			}),
 			tx.set.upsert({
 				where: {
-					workout_id_exercise_id_set_number: {
-						workout_id: WORKOUT_2,
-						exercise_id: EXERCISE_PULLUP,
-						set_number: 3,
+					workoutId_exerciseId_setNumber: {
+						workoutId: WORKOUT_2,
+						exerciseId: EXERCISE_PULLUP,
+						setNumber: 3,
 					},
 				},
 				update: {},
 				create: {
-					workout_id: WORKOUT_2,
-					exercise_id: EXERCISE_PULLUP,
-					set_number: 3,
+					workoutId: WORKOUT_2,
+					exerciseId: EXERCISE_PULLUP,
+					setNumber: 3,
 					weight: 10,
 					reps: 6,
 					rpe: 8.5,
-					is_warmup: false,
+					isWarmup: false,
 				},
 			}),
 			tx.set.upsert({
 				where: {
-					workout_id_exercise_id_set_number: {
-						workout_id: WORKOUT_2,
-						exercise_id: EXERCISE_PULLUP,
-						set_number: 4,
+					workoutId_exerciseId_setNumber: {
+						workoutId: WORKOUT_2,
+						exerciseId: EXERCISE_PULLUP,
+						setNumber: 4,
 					},
 				},
 				update: {},
 				create: {
-					workout_id: WORKOUT_2,
-					exercise_id: EXERCISE_PULLUP,
-					set_number: 4,
+					workoutId: WORKOUT_2,
+					exerciseId: EXERCISE_PULLUP,
+					setNumber: 4,
 					weight: 10,
 					reps: 5,
 					rpe: 9.0,
-					is_warmup: false,
+					isWarmup: false,
 				},
 			}),
 
 			// ── WORKOUT_2 · Barbell Row ───────────────
 			tx.set.upsert({
 				where: {
-					workout_id_exercise_id_set_number: {
-						workout_id: WORKOUT_2,
-						exercise_id: EXERCISE_ROW,
-						set_number: 1,
+					workoutId_exerciseId_setNumber: {
+						workoutId: WORKOUT_2,
+						exerciseId: EXERCISE_ROW,
+						setNumber: 1,
 					},
 				},
 				update: {},
 				create: {
-					workout_id: WORKOUT_2,
-					exercise_id: EXERCISE_ROW,
-					set_number: 1,
+					workoutId: WORKOUT_2,
+					exerciseId: EXERCISE_ROW,
+					setNumber: 1,
 					weight: 40,
 					reps: 15,
 					rpe: null,
-					is_warmup: true,
+					isWarmup: true,
 				},
 			}),
 			tx.set.upsert({
 				where: {
-					workout_id_exercise_id_set_number: {
-						workout_id: WORKOUT_2,
-						exercise_id: EXERCISE_ROW,
-						set_number: 2,
+					workoutId_exerciseId_setNumber: {
+						workoutId: WORKOUT_2,
+						exerciseId: EXERCISE_ROW,
+						setNumber: 2,
 					},
 				},
 				update: {},
 				create: {
-					workout_id: WORKOUT_2,
-					exercise_id: EXERCISE_ROW,
-					set_number: 2,
+					workoutId: WORKOUT_2,
+					exerciseId: EXERCISE_ROW,
+					setNumber: 2,
 					weight: 75,
 					reps: 10,
 					rpe: null,
-					is_warmup: false,
+					isWarmup: false,
 				},
 			}),
 			tx.set.upsert({
 				where: {
-					workout_id_exercise_id_set_number: {
-						workout_id: WORKOUT_2,
-						exercise_id: EXERCISE_ROW,
-						set_number: 3,
+					workoutId_exerciseId_setNumber: {
+						workoutId: WORKOUT_2,
+						exerciseId: EXERCISE_ROW,
+						setNumber: 3,
 					},
 				},
 				update: {},
 				create: {
-					workout_id: WORKOUT_2,
-					exercise_id: EXERCISE_ROW,
-					set_number: 3,
+					workoutId: WORKOUT_2,
+					exerciseId: EXERCISE_ROW,
+					setNumber: 3,
 					weight: 77.5,
 					reps: 9,
 					rpe: 8.0,
-					is_warmup: false,
+					isWarmup: false,
 				},
 			}),
 			tx.set.upsert({
 				where: {
-					workout_id_exercise_id_set_number: {
-						workout_id: WORKOUT_2,
-						exercise_id: EXERCISE_ROW,
-						set_number: 4,
+					workoutId_exerciseId_setNumber: {
+						workoutId: WORKOUT_2,
+						exerciseId: EXERCISE_ROW,
+						setNumber: 4,
 					},
 				},
 				update: {},
 				create: {
-					workout_id: WORKOUT_2,
-					exercise_id: EXERCISE_ROW,
-					set_number: 4,
+					workoutId: WORKOUT_2,
+					exerciseId: EXERCISE_ROW,
+					setNumber: 4,
 					weight: 80,
 					reps: 8,
 					rpe: 8.5,
-					is_warmup: false,
+					isWarmup: false,
 				},
 			}),
 
@@ -755,234 +755,234 @@ async function main() {
 			// sets 2 y 3 tienen reps > 10 → Epley NO debe aplicar (caso de test para analytics)
 			tx.set.upsert({
 				where: {
-					workout_id_exercise_id_set_number: {
-						workout_id: WORKOUT_2,
-						exercise_id: EXERCISE_CURL,
-						set_number: 1,
+					workoutId_exerciseId_setNumber: {
+						workoutId: WORKOUT_2,
+						exerciseId: EXERCISE_CURL,
+						setNumber: 1,
 					},
 				},
 				update: {},
 				create: {
-					workout_id: WORKOUT_2,
-					exercise_id: EXERCISE_CURL,
-					set_number: 1,
+					workoutId: WORKOUT_2,
+					exerciseId: EXERCISE_CURL,
+					setNumber: 1,
 					weight: 10,
 					reps: 15,
 					rpe: null,
-					is_warmup: true,
+					isWarmup: true,
 				},
 			}),
 			tx.set.upsert({
 				where: {
-					workout_id_exercise_id_set_number: {
-						workout_id: WORKOUT_2,
-						exercise_id: EXERCISE_CURL,
-						set_number: 2,
+					workoutId_exerciseId_setNumber: {
+						workoutId: WORKOUT_2,
+						exerciseId: EXERCISE_CURL,
+						setNumber: 2,
 					},
 				},
 				update: {},
 				create: {
-					workout_id: WORKOUT_2,
-					exercise_id: EXERCISE_CURL,
-					set_number: 2,
+					workoutId: WORKOUT_2,
+					exerciseId: EXERCISE_CURL,
+					setNumber: 2,
 					weight: 20,
 					reps: 12,
 					rpe: null,
-					is_warmup: false,
+					isWarmup: false,
 				},
 			}),
 			tx.set.upsert({
 				where: {
-					workout_id_exercise_id_set_number: {
-						workout_id: WORKOUT_2,
-						exercise_id: EXERCISE_CURL,
-						set_number: 3,
+					workoutId_exerciseId_setNumber: {
+						workoutId: WORKOUT_2,
+						exerciseId: EXERCISE_CURL,
+						setNumber: 3,
 					},
 				},
 				update: {},
 				create: {
-					workout_id: WORKOUT_2,
-					exercise_id: EXERCISE_CURL,
-					set_number: 3,
+					workoutId: WORKOUT_2,
+					exerciseId: EXERCISE_CURL,
+					setNumber: 3,
 					weight: 22.5,
 					reps: 11,
 					rpe: 7.5,
-					is_warmup: false,
+					isWarmup: false,
 				},
 			}),
 			tx.set.upsert({
 				where: {
-					workout_id_exercise_id_set_number: {
-						workout_id: WORKOUT_2,
-						exercise_id: EXERCISE_CURL,
-						set_number: 4,
+					workoutId_exerciseId_setNumber: {
+						workoutId: WORKOUT_2,
+						exerciseId: EXERCISE_CURL,
+						setNumber: 4,
 					},
 				},
 				update: {},
 				create: {
-					workout_id: WORKOUT_2,
-					exercise_id: EXERCISE_CURL,
-					set_number: 4,
+					workoutId: WORKOUT_2,
+					exerciseId: EXERCISE_CURL,
+					setNumber: 4,
 					weight: 22.5,
 					reps: 10,
 					rpe: 8.0,
-					is_warmup: false,
+					isWarmup: false,
 				},
 			}),
 
 			// ── WORKOUT_3 · Squat ─────────────────────
 			tx.set.upsert({
 				where: {
-					workout_id_exercise_id_set_number: {
-						workout_id: WORKOUT_3,
-						exercise_id: EXERCISE_SQUAT,
-						set_number: 1,
+					workoutId_exerciseId_setNumber: {
+						workoutId: WORKOUT_3,
+						exerciseId: EXERCISE_SQUAT,
+						setNumber: 1,
 					},
 				},
 				update: {},
 				create: {
-					workout_id: WORKOUT_3,
-					exercise_id: EXERCISE_SQUAT,
-					set_number: 1,
+					workoutId: WORKOUT_3,
+					exerciseId: EXERCISE_SQUAT,
+					setNumber: 1,
 					weight: 60,
 					reps: 10,
 					rpe: null,
-					is_warmup: true,
+					isWarmup: true,
 				},
 			}),
 			tx.set.upsert({
 				where: {
-					workout_id_exercise_id_set_number: {
-						workout_id: WORKOUT_3,
-						exercise_id: EXERCISE_SQUAT,
-						set_number: 2,
+					workoutId_exerciseId_setNumber: {
+						workoutId: WORKOUT_3,
+						exerciseId: EXERCISE_SQUAT,
+						setNumber: 2,
 					},
 				},
 				update: {},
 				create: {
-					workout_id: WORKOUT_3,
-					exercise_id: EXERCISE_SQUAT,
-					set_number: 2,
+					workoutId: WORKOUT_3,
+					exerciseId: EXERCISE_SQUAT,
+					setNumber: 2,
 					weight: 100,
 					reps: 5,
 					rpe: 8.0,
-					is_warmup: false,
+					isWarmup: false,
 				},
 			}),
 			tx.set.upsert({
 				where: {
-					workout_id_exercise_id_set_number: {
-						workout_id: WORKOUT_3,
-						exercise_id: EXERCISE_SQUAT,
-						set_number: 3,
+					workoutId_exerciseId_setNumber: {
+						workoutId: WORKOUT_3,
+						exerciseId: EXERCISE_SQUAT,
+						setNumber: 3,
 					},
 				},
 				update: {},
 				create: {
-					workout_id: WORKOUT_3,
-					exercise_id: EXERCISE_SQUAT,
-					set_number: 3,
+					workoutId: WORKOUT_3,
+					exerciseId: EXERCISE_SQUAT,
+					setNumber: 3,
 					weight: 105,
 					reps: 5,
 					rpe: 8.5,
-					is_warmup: false,
+					isWarmup: false,
 				},
 			}),
 			tx.set.upsert({
 				where: {
-					workout_id_exercise_id_set_number: {
-						workout_id: WORKOUT_3,
-						exercise_id: EXERCISE_SQUAT,
-						set_number: 4,
+					workoutId_exerciseId_setNumber: {
+						workoutId: WORKOUT_3,
+						exerciseId: EXERCISE_SQUAT,
+						setNumber: 4,
 					},
 				},
 				update: {},
 				create: {
-					workout_id: WORKOUT_3,
-					exercise_id: EXERCISE_SQUAT,
-					set_number: 4,
+					workoutId: WORKOUT_3,
+					exerciseId: EXERCISE_SQUAT,
+					setNumber: 4,
 					weight: 107.5,
 					reps: 4,
 					rpe: 9.5,
-					is_warmup: false,
+					isWarmup: false,
 				},
 			}),
 
 			// ── WORKOUT_3 · Romanian Deadlift ─────────
 			tx.set.upsert({
 				where: {
-					workout_id_exercise_id_set_number: {
-						workout_id: WORKOUT_3,
-						exercise_id: EXERCISE_RDL,
-						set_number: 1,
+					workoutId_exerciseId_setNumber: {
+						workoutId: WORKOUT_3,
+						exerciseId: EXERCISE_RDL,
+						setNumber: 1,
 					},
 				},
 				update: {},
 				create: {
-					workout_id: WORKOUT_3,
-					exercise_id: EXERCISE_RDL,
-					set_number: 1,
+					workoutId: WORKOUT_3,
+					exerciseId: EXERCISE_RDL,
+					setNumber: 1,
 					weight: 50,
 					reps: 12,
 					rpe: null,
-					is_warmup: true,
+					isWarmup: true,
 				},
 			}),
 			tx.set.upsert({
 				where: {
-					workout_id_exercise_id_set_number: {
-						workout_id: WORKOUT_3,
-						exercise_id: EXERCISE_RDL,
-						set_number: 2,
+					workoutId_exerciseId_setNumber: {
+						workoutId: WORKOUT_3,
+						exerciseId: EXERCISE_RDL,
+						setNumber: 2,
 					},
 				},
 				update: {},
 				create: {
-					workout_id: WORKOUT_3,
-					exercise_id: EXERCISE_RDL,
-					set_number: 2,
+					workoutId: WORKOUT_3,
+					exerciseId: EXERCISE_RDL,
+					setNumber: 2,
 					weight: 90,
 					reps: 10,
 					rpe: 7.5,
-					is_warmup: false,
+					isWarmup: false,
 				},
 			}),
 			tx.set.upsert({
 				where: {
-					workout_id_exercise_id_set_number: {
-						workout_id: WORKOUT_3,
-						exercise_id: EXERCISE_RDL,
-						set_number: 3,
+					workoutId_exerciseId_setNumber: {
+						workoutId: WORKOUT_3,
+						exerciseId: EXERCISE_RDL,
+						setNumber: 3,
 					},
 				},
 				update: {},
 				create: {
-					workout_id: WORKOUT_3,
-					exercise_id: EXERCISE_RDL,
-					set_number: 3,
+					workoutId: WORKOUT_3,
+					exerciseId: EXERCISE_RDL,
+					setNumber: 3,
 					weight: 95,
 					reps: 8,
 					rpe: 8.0,
-					is_warmup: false,
+					isWarmup: false,
 				},
 			}),
 			tx.set.upsert({
 				where: {
-					workout_id_exercise_id_set_number: {
-						workout_id: WORKOUT_3,
-						exercise_id: EXERCISE_RDL,
-						set_number: 4,
+					workoutId_exerciseId_setNumber: {
+						workoutId: WORKOUT_3,
+						exerciseId: EXERCISE_RDL,
+						setNumber: 4,
 					},
 				},
 				update: {},
 				create: {
-					workout_id: WORKOUT_3,
-					exercise_id: EXERCISE_RDL,
-					set_number: 4,
+					workoutId: WORKOUT_3,
+					exerciseId: EXERCISE_RDL,
+					setNumber: 4,
 					weight: 97.5,
 					reps: 8,
 					rpe: 8.5,
-					is_warmup: false,
+					isWarmup: false,
 				},
 			}),
 
@@ -990,59 +990,59 @@ async function main() {
 			// Solo 3 sets: simula sesión iniciada, aún no terminada
 			tx.set.upsert({
 				where: {
-					workout_id_exercise_id_set_number: {
-						workout_id: WORKOUT_4,
-						exercise_id: EXERCISE_BENCH,
-						set_number: 1,
+					workoutId_exerciseId_setNumber: {
+						workoutId: WORKOUT_4,
+						exerciseId: EXERCISE_BENCH,
+						setNumber: 1,
 					},
 				},
 				update: {},
 				create: {
-					workout_id: WORKOUT_4,
-					exercise_id: EXERCISE_BENCH,
-					set_number: 1,
+					workoutId: WORKOUT_4,
+					exerciseId: EXERCISE_BENCH,
+					setNumber: 1,
 					weight: 40,
 					reps: 15,
 					rpe: null,
-					is_warmup: true,
+					isWarmup: true,
 				},
 			}),
 			tx.set.upsert({
 				where: {
-					workout_id_exercise_id_set_number: {
-						workout_id: WORKOUT_4,
-						exercise_id: EXERCISE_BENCH,
-						set_number: 2,
+					workoutId_exerciseId_setNumber: {
+						workoutId: WORKOUT_4,
+						exerciseId: EXERCISE_BENCH,
+						setNumber: 2,
 					},
 				},
 				update: {},
 				create: {
-					workout_id: WORKOUT_4,
-					exercise_id: EXERCISE_BENCH,
-					set_number: 2,
+					workoutId: WORKOUT_4,
+					exerciseId: EXERCISE_BENCH,
+					setNumber: 2,
 					weight: 82.5,
 					reps: 8,
 					rpe: 8.0,
-					is_warmup: false,
+					isWarmup: false,
 				},
 			}),
 			tx.set.upsert({
 				where: {
-					workout_id_exercise_id_set_number: {
-						workout_id: WORKOUT_4,
-						exercise_id: EXERCISE_BENCH,
-						set_number: 3,
+					workoutId_exerciseId_setNumber: {
+						workoutId: WORKOUT_4,
+						exerciseId: EXERCISE_BENCH,
+						setNumber: 3,
 					},
 				},
 				update: {},
 				create: {
-					workout_id: WORKOUT_4,
-					exercise_id: EXERCISE_BENCH,
-					set_number: 3,
+					workoutId: WORKOUT_4,
+					exerciseId: EXERCISE_BENCH,
+					setNumber: 3,
 					weight: 85,
 					reps: 7,
 					rpe: 8.5,
-					is_warmup: false,
+					isWarmup: false,
 				},
 			}),
 		]);

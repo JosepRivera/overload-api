@@ -24,13 +24,13 @@
 		"docs:preview": "pnpm --filter apps-docs preview"
 	},
 	"dependencies": {
-		"@nestjs/common": "^11.1.28",
-		"@nestjs/core": "^11.1.28",
-		"@nestjs/platform-express": "^11.1.28",
+		"@nestjs/common": "^11.1.29",
+		"@nestjs/core": "^11.1.29",
+		"@nestjs/platform-express": "^11.1.29",
 		"@nestjs/swagger": "^11.4.6",
 		"@prisma/adapter-pg": "^7.9.1",
 		"@prisma/client": "^7.9.1",
-		"@scalar/nestjs-api-reference": "^1.2.12",
+		"@scalar/nestjs-api-reference": "^1.2.13",
 		"bcrypt": "^6.0.0",
 		"dotenv": "^17.4.2",
 		"helmet": "^8.3.0",
@@ -44,7 +44,7 @@
 		"@biomejs/biome": "^2.5.7",
 		"@nestjs/cli": "^11.0.24",
 		"@nestjs/schematics": "^11.1.0",
-		"@nestjs/testing": "^11.1.28",
+		"@nestjs/testing": "^11.1.29",
 		"@swc/cli": "^0.8.1",
 		"@swc/core": "^1.15.47",
 		"@swc/helpers": "^0.5.23",
@@ -54,7 +54,7 @@
 		"@types/supertest": "^7.2.1",
 		"prisma": "^7.9.1",
 		"supertest": "^7.2.2",
-		"tsx": "^4.23.5",
+		"tsx": "^4.23.12",
 		"typescript": "^5.9.3",
 		"vitest": "^4.1.10"
 	}

@@ -170,9 +170,7 @@ export class RoutinesService {
 		const newMax = input.targetRepsMax ?? routineExercise.targetRepsMax;
 
 		if (newMax < newMin) {
-			throw new BadRequestException(
-				"targetRepsMax must be greater than or equal to targetRepsMin",
-			);
+			throw new BadRequestException("targetRepsMax must be greater than or equal to targetRepsMin");
 		}
 
 		return this.prisma.routineExercise.update({

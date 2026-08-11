@@ -12,9 +12,7 @@ services:
       - key: PORT
         value: 3000
       - key: DATABASE_URL
-        fromDatabase:
-          name: overload-db
-          property: connectionString
+        sync: false
       - key: JWT_SECRET
         generateValue: true
       - key: JWT_ACCESS_TOKEN_TTL
@@ -25,10 +23,3 @@ services:
         sync: false
       - key: BCRYPT_ROUNDS
         value: 10
-
-databases:
-  - name: overload-db
-    databaseName: overload
-    user: overload
-    plan: free
-    region: oregon

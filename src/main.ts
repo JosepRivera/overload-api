@@ -35,20 +35,26 @@ async function bootstrap() {
 	app.useGlobalPipes(new ZodValidationPipe());
 	app.useGlobalInterceptors(new TransformInterceptor());
 
-	const config = new DocumentBuilder()
+	const builder = new DocumentBuilder()
 		.setTitle("Overload API")
 		.setDescription("REST API for strength training tracking")
 		.setVersion("1.0")
-		.addServer(`http://localhost:${env.PORT}`, "Development")
-		.addBearerAuth()
-		.build();
+		.addBearerAuth();
+
+	if (env.APP_URL) {
+		builder.addServer(env.APP_URL, "Production");
+	} else {
+		builder.addServer(`http://localhost:${env.PORT}`, "Development");
+	}
+
+	const config = builder.build();
 
 	const document = cleanupOpenApiDoc(SwaggerModule.createDocument(app, config));
 	app.use(
 		"/api/docs",
 		apiReference({
 			content: document,
-			theme: "default",
+			theme: "mars",
 		}),
 	);
 

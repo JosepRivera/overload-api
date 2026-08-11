@@ -35,7 +35,6 @@ async function bootstrap() {
 	app.useGlobalPipes(new ZodValidationPipe());
 	app.useGlobalInterceptors(new TransformInterceptor());
 
-	// Scalar/Starlight are dev-only tooling — no public consumers of this API yet.
 	if (env.NODE_ENV === "development") {
 		const config = new DocumentBuilder()
 			.setTitle("Overload API")

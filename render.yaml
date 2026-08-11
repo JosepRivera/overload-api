@@ -7,7 +7,6 @@ services:
     region: oregon
     plan: free
     healthCheckPath: /health
-    preDeployCommand: pnpm prisma migrate deploy
     envVars:
       - key: NODE_ENV
         value: production

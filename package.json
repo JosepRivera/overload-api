@@ -7,10 +7,8 @@
 		"node": ">=24.0.0 <25"
 	},
 	"scripts": {
-		"start": "nest start --watch",
 		"build": "nest build",
 		"lint": "biome check --write ./src ./test ./prisma",
-		"typecheck": "tsc --noEmit",
 		"dev": "docker compose up",
 		"dev:build": "pnpm install && docker compose up --build",
 		"dev:stop": "docker compose down",
@@ -20,9 +18,7 @@
 		"db:migrate": "docker exec -it overload-app-dev pnpm prisma migrate dev --name",
 		"test": "vitest run --project unit",
 		"test:e2e": "docker compose -f compose.test.yaml up --build --abort-on-container-exit --exit-code-from app-test --remove-orphans",
-		"test:e2e:down": "docker compose -f compose.test.yaml down -v",
-		"docs:build": "pnpm --filter apps-docs build",
-		"docs:preview": "pnpm --filter apps-docs preview"
+		"test:e2e:down": "docker compose -f compose.test.yaml down -v"
 	},
 	"dependencies": {
 		"@nestjs/common": "^11.1.29",

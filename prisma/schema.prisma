@@ -2,10 +2,6 @@ generator client {
   provider     = "prisma-client"
   output       = "../src/generated/prisma"
   moduleFormat = "cjs"
-
-  // Sin fijarlo, Prisma lo infiere del entorno y generaba imports con extension
-  // .ts literal. SWC no reescribe specifiers, asi que dist quedaba pidiendo
-  // ./internal/class.ts cuando en disco hay class.js, y el proceso moria al arrancar.
   importFileExtension = "js"
 }
 

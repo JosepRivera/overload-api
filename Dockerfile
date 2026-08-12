@@ -45,6 +45,4 @@ COPY prisma ./prisma/
 COPY prisma.config.ts ./
 
 EXPOSE 3000
-# Free-tier Render doesn't support preDeployCommand, so migrations run on
-# every boot instead — safe because `prisma migrate deploy` is idempotent.
 CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main.js"]

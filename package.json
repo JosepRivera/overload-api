@@ -9,8 +9,7 @@
 	"scripts": {
 		"build": "nest build",
 		"lint": "biome check --write ./src ./test ./prisma",
-		"dev": "docker compose up",
-		"dev:build": "pnpm install && docker compose up --build",
+		"dev": "pnpm install && docker compose up --build",
 		"dev:stop": "docker compose down",
 		"dev:clean": "docker compose down -v",
 		"db:seed": "docker exec overload-app-dev pnpm prisma db seed",

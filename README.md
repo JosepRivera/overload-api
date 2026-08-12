@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="apps/docs/src/assets/logo.png" alt="Overload Logo" width="250" style="border-radius: 20px;" />
+<img src="apps/docs/src/assets/logo.png" alt="Overload Logo" width="250"/>
 
 # Overload
 
@@ -8,6 +8,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white&labelColor=3178C6&color=2d2d2d)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-24-339933?style=for-the-badge&logo=nodedotjs&logoColor=white&labelColor=339933&color=2d2d2d)](https://nodejs.org/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-4169E1?style=for-the-badge&logo=postgresql&logoColor=white&labelColor=4169E1&color=2d2d2d)](https://www.postgresql.org/)
+[![Neon](https://img.shields.io/badge/Neon-DB-00E599?style=for-the-badge&logo=neon&logoColor=white&labelColor=00E599&color=2d2d2d)](https://neon.tech/)
 [![Prisma](https://img.shields.io/badge/Prisma-7.9-2D3748?style=for-the-badge&logo=prisma&logoColor=white&labelColor=2D3748&color=2d2d2d)](https://www.prisma.io/)
 [![Zod](https://img.shields.io/badge/Zod-4.4-3E67B1?style=for-the-badge&logo=zod&logoColor=white&labelColor=3E67B1&color=2d2d2d)](https://zod.dev/)
 [![jose](https://img.shields.io/badge/jose-6.2-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white&labelColor=000000&color=2d2d2d)](https://github.com/panva/jose)
@@ -18,23 +19,12 @@
 [![Scalar](https://img.shields.io/badge/Scalar-1.2-5865F2?style=for-the-badge&logo=scalar&logoColor=white&labelColor=5865F2&color=2d2d2d)](https://scalar.com/)
 [![Astro](https://img.shields.io/badge/Astro-7.2-BC52EE?style=for-the-badge&logo=astro&logoColor=white&labelColor=BC52EE&color=2d2d2d)](https://astro.build/)
 [![Starlight](https://img.shields.io/badge/Starlight-0.41-BC52EE?style=for-the-badge&logo=astro&logoColor=white&labelColor=6D28D9&color=2d2d2d)](https://starlight.astro.build/)
-[![Render](https://img.shields.io/badge/Render-Live-46E3B7?style=for-the-badge&logo=render&logoColor=white&labelColor=46E3B7&color=2d2d2d)](https://overload-server.onrender.com)
+[![Render](https://img.shields.io/badge/Render-Live-white?style=for-the-badge&logo=render&logoColor=black&labelColor=white&color=2d2d2d)](https://overload-server.onrender.com)
 [![Vercel](https://img.shields.io/badge/Vercel-Live-000000?style=for-the-badge&logo=vercel&logoColor=white&labelColor=000000&color=2d2d2d)](https://overload-server-docs.vercel.app)
 
 **Track strength training as data, not as a notebook.**
 
 </div>
-
----
-
-## Table of Contents
-
-- [Description](#description)
-- [Features](#features)
-- [Environment Variables](#environment-variables)
-- [Installation \& Setup](#installation--setup)
-- [Available Commands](#available-commands)
-- [Documentation](#documentation)
 
 ---
 
@@ -74,28 +64,6 @@ It is built around one idea: **progressive overload**. If the stimulus does not 
 
 ---
 
-## Environment Variables
-
-Copied from `.env.example` during [setup](#installation--setup):
-
-| Variable                | Description                          | Default / Example       |
-| ----------------------- | ------------------------------------ | ----------------------- |
-| `POSTGRES_USER`         | PostgreSQL username                  | `overload_user`         |
-| `POSTGRES_PASSWORD`     | PostgreSQL password                  | —                       |
-| `POSTGRES_DB`           | Database name                        | `overload_db`           |
-| `POSTGRES_PORT`         | PostgreSQL port exposed on the host  | `5432`                  |
-| `PORT`                  | Port the API listens on              | `3000`                  |
-| `NODE_ENV`              | Runtime environment                  | `development`           |
-| `JWT_SECRET`            | Secret key for signing access tokens | —                       |
-| `JWT_ACCESS_TOKEN_TTL`  | Access token duration                | `15m`                   |
-| `JWT_REFRESH_TOKEN_TTL` | Refresh token duration               | `7d`                    |
-| `CORS_ORIGIN`           | Allowed CORS origin                  | `http://localhost:5173` |
-| `BCRYPT_ROUNDS`         | bcrypt hashing rounds                | `10`                    |
-
-> `DATABASE_URL` is assembled by Docker Compose from the `POSTGRES_*` values. Only define it manually when running outside Docker.
-
----
-
 ## Installation & Setup
 
 ### Prerequisites
@@ -122,10 +90,8 @@ cp .env.example .env
 **3. Start the environment**
 
 ```bash
-pnpm dev:build
+pnpm dev
 ```
-
-Use `dev:build` on the first run — it installs dependencies and builds the images. From then on, `pnpm dev` is enough.
 
 This starts three containers — `overload-postgres-dev`, `overload-app-dev` and `overload-docs-dev`. The API runs in watch mode, and pending migrations are applied automatically on startup.
 

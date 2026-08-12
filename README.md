@@ -12,12 +12,14 @@
 [![Zod](https://img.shields.io/badge/Zod-4.4-3E67B1?style=for-the-badge&logo=zod&logoColor=white&labelColor=3E67B1&color=2d2d2d)](https://zod.dev/)
 [![jose](https://img.shields.io/badge/jose-6.2-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white&labelColor=000000&color=2d2d2d)](https://github.com/panva/jose)
 [![Docker](https://img.shields.io/badge/Docker-29-2496ED?style=for-the-badge&logo=docker&logoColor=white&labelColor=2496ED&color=2d2d2d)](https://www.docker.com/)
-[![pnpm](https://img.shields.io/badge/pnpm-11.18-F69220?style=for-the-badge&logo=pnpm&logoColor=white&labelColor=F69220&color=2d2d2d)](https://pnpm.io/)
+[![pnpm](https://img.shields.io/badge/pnpm-11.21-F69220?style=for-the-badge&logo=pnpm&logoColor=white&labelColor=F69220&color=2d2d2d)](https://pnpm.io/)
 [![Biome](https://img.shields.io/badge/Biome-2.5-60A5FA?style=for-the-badge&logo=biome&logoColor=white&labelColor=60A5FA&color=2d2d2d)](https://biomejs.dev/)
 [![Vitest](https://img.shields.io/badge/Vitest-4.1-6E9F18?style=for-the-badge&logo=vitest&logoColor=white&labelColor=6E9F18&color=2d2d2d)](https://vitest.dev/)
 [![Scalar](https://img.shields.io/badge/Scalar-1.2-5865F2?style=for-the-badge&logo=scalar&logoColor=white&labelColor=5865F2&color=2d2d2d)](https://scalar.com/)
-[![Astro](https://img.shields.io/badge/Astro-7.1-BC52EE?style=for-the-badge&logo=astro&logoColor=white&labelColor=BC52EE&color=2d2d2d)](https://astro.build/)
+[![Astro](https://img.shields.io/badge/Astro-7.2-BC52EE?style=for-the-badge&logo=astro&logoColor=white&labelColor=BC52EE&color=2d2d2d)](https://astro.build/)
 [![Starlight](https://img.shields.io/badge/Starlight-0.41-BC52EE?style=for-the-badge&logo=astro&logoColor=white&labelColor=6D28D9&color=2d2d2d)](https://starlight.astro.build/)
+[![Render](https://img.shields.io/badge/Render-Live-46E3B7?style=for-the-badge&logo=render&logoColor=white&labelColor=46E3B7&color=2d2d2d)](https://overload-server.onrender.com)
+[![Vercel](https://img.shields.io/badge/Vercel-Live-000000?style=for-the-badge&logo=vercel&logoColor=white&labelColor=000000&color=2d2d2d)](https://overload-server-docs.vercel.app)
 
 **Track strength training as data, not as a notebook.**
 
@@ -74,11 +76,7 @@ It is built around one idea: **progressive overload**. If the stimulus does not 
 
 ## Environment Variables
 
-Copy the example file before starting:
-
-```bash
-cp .env.example .env
-```
+Copied from `.env.example` during [setup](#installation--setup):
 
 | Variable                | Description                          | Default / Example       |
 | ----------------------- | ------------------------------------ | ----------------------- |
@@ -131,60 +129,11 @@ Use `dev:build` on the first run — it installs dependencies and builds the ima
 
 This starts three containers — `overload-postgres-dev`, `overload-app-dev` and `overload-docs-dev`. The API runs in watch mode, and pending migrations are applied automatically on startup.
 
-| Service              | URL                              |
-| -------------------- | -------------------------------- |
-| API                  | `http://localhost:3000`          |
-| Interactive API ref  | `http://localhost:3000/api/docs` |
-| Documentation site   | `http://localhost:4321`          |
-| PostgreSQL           | `localhost:5432`                 |
-| Node.js debugger     | `localhost:9229`                 |
-
----
-
-## Available Commands
-
-### Environment
-
-| Command          | Description                                          | Use it when                              |
-| ---------------- | ---------------------------------------------------- | ---------------------------------------- |
-| `pnpm dev`       | Start the full stack with Docker Compose             | Day-to-day development                   |
-| `pnpm dev:build` | Reinstall dependencies and rebuild images            | After adding a dep or editing Dockerfile |
-| `pnpm dev:stop`  | Stop and remove containers                           | Done for the day — database is preserved |
-| `pnpm dev:clean` | Stop containers and drop volumes — **wipes the DB**  | Starting completely from scratch         |
-
-### Database
-
-| Command                            | Description                                            |
-| ---------------------------------- | ------------------------------------------------------ |
-| `pnpm db:migrate <migration-name>` | Create and apply a migration after editing the schema  |
-| `pnpm db:seed`                     | Load sample data into the running dev container        |
-| `pnpm db:reset`                    | Drop the database and replay every migration           |
-
-### Tests
-
-| Command              | Description                                                    |
-| -------------------- | -------------------------------------------------------------- |
-| `pnpm test`          | Unit tests (`src/**/__tests__/**/*.spec.ts`)                   |
-| `pnpm test:e2e`      | E2E suite in an isolated Postgres container on port `5433`     |
-| `pnpm test:e2e:down` | Tear down the E2E containers and their volumes                 |
-
-### Build & Quality
-
-| Command             | Description                                            |
-| ------------------- | ------------------------------------------------------ |
-| `pnpm build`        | Compile the API to `dist/`                             |
-| `pnpm lint`         | Lint and auto-fix `src/` and `test/` with Biome        |
-| `pnpm start`        | Run the API in watch mode outside Docker               |
-| `pnpm docs:build`   | Build the static documentation site                    |
-| `pnpm docs:preview` | Serve the built documentation site                     |
-
 ---
 
 ## Documentation
 
 | Docs                        | What's there                                                        | URL                                                              |
 | --------------------------- | ------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| **Documentation site**      | Architecture, database schema, business rules and decision records  | [`http://localhost:4321`](http://localhost:4321)                 |
+| **Documentation site**      | Architecture, database schema, business rules and decision records  | [overload-server-docs.vercel.app](https://overload-server-docs.vercel.app) (local: [`http://localhost:4321`](http://localhost:4321)) |
 | **Interactive API reference** | Every endpoint, with live requests against your local server       | [`http://localhost:3000/api/docs`](http://localhost:3000/api/docs) |
-
-Both come up with `pnpm dev`. Protected endpoints need a Bearer Token — get one from `POST /auth/login` and paste it into the **Authorize** button in the API reference.

@@ -7,8 +7,7 @@ const REPO_URL = 'https://github.com/JosepRivera/overload-server';
 
 // https://astro.build/config
 export default defineConfig({
-	// TODO: set `site` to the public docs URL once this site is deployed.
-	// Required for canonical URLs, sitemap generation and social card previews.
+	site: 'https://overload-server-docs.vercel.app',
 	integrations: [
 		starlight({
 			title: 'Overload',

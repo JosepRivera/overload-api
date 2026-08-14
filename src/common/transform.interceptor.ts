@@ -15,7 +15,7 @@ export class TransformInterceptor implements NestInterceptor {
 	intercept(_context: ExecutionContext, next: CallHandler): Observable<unknown> {
 		return next.handle().pipe(
 			map((data) => {
-				if (data === null || data === undefined) return data;
+				if (data === undefined) return data;
 				return { data };
 			}),
 			catchError((err) => {
@@ -28,6 +28,7 @@ export class TransformInterceptor implements NestInterceptor {
 					throw new BadRequestException({
 						statusCode: 400,
 						message: "Validation failed",
+						error: "Bad Request",
 						errors,
 					});
 				}

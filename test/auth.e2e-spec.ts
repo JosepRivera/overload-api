@@ -32,9 +32,6 @@ describe("Auth E2E", () => {
 		await app.close();
 	});
 
-	// ─────────────────────────────────────────────
-	// POST /auth/register
-	// ─────────────────────────────────────────────
 
 	describe("POST /auth/register", () => {
 		it("happy path: 201, devuelve accessToken, refreshToken y user sin passwordHash", async () => {
@@ -119,9 +116,6 @@ describe("Auth E2E", () => {
 		});
 	});
 
-	// ─────────────────────────────────────────────
-	// POST /auth/login
-	// ─────────────────────────────────────────────
 
 	describe("POST /auth/login", () => {
 		it("happy path: 200", async () => {
@@ -174,9 +168,6 @@ describe("Auth E2E", () => {
 		});
 	});
 
-	// ─────────────────────────────────────────────
-	// POST /auth/refresh
-	// ─────────────────────────────────────────────
 
 	describe("POST /auth/refresh", () => {
 		it("happy path: 200, devuelve nuevos tokens", async () => {
@@ -192,10 +183,8 @@ describe("Auth E2E", () => {
 		it("token rotación: refresh token anterior revocado → 401", async () => {
 			const { refreshToken } = await registerAndLogin(app);
 
-			// Use it once to get new tokens
 			await request(app.getHttpServer()).post("/auth/refresh").send({ refreshToken });
 
-			// The original refresh token is now revoked
 			const res = await request(app.getHttpServer()).post("/auth/refresh").send({ refreshToken });
 
 			expect(res.status).toBe(401);
@@ -211,31 +200,19 @@ describe("Auth E2E", () => {
 
 		it("token de otro usuario → 401", async () => {
 			const user1 = await registerAndLogin(app);
-			// Attempt to use user1's refresh token for user2's context
-			// By verifying that even a valid token for a different user can't be reused after first use
-			// We just verify the token belongs to its user — use it with a different email context
 			await registerAndLogin(app);
 
-			// user2 uses user1's refresh token → should fail because userId in token doesn't match stored hash for user2
 			const res = await request(app.getHttpServer())
 				.post("/auth/refresh")
 				.send({ refreshToken: user1.refreshToken });
 
-			// user1's token is still valid (hasn't been used), so this succeeds for user1
-			// But the key security: the token is tied to user1 and can only give user1 new tokens
-			// The refresh will succeed (it's user1's valid token), not fail
-			// What matters is that user2 cannot use it maliciously - verified by isolation of returned tokens
 			expect([200, 401]).toContain(res.status);
 			if (res.status === 200) {
-				// The tokens returned belong to user1, not user2
 				expect(res.body.data).toHaveProperty("accessToken");
 			}
 		});
 	});
 
-	// ─────────────────────────────────────────────
-	// POST /auth/logout
-	// ─────────────────────────────────────────────
 
 	describe("POST /auth/logout", () => {
 		it("happy path: 204 sin body", async () => {
@@ -266,9 +243,6 @@ describe("Auth E2E", () => {
 		});
 	});
 
-	// ─────────────────────────────────────────────
-	// Límite de 5 refresh tokens
-	// ─────────────────────────────────────────────
 
 	describe("Límite de 5 refresh tokens", () => {
 		it("login 6 veces → token más antiguo revocado, últimos 5 activos", async () => {
@@ -277,7 +251,6 @@ describe("Auth E2E", () => {
 				.post("/auth/register")
 				.send({ email, password: "Password123!", name: "Limit Test" });
 
-			// Login 6 times, collect all refresh tokens
 			const tokens: string[] = [];
 			for (let i = 0; i < 6; i++) {
 				const res = await request(app.getHttpServer())
@@ -286,19 +259,16 @@ describe("Auth E2E", () => {
 				tokens.push(res.body.data.refreshToken);
 			}
 
-			// The first token (oldest) should be revoked
 			const firstTokenRes = await request(app.getHttpServer())
 				.post("/auth/refresh")
 				.send({ refreshToken: tokens[0] });
 			expect(firstTokenRes.status).toBe(401);
 
-			// The last 5 tokens should still be valid
 			for (let i = 1; i <= 5; i++) {
 				const res = await request(app.getHttpServer())
 					.post("/auth/refresh")
 					.send({ refreshToken: tokens[i] });
 				expect(res.status).toBe(200);
-				// Re-register the new token so subsequent tokens remain valid
 				tokens[i] = res.body.data.refreshToken;
 			}
 		});

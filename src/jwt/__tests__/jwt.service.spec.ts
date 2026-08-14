@@ -1,10 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { JwtService } from "@/jwt/jwt.service.js";
 
-// ---------------------------------------------------------------------------
-// Suite
-// ---------------------------------------------------------------------------
-
 describe("JwtService", () => {
 	let service: JwtService;
 
@@ -12,16 +8,12 @@ describe("JwtService", () => {
 		service = new JwtService();
 	});
 
-	// -------------------------------------------------------------------------
-	// signAccessToken / signRefreshToken
-	// -------------------------------------------------------------------------
-
 	describe("signAccessToken", () => {
 		it("returns a JWT string", async () => {
 			const token = await service.signAccessToken({ sub: "user-1", email: "a@b.com" });
 
 			expect(typeof token).toBe("string");
-			expect(token.split(".")).toHaveLength(3); // header.payload.signature
+			expect(token.split(".")).toHaveLength(3);
 		});
 
 		it("produces a token that verifies successfully", async () => {
@@ -57,10 +49,6 @@ describe("JwtService", () => {
 		});
 	});
 
-	// -------------------------------------------------------------------------
-	// verify — happy path
-	// -------------------------------------------------------------------------
-
 	describe("verify", () => {
 		it("returns valid=true and the decoded payload for a fresh token", async () => {
 			const payload = { sub: "user-42", email: "test@test.com" };
@@ -75,19 +63,14 @@ describe("JwtService", () => {
 			expect(result.errorType).toBeUndefined();
 		});
 
-		// -------------------------------------------------------------------------
-		// verify — expired token
-		// -------------------------------------------------------------------------
-
 		it("returns expired=true for an already-expired token", async () => {
-			// Craft a token manually with exp already in the past — no fake timers needed
 			const { SignJWT } = await import("jose");
 			const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 
 			const token = await new SignJWT({ sub: "user-1" })
 				.setProtectedHeader({ alg: "HS256" })
-				.setIssuedAt(Math.floor(Date.now() / 1000) - 120) // issued 2 min ago
-				.setExpirationTime(Math.floor(Date.now() / 1000) - 60) // expired 1 min ago
+				.setIssuedAt(Math.floor(Date.now() / 1000) - 120)
+				.setExpirationTime(Math.floor(Date.now() / 1000) - 60)
 				.sign(secret);
 
 			const result = await service.verify(token);
@@ -98,12 +81,7 @@ describe("JwtService", () => {
 			expect(result.errorType).toBe("expired");
 		});
 
-		// -------------------------------------------------------------------------
-		// verify — invalid token
-		// -------------------------------------------------------------------------
-
 		it("returns valid=false and errorType=invalid for a token with bad signature", async () => {
-			// Valid JWT structure (3 parts) but signature does not match
 			const result = await service.verify(
 				"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyLTEifQ.invalidsignatureXXXXXXXXXXXXXXXXXXXXXXXX",
 			);
@@ -146,10 +124,6 @@ describe("JwtService", () => {
 			expect(result.decoded).toBeNull();
 			expect(result.errorType).toBe("invalid");
 		});
-
-		// -------------------------------------------------------------------------
-		// verify — unknown / garbage input
-		// -------------------------------------------------------------------------
 
 		it("returns valid=false and errorType=invalid for a completely malformed string", async () => {
 			const result = await service.verify("not.a.valid.jwt.at.all");

@@ -32,9 +32,6 @@ describe("Exercises E2E", () => {
 		await app.close();
 	});
 
-	// ─────────────────────────────────────────────
-	// POST /exercises
-	// ─────────────────────────────────────────────
 
 	describe("POST /exercises", () => {
 		it("happy path: 201, devuelve el ejercicio creado", async () => {
@@ -132,9 +129,6 @@ describe("Exercises E2E", () => {
 		});
 	});
 
-	// ─────────────────────────────────────────────
-	// GET /exercises
-	// ─────────────────────────────────────────────
 
 	describe("GET /exercises", () => {
 		it("happy path: solo ejercicios no archivados del usuario", async () => {
@@ -221,9 +215,6 @@ describe("Exercises E2E", () => {
 		});
 	});
 
-	// ─────────────────────────────────────────────
-	// GET /exercises/:id
-	// ─────────────────────────────────────────────
 
 	describe("GET /exercises/:id", () => {
 		it("happy path: 200", async () => {
@@ -290,9 +281,6 @@ describe("Exercises E2E", () => {
 		});
 	});
 
-	// ─────────────────────────────────────────────
-	// PATCH /exercises/:id
-	// ─────────────────────────────────────────────
 
 	describe("PATCH /exercises/:id", () => {
 		it("happy path: 200", async () => {
@@ -388,9 +376,6 @@ describe("Exercises E2E", () => {
 		});
 	});
 
-	// ─────────────────────────────────────────────
-	// PATCH /exercises/:id/archive  (soft delete)
-	// ─────────────────────────────────────────────
 
 	describe("PATCH /exercises/:id/archive (soft delete)", () => {
 		it("happy path: ejercicio queda con isArchived = true", async () => {

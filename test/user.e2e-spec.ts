@@ -32,9 +32,6 @@ describe("User E2E", () => {
 		await app.close();
 	});
 
-	// ─────────────────────────────────────────────
-	// GET /users/me
-	// ─────────────────────────────────────────────
 
 	describe("GET /users/me", () => {
 		it("happy path: perfil sin passwordHash", async () => {

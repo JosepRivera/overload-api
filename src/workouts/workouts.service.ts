@@ -44,6 +44,7 @@ export class WorkoutsService {
 				notes: input.notes ?? null,
 				...(input.routineId && { routineId: input.routineId }),
 			},
+			omit: { userId: true, createdAt: true },
 		});
 	}
 
@@ -56,6 +57,7 @@ export class WorkoutsService {
 				orderBy: { startedAt: "desc" },
 				skip,
 				take: limit,
+				omit: { userId: true, createdAt: true },
 			}),
 			this.prisma.workout.count({
 				where: { userId, finishedAt: { not: null } },
@@ -71,12 +73,14 @@ export class WorkoutsService {
 				userId,
 				finishedAt: null,
 			},
+			omit: { userId: true, createdAt: true },
 		});
 	}
 
 	async findOne(userId: string, id: string) {
 		const workout = await this.prisma.workout.findFirst({
 			where: { id, userId },
+			omit: { userId: true, createdAt: true },
 		});
 
 		if (!workout) {
@@ -94,6 +98,7 @@ export class WorkoutsService {
 			data: {
 				...(input.notes !== undefined && { notes: input.notes }),
 			},
+			omit: { userId: true, createdAt: true },
 		});
 	}
 
@@ -101,7 +106,7 @@ export class WorkoutsService {
 		const workout = await this.findOne(userId, id);
 
 		if (workout.finishedAt !== null) {
-			throw new BadRequestException("Workout is already finished");
+			throw new ConflictException("Workout is already finished");
 		}
 
 		this.validateWorkoutDuration(workout.startedAt, new Date());
@@ -111,6 +116,7 @@ export class WorkoutsService {
 			data: {
 				finishedAt: new Date(),
 			},
+			omit: { userId: true, createdAt: true },
 		});
 	}
 

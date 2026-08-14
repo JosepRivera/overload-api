@@ -29,7 +29,7 @@ export class AuthService {
 	private calculateExpiry(ttl: string): Date {
 		const match = ttl.match(/^(\d+)\s*(ms|s|m|h|d|w|y)$/i);
 		if (!match) {
-			return new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // fallback 7d
+			return new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 		}
 
 		const value = Number.parseInt(match[1] ?? "0", 10);
@@ -48,10 +48,6 @@ export class AuthService {
 		return new Date(Date.now() + value * (multipliers[unit ?? ""] ?? 0));
 	}
 
-	// FIX BUG-002: Use SHA-256 instead of bcrypt for refresh token hashing.
-	// Refresh tokens are high-entropy random values — bcrypt's cost is unnecessary
-	// and causes O(n) comparisons on every refresh/logout. SHA-256 is O(1) and
-	// allows direct DB lookup by hash instead of iterating all active tokens.
 	private hashToken(token: string): string {
 		return createHash("sha256").update(token).digest("hex");
 	}
@@ -59,7 +55,6 @@ export class AuthService {
 	private async saveRefreshToken(userId: string, token: string) {
 		const tokenHash = this.hashToken(token);
 
-		// Delete expired tokens first
 		await this.prisma.refreshToken.deleteMany({
 			where: {
 				userId,
@@ -67,8 +62,6 @@ export class AuthService {
 			},
 		});
 
-		// FIX BUG-001: Enforce max 5 active refresh tokens per user.
-		// If the limit is reached, revoke the oldest active token before creating a new one.
 		const activeTokens = await this.prisma.refreshToken.findMany({
 			where: {
 				userId,
@@ -96,8 +89,6 @@ export class AuthService {
 		});
 	}
 
-	// FIX BUG-002: Direct DB lookup by SHA-256 hash instead of iterating
-	// all active tokens with bcrypt.compare — O(1) instead of O(n).
 	private async findValidRefreshToken(userId: string, rawToken: string) {
 		const tokenHash = this.hashToken(rawToken);
 
@@ -115,8 +106,6 @@ export class AuthService {
 	private async generateTokens(userId: string, email: string) {
 		const [accessToken, refreshToken] = await Promise.all([
 			this.jwtService.signAccessToken({ sub: userId, email }),
-			// jti (JWT ID) ensures each refresh token is unique even if issued
-			// within the same second for the same user — prevents SHA-256 hash collisions.
 			this.jwtService.signRefreshToken({ sub: userId, email, jti: randomUUID() }),
 		]);
 
@@ -137,8 +126,7 @@ export class AuthService {
 		const tokens = await this.generateTokens(user.id, user.email);
 		await this.saveRefreshToken(user.id, tokens.refreshToken);
 
-		const { passwordHash: _, createdAt: __, updatedAt: ___, ...userData } = user;
-		return { ...tokens, user: userData };
+		return { ...tokens, user: { id: user.id, email: user.email, name: user.name } };
 	}
 
 	async register(dto: RegisterDto) {
@@ -152,8 +140,7 @@ export class AuthService {
 		const tokens = await this.generateTokens(user.id, user.email);
 		await this.saveRefreshToken(user.id, tokens.refreshToken);
 
-		const { passwordHash: _, createdAt: __, updatedAt: ___, ...userData } = user;
-		return { ...tokens, user: userData };
+		return { ...tokens, user: { id: user.id, email: user.email, name: user.name } };
 	}
 
 	async refresh(dto: RefreshTokenDto) {

@@ -229,6 +229,8 @@ export class RoutinesService {
 				}),
 			),
 		);
+
+		return this.findAllExercises(userId, routineId);
 	}
 
 	// ─────────────────────────────────────────────

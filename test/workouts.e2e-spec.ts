@@ -278,7 +278,7 @@ describe("Workouts E2E", () => {
 				.post(`/workouts/${id}/finish`)
 				.set(authHeader(accessToken));
 
-			expect(res.status).toBe(400);
+			expect(res.status).toBe(409);
 		});
 
 		it("workout de otro usuario → 404", async () => {

@@ -101,7 +101,7 @@ export class WorkoutsService {
 		const workout = await this.findOne(userId, id);
 
 		if (workout.finishedAt !== null) {
-			throw new BadRequestException("Workout is already finished");
+			throw new ConflictException("Workout is already finished");
 		}
 
 		this.validateWorkoutDuration(workout.startedAt, new Date());

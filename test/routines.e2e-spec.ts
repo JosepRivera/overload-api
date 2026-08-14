@@ -32,9 +32,6 @@ describe("Routines E2E", () => {
 		await app.close();
 	});
 
-	// ─────────────────────────────────────────────
-	// POST /routines
-	// ─────────────────────────────────────────────
 
 	describe("POST /routines", () => {
 		it("happy path: 201", async () => {
@@ -120,9 +117,6 @@ describe("Routines E2E", () => {
 		});
 	});
 
-	// ─────────────────────────────────────────────
-	// GET /routines
-	// ─────────────────────────────────────────────
 
 	describe("GET /routines", () => {
 		it("rutinas inactivas NO aparecen en el listado", async () => {
@@ -150,9 +144,6 @@ describe("Routines E2E", () => {
 		});
 	});
 
-	// ─────────────────────────────────────────────
-	// GET /routines/:id
-	// ─────────────────────────────────────────────
 
 	describe("GET /routines/:id", () => {
 		it("happy path: incluye routineExercises ordenados por orderIndex", async () => {
@@ -165,7 +156,6 @@ describe("Routines E2E", () => {
 
 			const routineId = routineRes.body.data.id;
 
-			// Create two exercises and add them to the routine
 			const ex1 = await request(app.getHttpServer())
 				.post("/exercises")
 				.set(authHeader(accessToken))
@@ -207,7 +197,6 @@ describe("Routines E2E", () => {
 			expect(Array.isArray(res.body.data.routineExercises)).toBe(true);
 			expect(res.body.data.routineExercises.length).toBe(2);
 
-			// Verify orderIndex ordering
 			const indices = res.body.data.routineExercises.map(
 				(re: { orderIndex: number }) => re.orderIndex,
 			);
@@ -233,9 +222,6 @@ describe("Routines E2E", () => {
 		});
 	});
 
-	// ─────────────────────────────────────────────
-	// PATCH /routines/:id
-	// ─────────────────────────────────────────────
 
 	describe("PATCH /routines/:id", () => {
 		it("happy path: 200", async () => {
@@ -301,9 +287,6 @@ describe("Routines E2E", () => {
 		});
 	});
 
-	// ─────────────────────────────────────────────
-	// DELETE /routines/:id
-	// ─────────────────────────────────────────────
 
 	describe("DELETE /routines/:id", () => {
 		it("happy path: 204 sin body", async () => {
@@ -344,9 +327,6 @@ describe("Routines E2E", () => {
 		});
 	});
 
-	// ─────────────────────────────────────────────
-	// POST /routines/:id/exercises
-	// ─────────────────────────────────────────────
 
 	describe("POST /routines/:id/exercises", () => {
 		it("happy path: 201", async () => {
@@ -379,7 +359,7 @@ describe("Routines E2E", () => {
 
 			expect(res.status).toBe(201);
 			expect(res.body.data).toHaveProperty("exerciseId", exerciseId);
-			expect(res.body.data).toHaveProperty("routineId", routineId);
+			expect(res.body.data).not.toHaveProperty("routineId");
 		});
 
 		it("ejercicio archivado → error", async () => {
@@ -546,7 +526,7 @@ describe("Routines E2E", () => {
 					exerciseId: exRes.body.data.id,
 					targetSets: 3,
 					targetRepsMin: 12,
-					targetRepsMax: 8, // max < min
+					targetRepsMax: 8,
 					targetRestSec: 90,
 				});
 
@@ -554,9 +534,6 @@ describe("Routines E2E", () => {
 		});
 	});
 
-	// ─────────────────────────────────────────────
-	// POST /routines/:id/exercises/reorder
-	// ─────────────────────────────────────────────
 
 	describe("POST /routines/:id/exercises/reorder", () => {
 		it("happy path: reordena correctamente", async () => {
@@ -604,7 +581,6 @@ describe("Routines E2E", () => {
 			const re1Id = re1.body.data.id;
 			const re2Id = re2.body.data.id;
 
-			// Reorder: swap them
 			const reorderRes = await request(app.getHttpServer())
 				.post(`/routines/${routineId}/exercises/reorder`)
 				.set(authHeader(accessToken))
@@ -617,7 +593,6 @@ describe("Routines E2E", () => {
 
 			expect(reorderRes.status).toBe(200);
 
-			// Verify new order
 			const getRes = await request(app.getHttpServer())
 				.get(`/routines/${routineId}`)
 				.set(authHeader(accessToken));
@@ -655,7 +630,6 @@ describe("Routines E2E", () => {
 					targetRestSec: 90,
 				});
 
-			// Send a non-existent ID in reorder
 			const res = await request(app.getHttpServer())
 				.post(`/routines/${routineId}/exercises/reorder`)
 				.set(authHeader(accessToken))
@@ -708,7 +682,6 @@ describe("Routines E2E", () => {
 					targetRestSec: 90,
 				});
 
-			// Both with same orderIndex
 			const res = await request(app.getHttpServer())
 				.post(`/routines/${routineId}/exercises/reorder`)
 				.set(authHeader(accessToken))

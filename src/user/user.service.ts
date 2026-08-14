@@ -29,22 +29,22 @@ export class UserService {
 		});
 	}
 
-	async findById(id: string) {
-		return this.prisma.user.findUnique({
-			where: { id },
-		});
-	}
-
 	async findByIdSafe(id: string) {
 		const user = await this.prisma.user.findUnique({
 			where: { id },
+			omit: {
+				passwordHash: true,
+				isActive: true,
+				emailVerified: true,
+				createdAt: true,
+				updatedAt: true,
+			},
 		});
 
 		if (!user) {
 			throw new NotFoundException("User not found");
 		}
 
-		const { passwordHash: _, ...userWithoutPassword } = user;
-		return userWithoutPassword;
+		return user;
 	}
 }

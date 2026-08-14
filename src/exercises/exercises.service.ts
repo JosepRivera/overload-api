@@ -18,6 +18,7 @@ export class ExerciseService {
 				type: input.type,
 				notes: input.notes ?? null,
 			},
+			omit: { userId: true, createdAt: true, updatedAt: true },
 		});
 	}
 
@@ -28,12 +29,14 @@ export class ExerciseService {
 				...(includeArchived ? {} : { isArchived: false }),
 			},
 			orderBy: [{ name: "asc" }],
+			omit: { userId: true, createdAt: true, updatedAt: true },
 		});
 	}
 
 	async findOne(userId: string, id: string) {
 		const exercise = await this.prisma.exercise.findFirst({
 			where: { id, userId },
+			omit: { userId: true, createdAt: true, updatedAt: true },
 		});
 		if (!exercise) {
 			throw new NotFoundException("Exercise not found");
@@ -64,6 +67,7 @@ export class ExerciseService {
 				...(input.type !== undefined && { type: input.type }),
 				...(input.notes !== undefined && { notes: input.notes }),
 			},
+			omit: { userId: true, createdAt: true, updatedAt: true },
 		});
 	}
 
@@ -72,6 +76,7 @@ export class ExerciseService {
 		return this.prisma.exercise.update({
 			where: { id },
 			data: { isArchived: true },
+			omit: { userId: true, createdAt: true, updatedAt: true },
 		});
 	}
 

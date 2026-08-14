@@ -21,10 +21,6 @@ export class RoutinesService {
 		private exerciseService: ExerciseService,
 	) {}
 
-	// ─────────────────────────────────────────────
-	// ROUTINE CRUD
-	// ─────────────────────────────────────────────
-
 	async create(userId: string, input: CreateRoutineInput) {
 		await this.assertUniqueNameForUser(userId, input.name);
 
@@ -34,6 +30,7 @@ export class RoutinesService {
 				name: input.name,
 				description: input.description ?? null,
 			},
+			omit: { userId: true, createdAt: true, updatedAt: true },
 		});
 	}
 
@@ -41,15 +38,18 @@ export class RoutinesService {
 		return this.prisma.routine.findMany({
 			where: { userId, isActive: true },
 			orderBy: { name: "asc" },
+			omit: { userId: true, createdAt: true, updatedAt: true },
 		});
 	}
 
 	async findOne(userId: string, id: string) {
 		const routine = await this.prisma.routine.findFirst({
 			where: { id, userId },
+			omit: { userId: true, createdAt: true, updatedAt: true },
 			include: {
 				routineExercises: {
 					orderBy: { orderIndex: "asc" },
+					omit: { routineId: true, exerciseId: true },
 					include: {
 						exercise: {
 							select: {
@@ -89,6 +89,7 @@ export class RoutinesService {
 				...(input.name !== undefined && { name: input.name }),
 				...(input.description !== undefined && { description: input.description }),
 			},
+			omit: { userId: true, createdAt: true, updatedAt: true },
 		});
 	}
 
@@ -104,10 +105,6 @@ export class RoutinesService {
 			data: { isActive: false },
 		});
 	}
-
-	// ─────────────────────────────────────────────
-	// ROUTINE EXERCISES
-	// ─────────────────────────────────────────────
 
 	async addExercise(userId: string, routineId: string, input: AddRoutineExerciseInput) {
 		const routine = await this.findOne(userId, routineId);
@@ -132,6 +129,7 @@ export class RoutinesService {
 				orderIndex: nextOrderIndex,
 				notes: input.notes ?? null,
 			},
+			omit: { routineId: true },
 		});
 	}
 
@@ -141,6 +139,7 @@ export class RoutinesService {
 		return this.prisma.routineExercise.findMany({
 			where: { routineId },
 			orderBy: { orderIndex: "asc" },
+			omit: { routineId: true, exerciseId: true },
 			include: {
 				exercise: {
 					select: {
@@ -164,8 +163,6 @@ export class RoutinesService {
 		await this.findOne(userId, routineId);
 		const routineExercise = await this.findRoutineExercise(routineId, routineExerciseId);
 
-		// If only one of the two rep fields is being updated, resolve the other
-		// from the stored value to re-run the min <= max check correctly
 		const newMin = input.targetRepsMin ?? routineExercise.targetRepsMin;
 		const newMax = input.targetRepsMax ?? routineExercise.targetRepsMax;
 
@@ -182,6 +179,7 @@ export class RoutinesService {
 				...(input.targetRestSec !== undefined && { targetRestSec: input.targetRestSec }),
 				...(input.notes !== undefined && { notes: input.notes }),
 			},
+			omit: { routineId: true },
 		});
 	}
 
@@ -210,7 +208,6 @@ export class RoutinesService {
 			throw new BadRequestException("One or more exercise IDs do not belong to this routine");
 		}
 
-		// Paso 1: índices temporales negativos para evitar conflictos con unique constraint
 		await this.prisma.$transaction(
 			input.exercises.map(({ id }, i) =>
 				this.prisma.routineExercise.update({
@@ -220,7 +217,6 @@ export class RoutinesService {
 			),
 		);
 
-		// Paso 2: índices finales
 		await this.prisma.$transaction(
 			input.exercises.map(({ id, orderIndex }) =>
 				this.prisma.routineExercise.update({
@@ -232,10 +228,6 @@ export class RoutinesService {
 
 		return this.findAllExercises(userId, routineId);
 	}
-
-	// ─────────────────────────────────────────────
-	// PRIVATE HELPERS
-	// ─────────────────────────────────────────────
 
 	private async assertUniqueNameForUser(userId: string, name: string, excludeId?: string) {
 		const existing = await this.prisma.routine.findFirst({

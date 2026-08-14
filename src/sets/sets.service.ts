@@ -96,8 +96,9 @@ export class SetsService {
 	}
 
 	private serializeSet(set: PrismaSet) {
+		const { workoutId: _, createdAt: __, ...rest } = set;
 		return {
-			...set,
+			...rest,
 			weight: Number(set.weight),
 			rpe: set.rpe !== null ? Number(set.rpe) : null,
 		};

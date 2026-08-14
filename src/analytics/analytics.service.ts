@@ -49,8 +49,6 @@ export class AnalyticsService {
 			return { exerciseId, estimated1rm: null, basedOn: null };
 		}
 
-		// Pick the set that yields the highest estimated 1RM, not just the heaviest weight.
-		// e.g. 90kg×3 → 99, but 80kg×8 → 101.3 — the latter is the better estimate.
 		let best: { weight: number; reps: number; estimated: number } | null = null;
 
 		for (const s of sets) {
@@ -62,13 +60,12 @@ export class AnalyticsService {
 			}
 		}
 
-		// best is guaranteed non-null here (sets.length > 0)
 		// biome-ignore lint/style/noNonNullAssertion: guarded by sets.length check above
 		const { weight, reps, estimated } = best!;
 
 		return {
 			exerciseId,
-			estimated1rm: Math.round(estimated * 10) / 10, // 1 decimal place
+			estimated1rm: Math.round(estimated * 10) / 10,
 			basedOn: { weight, reps },
 		};
 	}

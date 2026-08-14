@@ -2,10 +2,6 @@ import { NotFoundException } from "@nestjs/common";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AnalyticsService } from "@/analytics/analytics.service.js";
 
-// ---------------------------------------------------------------------------
-// Prisma mock
-// ---------------------------------------------------------------------------
-
 const prismaMock = {
 	exercise: {
 		findFirst: vi.fn(),
@@ -19,10 +15,6 @@ const prismaMock = {
 	},
 };
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
 const USER_ID = "user-uuid-1";
 const EXERCISE_ID = "exercise-uuid-1";
 const WORKOUT_ID = "workout-uuid-1";
@@ -35,15 +27,11 @@ function makeSet(
 ) {
 	return {
 		workoutId,
-		weight: weight.toString(), // Prisma Decimal comes as string
+		weight: weight.toString(),
 		reps,
 		workout: { startedAt },
 	};
 }
-
-// ---------------------------------------------------------------------------
-// Suite
-// ---------------------------------------------------------------------------
 
 describe("AnalyticsService", () => {
 	let service: AnalyticsService;
@@ -53,10 +41,6 @@ describe("AnalyticsService", () => {
 		service = new AnalyticsService(prismaMock as never);
 	});
 
-	// -------------------------------------------------------------------------
-	// getExercisePrs
-	// -------------------------------------------------------------------------
-
 	describe("getExercisePrs", () => {
 		beforeEach(() => {
 			prismaMock.exercise.findFirst.mockResolvedValue({ id: EXERCISE_ID });
@@ -64,10 +48,7 @@ describe("AnalyticsService", () => {
 
 		it("returns weightPr and volumePr from non-warmup sets", async () => {
 			prismaMock.set.aggregate.mockResolvedValue({ _max: { weight: "100" } });
-			prismaMock.set.findMany.mockResolvedValue([
-				makeSet(100, 5), // volume = 500
-				makeSet(80, 8), // volume = 640  ← volume PR
-			]);
+			prismaMock.set.findMany.mockResolvedValue([makeSet(100, 5), makeSet(80, 8)]);
 
 			const result = await service.getExercisePrs(USER_ID, EXERCISE_ID);
 
@@ -88,10 +69,10 @@ describe("AnalyticsService", () => {
 		it("picks the correct volume PR when multiple sets have different weight×reps", async () => {
 			prismaMock.set.aggregate.mockResolvedValue({ _max: { weight: "120" } });
 			prismaMock.set.findMany.mockResolvedValue([
-				makeSet(120, 1), // volume = 120
-				makeSet(100, 3), // volume = 300
-				makeSet(80, 5), // volume = 400  ← volume PR
-				makeSet(60, 6), // volume = 360
+				makeSet(120, 1),
+				makeSet(100, 3),
+				makeSet(80, 5),
+				makeSet(60, 6),
 			]);
 
 			const result = await service.getExercisePrs(USER_ID, EXERCISE_ID);
@@ -106,7 +87,7 @@ describe("AnalyticsService", () => {
 
 			const result = await service.getExercisePrs(USER_ID, EXERCISE_ID);
 
-			expect(result.weightPr).toBe(0); // ← era toBeNull(), estaba mal
+			expect(result.weightPr).toBe(0);
 			expect(result.volumePr).toBe(0);
 		});
 
@@ -117,17 +98,12 @@ describe("AnalyticsService", () => {
 		});
 	});
 
-	// -------------------------------------------------------------------------
-	// getExercise1rm
-	// -------------------------------------------------------------------------
-
 	describe("getExercise1rm", () => {
 		beforeEach(() => {
 			prismaMock.exercise.findFirst.mockResolvedValue({ id: EXERCISE_ID });
 		});
 
 		it("returns estimated1rm and basedOn using Epley formula", async () => {
-			// 100kg × (1 + 5/30) = 100 × 1.1667 = 116.7
 			prismaMock.set.findMany.mockResolvedValue([{ weight: "100", reps: 5 }]);
 
 			const result = await service.getExercise1rm(USER_ID, EXERCISE_ID);
@@ -138,8 +114,6 @@ describe("AnalyticsService", () => {
 		});
 
 		it("picks the set with the highest estimated 1RM, not the heaviest weight", async () => {
-			// 90kg×3  → 90 × (1 + 3/30)  = 90 × 1.1   = 99.0
-			// 80kg×8  → 80 × (1 + 8/30)  = 80 × 1.267  = 101.3  ← winner
 			prismaMock.set.findMany.mockResolvedValue([
 				{ weight: "90", reps: 3 },
 				{ weight: "80", reps: 8 },
@@ -161,7 +135,6 @@ describe("AnalyticsService", () => {
 		});
 
 		it("correctly applies Epley for a single-rep set (reps = 1)", async () => {
-			// 150kg × (1 + 1/30) = 150 × 1.0333 = 155.0
 			prismaMock.set.findMany.mockResolvedValue([{ weight: "150", reps: 1 }]);
 
 			const result = await service.getExercise1rm(USER_ID, EXERCISE_ID);
@@ -171,7 +144,6 @@ describe("AnalyticsService", () => {
 		});
 
 		it("correctly applies Epley at the reps = 10 boundary", async () => {
-			// 100kg × (1 + 10/30) = 100 × 1.333 = 133.3
 			prismaMock.set.findMany.mockResolvedValue([{ weight: "100", reps: 10 }]);
 
 			const result = await service.getExercise1rm(USER_ID, EXERCISE_ID);
@@ -180,7 +152,6 @@ describe("AnalyticsService", () => {
 		});
 
 		it("ignores sets with reps > 10 (Prisma filter handles this, service receives empty)", async () => {
-			// Simulates the DB already filtering out reps > 10 via the query
 			prismaMock.set.findMany.mockResolvedValue([]);
 
 			const result = await service.getExercise1rm(USER_ID, EXERCISE_ID);
@@ -189,7 +160,6 @@ describe("AnalyticsService", () => {
 		});
 
 		it("returns estimated1rm rounded to 1 decimal place", async () => {
-			// 95kg × (1 + 7/30) = 95 × 1.2333 = 117.17 → rounded to 117.2
 			prismaMock.set.findMany.mockResolvedValue([{ weight: "95", reps: 7 }]);
 
 			const result = await service.getExercise1rm(USER_ID, EXERCISE_ID);
@@ -213,10 +183,6 @@ describe("AnalyticsService", () => {
 		});
 	});
 
-	// -------------------------------------------------------------------------
-	// getWorkoutVolume
-	// -------------------------------------------------------------------------
-
 	describe("getWorkoutVolume", () => {
 		beforeEach(() => {
 			prismaMock.workout.findUnique.mockResolvedValue({ id: WORKOUT_ID });
@@ -224,9 +190,9 @@ describe("AnalyticsService", () => {
 
 		it("calculates total volume as sum of weight×reps for non-warmup sets", async () => {
 			prismaMock.set.findMany.mockResolvedValue([
-				{ weight: "100", reps: 5 }, // 500
-				{ weight: "80", reps: 8 }, // 640
-				{ weight: "60", reps: 10 }, // 600
+				{ weight: "100", reps: 5 },
+				{ weight: "80", reps: 8 },
+				{ weight: "60", reps: 10 },
 			]);
 
 			const result = await service.getWorkoutVolume(USER_ID, WORKOUT_ID);
@@ -262,10 +228,6 @@ describe("AnalyticsService", () => {
 			);
 		});
 	});
-
-	// -------------------------------------------------------------------------
-	// getExerciseProgression
-	// -------------------------------------------------------------------------
 
 	describe("getExerciseProgression", () => {
 		beforeEach(() => {

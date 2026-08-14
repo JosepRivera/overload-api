@@ -55,9 +55,6 @@ describe("Sets E2E", () => {
 		return { accessToken, workoutId, exerciseId };
 	}
 
-	// ─────────────────────────────────────────────
-	// POST /workouts/:workoutId/sets
-	// ─────────────────────────────────────────────
 
 	describe("POST /workouts/:workoutId/sets", () => {
 		it("happy path: 201, setNumber generado automáticamente desde 1", async () => {
@@ -220,9 +217,6 @@ describe("Sets E2E", () => {
 		});
 	});
 
-	// ─────────────────────────────────────────────
-	// GET /workouts/:workoutId/sets
-	// ─────────────────────────────────────────────
 
 	describe("GET /workouts/:workoutId/sets", () => {
 		it("lista todos los sets incluidos warmups", async () => {
@@ -264,9 +258,6 @@ describe("Sets E2E", () => {
 		});
 	});
 
-	// ─────────────────────────────────────────────
-	// PATCH /workouts/:workoutId/sets/:id
-	// ─────────────────────────────────────────────
 
 	describe("PATCH /workouts/:workoutId/sets/:id", () => {
 		it("happy path: 200", async () => {
@@ -315,7 +306,6 @@ describe("Sets E2E", () => {
 			const user2 = await registerAndLogin(app);
 			const { workoutId } = await setupWorkoutAndExercise();
 
-			// We need a set ID — since user2 can't see the workout, even with a valid set ID
 			const res = await request(app.getHttpServer())
 				.patch(`/workouts/${workoutId}/sets/00000000-0000-0000-0000-000000000000`)
 				.set(authHeader(user2.accessToken))
@@ -325,9 +315,6 @@ describe("Sets E2E", () => {
 		});
 	});
 
-	// ─────────────────────────────────────────────
-	// DELETE /workouts/:workoutId/sets/:id
-	// ─────────────────────────────────────────────
 
 	describe("DELETE /workouts/:workoutId/sets/:id", () => {
 		it("happy path: 204", async () => {

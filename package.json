@@ -26,7 +26,7 @@
 		"@nestjs/swagger": "^11.4.6",
 		"@prisma/adapter-pg": "^7.9.1",
 		"@prisma/client": "^7.9.1",
-		"@scalar/nestjs-api-reference": "^1.2.13",
+		"@scalar/nestjs-api-reference": "^1.2.14",
 		"bcrypt": "^6.0.0",
 		"dotenv": "^17.4.2",
 		"helmet": "^8.3.0",
@@ -47,11 +47,11 @@
 		"@swc/helpers": "^0.5.23",
 		"@types/bcrypt": "^6.0.0",
 		"@types/express": "^5.0.6",
-		"@types/node": "^24.13.3",
+		"@types/node": "^26.2.0",
 		"@types/supertest": "^7.2.1",
 		"supertest": "^7.2.2",
 		"tsx": "^4.23.12",
-		"typescript": "^5.9.3",
+		"typescript": "^6.0.3",
 		"vitest": "^4.1.10"
 	}
 }

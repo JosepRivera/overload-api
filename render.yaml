@@ -20,7 +20,5 @@ services:
         value: 15m
       - key: JWT_REFRESH_TOKEN_TTL
         value: 7d
-      - key: CORS_ORIGIN
-        sync: false
       - key: BCRYPT_ROUNDS
         value: 10

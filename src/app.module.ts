@@ -1,4 +1,6 @@
 import { Module } from "@nestjs/common";
+import { APP_GUARD } from "@nestjs/core";
+import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import { AnalyticsModule } from "./analytics/analytics.module.js";
 import { AppController } from "./app.controller.js";
 import { AuthModule } from "./auth/auth.module.js";
@@ -12,6 +14,7 @@ import { WorkoutsModule } from "./workouts/workouts.module.js";
 
 @Module({
 	imports: [
+		ThrottlerModule.forRoot([{ ttl: 60_000, limit: 60 }]),
 		JwtModule,
 		PrismaModule,
 		AuthModule,
@@ -23,5 +26,6 @@ import { WorkoutsModule } from "./workouts/workouts.module.js";
 		AnalyticsModule,
 	],
 	controllers: [AppController],
+	providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
 export class AppModule {}

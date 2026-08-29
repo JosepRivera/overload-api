@@ -15,7 +15,6 @@ export const envSchema = z.object({
 	JWT_SECRET: z.string().min(32),
 	JWT_ACCESS_TOKEN_TTL: msString.default("15m"),
 	JWT_REFRESH_TOKEN_TTL: msString.default("7d"),
-	CORS_ORIGIN: z.url().optional(),
 	BCRYPT_ROUNDS: z.coerce.number().int().min(4).max(15).default(10),
 });
 

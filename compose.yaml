@@ -36,7 +36,6 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       JWT_ACCESS_TOKEN_TTL: ${JWT_ACCESS_TOKEN_TTL}
       JWT_REFRESH_TOKEN_TTL: ${JWT_REFRESH_TOKEN_TTL}
-      CORS_ORIGIN: ${CORS_ORIGIN}
       BCRYPT_ROUNDS: ${BCRYPT_ROUNDS}
     volumes:
       - ./src:/app/src
